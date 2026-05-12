@@ -4,7 +4,7 @@
 /* ===== 12. LIGHT THEME (default) ===== */
 :root,
 :root[data-theme='light'] {
-	/* Calm-UI light substrate — lightening pass 2026-05-12: darker tiers shifted toward white.
+	/* Calm-UI light substrate — lightening pass 2026-05-12 + sunken second-pass 2026-05-12.
 	   Adjacent tier L delta target ≤ 0.025; hierarchy app > page > panel > subtle > surface. */
 	--s-color-bg-app: var(--s-cream-100);
 	--s-color-bg-page: var(--s-cream-75);
@@ -98,13 +98,13 @@
 	--s-color-nav-active-bg: var(--s-color-bg-strong);
 	--s-color-nav-active-fg: var(--s-color-fg-on-strong);
 
-	/* Surface elevation — semantic aliases: lightening pass 2026-05-12.
+	/* Surface elevation — semantic aliases: lightening pass 2026-05-12; sunken second-pass 2026-05-12.
 	   Hierarchy (lightest → darkest): raised > hover > default > sunken.
 	   --s-cream-25 (#fefdfd, L≈0.994) → raised (elevated card)
 	   --s-cream-35 (#fdfcfb, L≈0.990) → hover (surface hover lift, sits between raised/default)
 	   --s-cream-50 (#fbfbf9, L≈0.985) → default (base canvas)
-	   --s-cream-75 (#f6f5f0, L≈0.970) → sunken (inset/well; darkest tier)
-	   Adjacent tier L deltas: ~0.004–0.015 (all ≤ 0.025 target). */
+	   --s-cream-75 (#f9f9f6, L≈0.980) → sunken (inset/well; darkest tier; lifted from L≈0.970)
+	   Adjacent tier L deltas: raised→hover ~0.004, hover→default ~0.005, default→sunken ~0.005, raised→sunken ~0.014. */
 	--s-color-surface-raised: var(--s-cream-25);
 	--s-color-surface-hover: var(--s-cream-35);
 	--s-color-surface-default: var(--s-cream-50);

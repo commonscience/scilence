@@ -79,7 +79,7 @@
 	--s-cream-25:  #fefdfd;  /* white */
 	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */
 	--s-cream-50:  #fbfbf9;  /* paper */
-	--s-cream-75:  #f6f5f0;  /* pearl */
+	--s-cream-75:  #f9f9f6;  /* pearl — second-pass lift 2026-05-12: L≈0.970→0.980, delta raised→sunken ~0.014 */
 	--s-cream-100: #f0eee6;  /* cream */
 	--s-cream-150: #e8e6dc;  /* linen */
 	--s-cream-200: #e0ddd2;  /* sand */
