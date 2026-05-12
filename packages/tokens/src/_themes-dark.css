@@ -55,7 +55,7 @@
 	--s-color-fg-on-strong: var(--s-brand-50);
 
 	/* Hover states — one step above elevation-1 (brandscale-925) */
-	--s-color-hover-bg: var(--s-brand-850);
+	--s-color-hover-bg: var(--s-brand-alpha-5);      /* pass 12: green-tone hover per Caitlin direct */
 	--s-color-hover-bg-strong: var(--s-brand-800);
 	--s-color-hover-fg: var(--s-brand-50);
 	--s-color-hover-border: var(--s-brand-700);

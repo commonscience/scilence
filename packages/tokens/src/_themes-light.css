@@ -55,7 +55,7 @@
 	--s-color-fg-on-strong: var(--s-brand-25);
 
 	/* Hover states */
-	--s-color-hover-bg: var(--s-cream-50);           /* pass 7: hover between card+canvas */
+	--s-color-hover-bg: var(--s-brand-alpha-5);      /* pass 12: green-tone hover per Caitlin direct (matches .tree-item.active) */
 	--s-color-hover-bg-strong: var(--s-cream-100);  /* pass 7: strong hover deeper than canvas */
 	--s-color-hover-fg: var(--s-brand-900);
 	--s-color-hover-border: var(--s-cream-200);
