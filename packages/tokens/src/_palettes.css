@@ -74,15 +74,16 @@
 	--s-green-alpha-50: oklch(0.44 0.10 155 / 0.50);
 
 	/* ===== CREAMSCALE (warm neutrals) =====
-	   Near-white tones (cream-15, cream-25, cream-35) now expressed in OKLCH per
-	   amended feedback_oklch_colors policy (pass 8, 2026-05-12 Caitlin direct).
-	   cream-50 and darker remain hex; cream-75 converted to OKLCH pass 8.
-	   Sourced from the morph sequencer's battle-tested palette. */
-	--s-cream-15:  oklch(0.996 0.012 90);  /* warm near-white — pass 8: new tone above cream-25 for footer/bright-status surfaces; OKLCH form per amended feedback_oklch_colors policy */
+	   Entire scale expressed in hex — creamscale is the named hex exception
+	   per feedback_oklch_colors policy. Pass 8 OKLCH conversion of cream-15
+	   and cream-75 reverted (pass 9, 2026-05-12 Caitlin direct: H=90 hue
+	   skewed too cream/saturated). Sourced from the morph sequencer's
+	   battle-tested palette. */
+	--s-cream-15:  #fffdf7;  /* warm near-white — pass 9 revert from pass-8 OKLCH after Caitlin direct "skewed way too cream"; equivalent target was oklch(0.996 0.012 90), but H=90 hue pushed too warm/saturated; hex restored. Slot above cream-25 for footer/bright-status. */
 	--s-cream-25:  #fefdfd;  /* white */
 	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */
 	--s-cream-50:  #fbfbf9;  /* paper */
-	--s-cream-75:  oklch(0.965 0.008 90);  /* pearl — pass 6 hex #f6f5f0 converted to OKLCH form for system consistency per amended feedback_oklch_colors policy (pass 8) */
+	--s-cream-75:  #f6f5f0;  /* pearl — pass 6 hex restored (pass 8 OKLCH form reverted after Caitlin direct: H=90 hue pushed too cream). */
 	--s-cream-100: #f0eee6;  /* cream */
 	--s-cream-150: #e8e6dc;  /* linen */
 	--s-cream-200: #e0ddd2;  /* sand */
