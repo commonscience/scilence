@@ -79,7 +79,7 @@
 	--s-cream-25:  #fefdfd;  /* white */
 	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */
 	--s-cream-50:  #fbfbf9;  /* paper */
-	--s-cream-75:  #fbfaf7;  /* pearl — third-pass lift 2026-05-12: L≈0.980→0.987, delta raised→sunken ~0.007 (Caitlin direct: pass-2 still too profound) */
+	--s-cream-75:  #f6f5f0;  /* pearl — pass 6 reset to Caitlin-direct hex (was the original pre-pass-2 value; passes 2+3 had over-lifted it to #fbfaf7 which inverted hierarchy vs cream-50 #fbfbf9) */
 	--s-cream-100: #f0eee6;  /* cream */
 	--s-cream-150: #e8e6dc;  /* linen */
 	--s-cream-200: #e0ddd2;  /* sand */
