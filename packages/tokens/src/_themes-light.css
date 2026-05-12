@@ -4,14 +4,16 @@
 /* ===== 12. LIGHT THEME (default) ===== */
 :root,
 :root[data-theme='light'] {
-	/* Calm-UI light substrate — lightening pass 2026-05-12 + sunken second-pass 2026-05-12 + pass 4 2026-05-12.
-	   Pass 4: surface aliases shifted one tier warmer (raised→cream-50, canvas→cream-100, wells→cream-150).
-	   Adjacent tier L delta target ≤ 0.025; hierarchy app > page > panel > subtle > surface. */
-	--s-color-bg-app: var(--s-cream-100);
+	/* Calm-UI light substrate — pass 7 2026-05-12: Caitlin direct correction.
+	   Cards near-white (cream-25 #fefdfd); canvas/chrome warm cream (cream-75 #f6f5f0).
+	   Passes 4-6 over-shifted everything warmer including cards. Pass 7 re-routes:
+	   cards=cream-25, hover=cream-50, canvas/panel=cream-75, subtle/sunken=cream-100+.
+	   Adjacent tier L delta target ≤ 0.025; hierarchy: canvas(75) < hover(50) < card(25). */
+	--s-color-bg-app: var(--s-cream-75);             /* pass 7: page bg = #f6f5f0 warm cream */
 	--s-color-bg-page: var(--s-cream-75);
-	--s-color-bg-panel: var(--s-cream-100);          /* was cream-50 — pass 5: warmer chrome */
-	--s-color-bg-subtle: var(--s-cream-75);   /* was cream-35 — pass 4: one tier warmer */
-	--s-color-bg-surface: var(--s-cream-50);  /* was cream-25 — pass 4: one tier warmer */
+	--s-color-bg-panel: var(--s-cream-75);           /* pass 7: chrome matches canvas */
+	--s-color-bg-subtle: var(--s-cream-100);         /* pass 7: subtle deeper than canvas */
+	--s-color-bg-surface: var(--s-cream-25);         /* pass 7: surfaces = cards near-white */
 	--s-color-bg-titlebar: var(--s-cream-alpha-10);
 
 	/* Borders */
@@ -53,8 +55,8 @@
 	--s-color-fg-on-strong: var(--s-brand-25);
 
 	/* Hover states */
-	--s-color-hover-bg: var(--s-cream-75);           /* was cream-35 — pass 5 */
-	--s-color-hover-bg-strong: var(--s-cream-150);   /* was cream-75 — pass 5 */
+	--s-color-hover-bg: var(--s-cream-50);           /* pass 7: hover between card+canvas */
+	--s-color-hover-bg-strong: var(--s-cream-100);  /* pass 7: strong hover deeper than canvas */
 	--s-color-hover-fg: var(--s-brand-900);
 	--s-color-hover-border: var(--s-cream-200);
 	--s-color-hover-accent: oklch(0.32 0.045 var(--brand-hue));
@@ -89,8 +91,8 @@
 	--s-color-fg-heading: var(--s-brand-900);
 	--s-color-fg-code: var(--accent-brand-dark);
 	--s-color-fg-label: var(--s-brand-600);
-	--s-color-bg-card: var(--s-cream-75);            /* was cream-35 — pass 5: warmer cards */
-	--s-color-bg-card-hover: var(--s-cream-100);     /* was cream-50 — pass 5 */
+	--s-color-bg-card: var(--s-cream-25);            /* pass 7: cards near-white per Caitlin direct */
+	--s-color-bg-card-hover: var(--s-cream-50);     /* pass 7: hover between card+canvas */
 	--s-color-bg-table-header: var(--s-cream-75);
 	--s-color-bg-table-row-hover: var(--s-cream-35);
 
@@ -99,19 +101,17 @@
 	--s-color-nav-active-bg: var(--s-color-bg-strong);
 	--s-color-nav-active-fg: var(--s-color-fg-on-strong);
 
-	/* Surface elevation — semantic aliases: pass 4 2026-05-12 — one tier warmer throughout.
-	   Root cause of pass-3 residual: cream-25 #fefdfd reads as near-pure white; Claude's UI
-	   reference uses warmer cream throughout. Shifted all aliases one tier deeper into palette
-	   (no new colors); cream-25/35 still available for non-aliased use.
+	/* Surface elevation — semantic aliases: pass 7 2026-05-12 — Caitlin direct correction.
+	   Passes 4-6 inverted intent: cards went warmer than canvas. Pass 7 restores correct polarity.
 	   Hierarchy (lightest → darkest): raised > hover > default > sunken.
-	   --s-cream-50  (#fbfbf9) → raised   (elevated card; was cream-25)
-	   --s-cream-75  (#fbfaf7) → hover    (surface hover lift; was cream-35)
-	   --s-cream-100 (#f0eee6) → default  (base canvas; was cream-50)
-	   --s-cream-150 (#e8e6dc) → sunken   (inset/well; was cream-75) */
-	--s-color-surface-raised: var(--s-cream-50);   /* was cream-25 — cards */
-	--s-color-surface-hover: var(--s-cream-75);    /* was cream-35 — hover */
-	--s-color-surface-default: var(--s-cream-100); /* was cream-50 — canvas */
-	--s-color-surface-sunken: var(--s-cream-150);  /* was cream-75 — wells */
+	   --s-cream-25  (#fefdfd) → raised   (cards — near-white bright pop)
+	   --s-cream-50  (#fbfbf9) → hover    (surface hover lift — between card+canvas)
+	   --s-cream-75  (#f6f5f0) → default  (base canvas — warm cream per Caitlin direct)
+	   --s-cream-100 (#f0eee6) → sunken   (inset/well — deeper than canvas) */
+	--s-color-surface-raised: var(--s-cream-25);   /* pass 7: raised = cards near-white */
+	--s-color-surface-hover: var(--s-cream-50);    /* pass 7: hover between card+canvas */
+	--s-color-surface-default: var(--s-cream-75);  /* pass 7: canvas = #f6f5f0 warm cream */
+	--s-color-surface-sunken: var(--s-cream-100);  /* pass 7: sunken deeper than canvas */
 
 	/* Border semantic alias */
 	--s-color-border-default: var(--s-color-border-strong);
