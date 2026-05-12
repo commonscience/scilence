@@ -9,7 +9,7 @@
 	   Adjacent tier L delta target ≤ 0.025; hierarchy app > page > panel > subtle > surface. */
 	--s-color-bg-app: var(--s-cream-100);
 	--s-color-bg-page: var(--s-cream-75);
-	--s-color-bg-panel: var(--s-cream-50);
+	--s-color-bg-panel: var(--s-cream-100);          /* was cream-50 — pass 5: warmer chrome */
 	--s-color-bg-subtle: var(--s-cream-75);   /* was cream-35 — pass 4: one tier warmer */
 	--s-color-bg-surface: var(--s-cream-50);  /* was cream-25 — pass 4: one tier warmer */
 	--s-color-bg-titlebar: var(--s-cream-alpha-10);
@@ -53,8 +53,8 @@
 	--s-color-fg-on-strong: var(--s-brand-25);
 
 	/* Hover states */
-	--s-color-hover-bg: var(--s-cream-35);
-	--s-color-hover-bg-strong: var(--s-cream-75);
+	--s-color-hover-bg: var(--s-cream-75);           /* was cream-35 — pass 5 */
+	--s-color-hover-bg-strong: var(--s-cream-150);   /* was cream-75 — pass 5 */
 	--s-color-hover-fg: var(--s-brand-900);
 	--s-color-hover-border: var(--s-cream-200);
 	--s-color-hover-accent: oklch(0.32 0.045 var(--brand-hue));
@@ -89,8 +89,8 @@
 	--s-color-fg-heading: var(--s-brand-900);
 	--s-color-fg-code: var(--accent-brand-dark);
 	--s-color-fg-label: var(--s-brand-600);
-	--s-color-bg-card: var(--s-cream-35);
-	--s-color-bg-card-hover: var(--s-cream-50);
+	--s-color-bg-card: var(--s-cream-75);            /* was cream-35 — pass 5: warmer cards */
+	--s-color-bg-card-hover: var(--s-cream-100);     /* was cream-50 — pass 5 */
 	--s-color-bg-table-header: var(--s-cream-75);
 	--s-color-bg-table-row-hover: var(--s-cream-35);
 
