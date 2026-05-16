@@ -5,8 +5,19 @@
 // (admin shell, marketing site, public docs, future surfaces).
 //
 // First occupant: FilterRail (see Brief 103 — guide-shell-v5-section-state-left-rail.md).
-//
-// Re-exports added here as primitives land. The empty export keeps this
-// file a valid ES module barrel before any primitive ships.
 
-export {};
+// ── FilterRail (Brief 103) ──────────────────────────────────────────────
+export { createFilterRail } from './filter-rail/index.js';
+export type {
+	DatePickerFactory,
+	FilterGroupConfig,
+	FilterGroupSelection,
+	FilterOption,
+	FilterRailConfig,
+	FilterRailHandle,
+	FilterRailSearch,
+	FilterSelection,
+	FilterSelectionMode,
+	RangeConfig,
+	RangeSelection,
+} from './filter-rail/index.js';
