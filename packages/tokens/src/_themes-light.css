@@ -106,8 +106,8 @@
 	   --s-cream-25 (#fefdfd, L≈0.994) → raised
 	   --s-cream-35 (#fdfcfb, L≈0.990) → hover (between raised and default)
 	   --s-cream-50 (#fbfbf9, L≈0.985) → default (canvas)
-	   --s-cream-75 (#f6f5f0, L≈0.970) → sunken (inset/well)
-	   Adjacent tier L deltas: ~0.004, 0.005, 0.015 (all ≤ 0.025). */
+	   --s-cream-75 (#f9f9f6, L≈0.981) → sunken (inset/well) — second pass 042404
+	   Adjacent tier L deltas: ~0.004, 0.005, 0.004 (raised→sunken ~0.013). */
 	--s-color-surface-raised: var(--s-cream-25);
 	--s-color-surface-hover: var(--s-cream-35);
 	--s-color-surface-default: var(--s-cream-50);

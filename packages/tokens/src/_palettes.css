@@ -83,7 +83,7 @@
 	--s-cream-25:  #fefdfd;  /* white */
 	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */
 	--s-cream-50:  #fbfbf9;  /* paper */
-	--s-cream-75:  #f6f5f0;  /* pearl — pass 6 hex restored (pass 8 OKLCH form reverted after Caitlin direct: H=90 hue pushed too cream). */
+	--s-cream-75:  #f9f9f6;  /* pearl — sunken-tier second pass (2026-05-18): L≈0.981, closer to cream-50; subtler column-well vs card contrast. */
 	--s-cream-100: #f0eee6;  /* cream */
 	--s-cream-150: #e8e6dc;  /* linen */
 	--s-cream-200: #e0ddd2;  /* sand */
