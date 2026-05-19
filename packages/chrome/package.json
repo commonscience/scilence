@@ -1,0 +1,15 @@
+{
+  "name": "@scilence/chrome",
+  "version": "0.0.1",
+  "description": "Application chrome — navigation rails, headers, footers, and wayfinding.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ]
+}

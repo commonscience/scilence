@@ -1,0 +1,15 @@
+{
+  "name": "@scilence/skills",
+  "version": "0.0.1",
+  "description": "Workspace skill UI — skill cards and related reusable skill-surface components.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ]
+}

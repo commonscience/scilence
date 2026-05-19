@@ -1,0 +1,15 @@
+{
+  "name": "@scilence/layout",
+  "version": "0.0.1",
+  "description": "Page and panel layout primitives — shells, grids, surfaces, and resize handles.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ]
+}

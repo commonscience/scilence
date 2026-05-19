@@ -1,0 +1,15 @@
+{
+  "name": "@scilence/overlays",
+  "version": "0.0.1",
+  "description": "Layered UI surfaces — modals, drawers, popovers, tooltips, toasts, and sheets.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ]
+}
