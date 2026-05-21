@@ -1,0 +1,27 @@
+/* scilence — STEAMCO Design System Foundation
+   Canonical pan-app tokens (@scilence/tokens).
+
+   ===== INTERACTIVE — TOUCH-INPUT REGULATORY FLOORS =====
+
+   These tokens encode regulatory floors for touch input, NOT design
+   preferences. They MUST NOT be density-scaled — the floor applies equally
+   in density-condensed and density-expanded modes whenever the input
+   mechanism is touch.
+
+   Consumption pattern: wrap rules in `@media (hover: none) { ... }` so
+   the floor applies to touch devices (iPhone, iPad) regardless of
+   orientation, but does NOT affect density-condensed desktop with mouse
+   input. `@media (hover: none)` queries the input mechanism directly and
+   is the correct discriminator for touch-only enforcement. */
+
+:root {
+	/* Touch-target minimum — Apple HIG floor (44×44 CSS px) for touch
+	   input. NOT density-scaled. Consumed under @media (hover: none). */
+	--s-size-touch-target-min: 44px;
+
+	/* Input font minimum — iOS Safari auto-zooms when a focused input has
+	   font-size < 16px. NOT density-scaled. Consumed under
+	   @media (hover: none) with max() to preserve any larger existing
+	   font-size from density/typography tokens. */
+	--s-size-input-font-min-touch: 16px;
+}
