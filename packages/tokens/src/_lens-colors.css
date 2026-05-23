@@ -1,29 +1,30 @@
 /* scilence — admin/product lens tokens (kanban card face Pass 1)
    Pan-app semantic colors for substrate (admin) vs product work.
-   Iteration 2 (2026-05-23): dialed back per visceral check — very subtle. */
+   Iteration 3 (2026-05-23):
+     - product lens = transparent (uses default card bg) — per visceral check
+       'let product just be whatever the default color would have been ... no green'
+     - admin lens = very subtle teal tint
+     - left bands removed; signal carried by bg tint only
+*/
 
 :root {
-	/* Admin — tealscale substrate cue (very subtle) */
+	/* Admin — very subtle tealscale substrate cue */
 	--s-lens-admin-bg: var(--s-teal-alpha-5);
-	--s-lens-admin-border: var(--s-teal-200);
 	--s-lens-admin-fg: var(--s-teal-800);
 	--s-lens-admin-bg-hover: var(--s-teal-alpha-10);
 
-	/* Product — greenscale / outward-facing work cue (very subtle) */
-	--s-lens-product-bg: var(--s-green-alpha-5);
-	--s-lens-product-border: var(--s-green-200);
-	--s-lens-product-fg: var(--s-green-800);
-	--s-lens-product-bg-hover: var(--s-green-alpha-10);
+	/* Product — default card chrome (no tint) */
+	--s-lens-product-bg: transparent;
+	--s-lens-product-fg: var(--s-color-fg-default);
+	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
 
 :root[data-theme='dark'] {
 	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 8%, var(--s-color-bg-surface));
-	--s-lens-admin-border: var(--s-teal-400);
 	--s-lens-admin-fg: var(--s-teal-200);
 	--s-lens-admin-bg-hover: color-mix(in oklch, var(--s-teal-500) 14%, var(--s-color-bg-surface));
 
-	--s-lens-product-bg: color-mix(in oklch, var(--s-green-500) 8%, var(--s-color-bg-surface));
-	--s-lens-product-border: var(--s-green-400);
-	--s-lens-product-fg: var(--s-green-200);
-	--s-lens-product-bg-hover: color-mix(in oklch, var(--s-green-500) 14%, var(--s-color-bg-surface));
+	--s-lens-product-bg: transparent;
+	--s-lens-product-fg: var(--s-color-fg-default);
+	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
