@@ -1,31 +1,32 @@
 /* scilence — admin/product lens tokens (kanban card face Pass 1)
    Pan-app semantic colors for substrate (admin) vs product work.
-   Iteration 4 (2026-05-23):
-     - product lens = subtle cream tint (warm-neutral, no green) so cards
-       lift visibly above column bg; per Caitlin direct
-       'product background color is too subtle'
-     - admin lens = subtle teal tint
-     - no left bands; signal carried by bg tint only
+   Iteration 5 (2026-05-23):
+     - product lens = --s-color-bg-surface (design system's "lifted surface
+       above page" token: cream-25 light, equivalent dark). Cards naturally
+       lift above the column bg without a colored tint. Per Caitlin direct
+       'product cards are too similar to the page background'.
+     - admin lens = subtle teal tint over the same surface, so admin and
+       product feel like the same elevation tier (one tinted, one not).
 */
 
 :root {
-	/* Admin — subtle tealscale substrate cue */
-	--s-lens-admin-bg: var(--s-teal-alpha-5);
+	/* Admin — surface elevation + very subtle teal cue */
+	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 4%, var(--s-color-bg-surface));
 	--s-lens-admin-fg: var(--s-teal-800);
-	--s-lens-admin-bg-hover: var(--s-teal-alpha-10);
+	--s-lens-admin-bg-hover: color-mix(in oklch, var(--s-teal-500) 8%, var(--s-color-bg-surface));
 
-	/* Product — subtle cream tint (warm-neutral, no green) */
-	--s-lens-product-bg: var(--s-cream-alpha-10);
+	/* Product — surface elevation, no tint */
+	--s-lens-product-bg: var(--s-color-bg-surface);
 	--s-lens-product-fg: var(--s-color-fg-default);
-	--s-lens-product-bg-hover: var(--s-cream-alpha-20);
+	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
 
 :root[data-theme='dark'] {
-	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 8%, var(--s-color-bg-surface));
+	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 6%, var(--s-color-bg-surface));
 	--s-lens-admin-fg: var(--s-teal-200);
-	--s-lens-admin-bg-hover: color-mix(in oklch, var(--s-teal-500) 14%, var(--s-color-bg-surface));
+	--s-lens-admin-bg-hover: color-mix(in oklch, var(--s-teal-500) 12%, var(--s-color-bg-surface));
 
-	--s-lens-product-bg: color-mix(in oklch, var(--s-cream-100) 6%, var(--s-color-bg-surface));
+	--s-lens-product-bg: var(--s-color-bg-surface);
 	--s-lens-product-fg: var(--s-color-fg-default);
-	--s-lens-product-bg-hover: color-mix(in oklch, var(--s-cream-100) 12%, var(--s-color-bg-surface));
+	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
