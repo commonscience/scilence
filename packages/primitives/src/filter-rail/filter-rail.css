@@ -13,7 +13,7 @@
 	gap: var(--s-space-2);
 	padding: var(--s-space-3);
 	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	color: var(--s-color-fg-primary);
 	background: transparent;
 }
@@ -30,7 +30,7 @@
 
 .s-filter-rail__count {
 	font-family: var(--s-font-mono);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-variant-caps: all-small-caps;
 	letter-spacing: 0.05em;
 	color: var(--s-color-fg-muted);
@@ -38,7 +38,7 @@
 
 .s-filter-rail__clear-all {
 	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	color: var(--s-color-fg-muted);
 	background: transparent;
 	border: none;
@@ -86,7 +86,7 @@
 	flex: 1;
 	min-width: 0;
 	font: inherit;
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	color: var(--s-color-fg-primary);
 	background: transparent;
 	border: none;
@@ -123,7 +123,7 @@
 
 .s-filter-rail__prompt {
 	color: var(--s-color-fg-muted);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-style: italic;
 	padding: var(--s-space-tight-1) var(--s-space-1);
 }
@@ -152,7 +152,7 @@
 	cursor: pointer;
 	padding: var(--s-space-tight-1) 0;
 	font-family: var(--s-font-mono);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-variant-caps: all-small-caps;
 	letter-spacing: 0.06em;
 	text-transform: uppercase;
@@ -194,7 +194,7 @@
 	color: var(--s-color-prominent-fg);
 	border-radius: var(--s-radius-pill);
 	font-family: var(--s-font-mono);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-variant-numeric: tabular-nums;
 }
 
@@ -226,7 +226,7 @@
 	border: none;
 	color: var(--s-color-fg-muted);
 	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	padding: var(--s-space-tight-1) var(--s-space-1);
 	cursor: pointer;
 	border-radius: var(--s-radius-1);
@@ -267,7 +267,7 @@
 	background: var(--s-color-bg-subtle);
 	color: var(--s-color-fg-tertiary);
 	font-family: var(--s-font-mono);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-variant-numeric: tabular-nums;
 	line-height: 1.4;
 }
@@ -313,6 +313,6 @@
 
 .s-filter-rail__range-fallback {
 	color: var(--s-color-fg-tertiary);
-	font-size: var(--s-font-size-min);
+	font-size: var(--s-font-size-condensed);
 	font-style: italic;
 }
