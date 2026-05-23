@@ -95,6 +95,7 @@
 	--s-brand-alpha-50: oklch(0.18 0.08 var(--brand-hue) / 0.4);
 
 	/* Dark theme shadows */
+	--s-shadow-xs: 0 1px 1px oklch(0.18 0.08 var(--brand-hue) / 0.1);
 	--s-shadow-sm: 0 1px 2px oklch(0.18 0.08 var(--brand-hue) / 0.2), 0 1px 3px oklch(0.18 0.08 var(--brand-hue) / 0.12);
 	--s-shadow-md: 0 2px 4px oklch(0.18 0.08 var(--brand-hue) / 0.24), 0 4px 8px oklch(0.18 0.08 var(--brand-hue) / 0.16);
 	--s-shadow-lg: 0 8px 16px oklch(0.18 0.08 var(--brand-hue) / 0.3), 0 4px 8px oklch(0.18 0.08 var(--brand-hue) / 0.2);
