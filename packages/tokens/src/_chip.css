@@ -23,7 +23,7 @@
 	/* tone — shell background / border / foreground */
 	--s-chip-tone-default-bg: var(--s-color-bg-subtle);
 	--s-chip-tone-default-fg: var(--s-color-fg-muted);
-	--s-chip-tone-default-border-width: 1px;
+	--s-chip-tone-default-border-width: 0;
 	--s-chip-tone-default-border-color: var(--s-color-border-subtle);
 
 	--s-chip-tone-muted-bg: var(--s-color-bg-muted);

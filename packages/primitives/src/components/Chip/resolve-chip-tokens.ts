@@ -1,7 +1,7 @@
 import type { ChipVariants, Shape, Size, Slot, Tone } from './types.js';
 
 const DEFAULT_VARIANTS: ChipVariants = {
-	shape: 'square',
+	shape: 'round',
 	slot: 'text-only',
 	tone: 'default',
 	size: 'md',
