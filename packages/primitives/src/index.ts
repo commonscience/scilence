@@ -36,3 +36,16 @@ export type {
 	Tier,
 	Tone,
 } from './components/Card/index.js';
+
+// ── Chip (unified chip vocabulary) ──────────────────────────────────────
+export { Chip, createChip } from './components/Chip/index.js';
+export { mergeChipVariants, resolveChipTokens } from './components/Chip/index.js';
+export type {
+	ChipHandle,
+	ChipOptions,
+	ChipVariants,
+	Shape,
+	Slot,
+	Size,
+	Tone as ChipTone,
+} from './components/Chip/index.js';

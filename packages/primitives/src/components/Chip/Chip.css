@@ -1,0 +1,94 @@
+/**
+ * @scilence/primitives — Chip CSS
+ *
+ * Visual treatment is driven by resolved `--s-chip-*` custom properties set on
+ * the root by Chip.ts (variant token lookup). Surfaces must not re-layer shell
+ * rules on `.oar-*` selectors — use variant props on createChip instead.
+ */
+
+.s-chip {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s-chip-gap);
+	padding: var(--s-chip-padding-block) var(--s-chip-padding-inline);
+	border-radius: var(--s-chip-radius);
+	background: var(--s-chip-bg);
+	color: var(--s-chip-fg);
+	border-width: var(--s-chip-border-width);
+	border-style: solid;
+	border-color: var(--s-chip-border-color);
+	font-family: var(--s-font-sans);
+	font-size: var(--s-chip-font-size);
+	line-height: var(--s-chip-line-height);
+	font-weight: var(--s-font-weight-medium);
+	white-space: nowrap;
+	vertical-align: middle;
+}
+
+.s-chip:is(button, [role='button']) {
+	cursor: pointer;
+	font: inherit;
+	text-align: inherit;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.s-chip:is(button, [role='button']):focus-visible {
+	outline: 2px solid var(--s-color-focus);
+	outline-offset: 1px;
+}
+
+.s-chip__label {
+	display: inline;
+}
+
+.s-chip__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--s-chip-icon-size);
+	height: var(--s-chip-icon-size);
+}
+
+.s-chip__icon:empty,
+.s-chip__icon[hidden] {
+	display: none;
+}
+
+.s-chip__icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.s-chip__number {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: var(--s-chip-number-min-width);
+	padding: 0 var(--s-chip-number-padding-inline);
+	border-radius: var(--s-chip-number-radius);
+	background: var(--s-chip-number-bg);
+	color: var(--s-chip-number-fg);
+	font-family: var(--s-font-mono);
+	font-size: inherit;
+	font-variant-numeric: tabular-nums;
+	line-height: var(--s-chip-line-height);
+}
+
+.s-chip__number[hidden] {
+	display: none;
+}
+
+/* Filter rail — selected chip uses accent tone via data attribute */
+.s-chip[data-selected='true'] {
+	--s-chip-bg: var(--s-chip-tone-accent-bg);
+	--s-chip-fg: var(--s-chip-tone-accent-fg);
+	--s-chip-border-color: var(--s-chip-tone-accent-border-color);
+}
+
+.s-chip[data-selected='true'] .s-chip__number {
+	background: var(--s-chip-tone-accent-fg);
+	color: var(--s-chip-tone-accent-bg);
+}

@@ -1,0 +1,58 @@
+/* scilence — Chip primitive tokens (@scilence/tokens)
+   Variant axes resolve to these custom properties; Chip.ts sets
+   --s-chip-* resolved values on the element (single lookup, no cascade wars). */
+
+:root {
+	/* size — font + padding + gap */
+	--s-chip-size-sm-font-size: var(--s-font-size-condensed);
+	--s-chip-size-sm-line-height: var(--s-font-line-height-normal);
+	--s-chip-size-sm-padding-block: var(--s-space-tight-1);
+	--s-chip-size-sm-padding-inline: var(--s-space-1);
+	--s-chip-size-sm-gap: var(--s-space-tight-1);
+
+	--s-chip-size-md-font-size: var(--s-font-size-0);
+	--s-chip-size-md-line-height: var(--s-font-line-height-normal);
+	--s-chip-size-md-padding-block: var(--s-space-tight-1);
+	--s-chip-size-md-padding-inline: var(--s-space-1);
+	--s-chip-size-md-gap: var(--s-space-tight-1);
+
+	/* shape — border radius */
+	--s-chip-shape-square-radius: var(--s-radius-1);
+	--s-chip-shape-round-radius: var(--s-radius-pill);
+
+	/* tone — shell background / border / foreground */
+	--s-chip-tone-default-bg: var(--s-color-bg-subtle);
+	--s-chip-tone-default-fg: var(--s-color-fg-muted);
+	--s-chip-tone-default-border-width: 1px;
+	--s-chip-tone-default-border-color: var(--s-color-border-subtle);
+
+	--s-chip-tone-muted-bg: var(--s-color-bg-muted);
+	--s-chip-tone-muted-fg: var(--s-color-fg-secondary);
+	--s-chip-tone-muted-border-width: 1px;
+	--s-chip-tone-muted-border-color: var(--s-color-border-subtle);
+
+	--s-chip-tone-accent-bg: var(--s-color-prominent-bg);
+	--s-chip-tone-accent-fg: var(--s-color-prominent-fg);
+	--s-chip-tone-accent-border-width: 1px;
+	--s-chip-tone-accent-border-color: transparent;
+
+	--s-chip-tone-warning-bg: var(--s-color-status-warning-bg);
+	--s-chip-tone-warning-fg: var(--s-color-status-warning-fg);
+	--s-chip-tone-warning-border-width: 1px;
+	--s-chip-tone-warning-border-color: var(--s-color-status-warning-border);
+
+	--s-chip-tone-success-bg: var(--s-color-status-success-bg);
+	--s-chip-tone-success-fg: var(--s-color-status-success-fg);
+	--s-chip-tone-success-border-width: 1px;
+	--s-chip-tone-success-border-color: var(--s-color-status-success-border);
+
+	/* number badge (slot variants) */
+	--s-chip-number-bg: var(--s-color-bg-subtle);
+	--s-chip-number-fg: var(--s-color-fg-tertiary);
+	--s-chip-number-radius: var(--s-radius-pill);
+	--s-chip-number-min-width: var(--s-space-3);
+	--s-chip-number-padding-inline: var(--s-space-tight-1);
+
+	/* icon slot */
+	--s-chip-icon-size: 1em;
+}
