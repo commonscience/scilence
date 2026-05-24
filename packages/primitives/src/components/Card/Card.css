@@ -1,0 +1,47 @@
+/**
+ * @scilence/primitives — Card shell CSS
+ *
+ * Visual treatment is driven by resolved `--s-card-*` custom properties set on
+ * the root by Card.ts (variant token lookup). Surfaces must not re-layer shell
+ * rules on `.oar-*` selectors — use variant props on createCard instead.
+ */
+
+.s-card {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: var(--s-card-gap);
+	padding: var(--s-card-padding-block) var(--s-card-padding-inline);
+	background: var(--s-card-bg);
+	border-width: var(--s-card-border-width);
+	border-style: solid;
+	border-color: var(--s-card-border-color);
+	border-radius: var(--s-radius-1);
+	box-shadow: var(--s-card-shadow);
+	color: inherit;
+	font-family: inherit;
+	text-align: left;
+	transition: background 120ms ease;
+}
+
+.s-card:is(button, [role='button']) {
+	cursor: pointer;
+}
+
+.s-card__slot {
+	display: contents;
+}
+
+.s-card__slot--head:empty,
+.s-card__slot--body:empty,
+.s-card__slot--footer:empty {
+	display: none;
+}
+
+.s-card:hover {
+	background: var(--s-card-bg-hover);
+}
+
+.s-card[data-always-visible] [data-chrome-id] {
+	/* Surfaces gate chrome via eye-toggle; always-visible ids stay mounted. */
+}

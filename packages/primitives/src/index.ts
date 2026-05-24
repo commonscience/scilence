@@ -21,3 +21,18 @@ export type {
 	RangeConfig,
 	RangeSelection,
 } from './filter-rail/index.js';
+
+// ── Card (kanban shell extraction) ──────────────────────────────────────
+export { Card, createCard, ALWAYS_VISIBLE_CHROME_IDS } from './components/Card/index.js';
+export { mergeCardVariants, resolveCardTokens } from './components/Card/index.js';
+export type {
+	AlwaysVisibleChromeId,
+	CardHandle,
+	CardOptions,
+	CardSlotName,
+	CardVariants,
+	Density,
+	Elevation,
+	Tier,
+	Tone,
+} from './components/Card/index.js';

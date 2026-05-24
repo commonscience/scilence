@@ -8,13 +8,33 @@ importers:
 
   .: {}
 
+  packages/chrome: {}
+
+  packages/data: {}
+
+  packages/datavis-2d: {}
+
+  packages/datavis-3d: {}
+
+  packages/forms: {}
+
+  packages/layout: {}
+
+  packages/overlays: {}
+
   packages/primitives:
     devDependencies:
       typescript:
         specifier: ^5.4.0
         version: 5.9.3
 
+  packages/skills: {}
+
+  packages/timeline: {}
+
   packages/tokens: {}
+
+  packages/voice: {}
 
 packages:
 

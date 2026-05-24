@@ -1,0 +1,58 @@
+/* scilence — Card primitive tokens (@scilence/tokens)
+   Variant axes resolve to these custom properties; Card.ts sets
+   --s-card-* resolved values on the element (single lookup, no cascade wars). */
+
+:root {
+	/* elevation */
+	--s-card-elevation-none-shadow: none;
+	--s-card-elevation-hairline-shadow: var(--s-shadow-hairline);
+	--s-card-elevation-raised-shadow: var(--s-shadow-sm);
+	--s-card-elevation-float-shadow: var(--s-shadow-md);
+
+	/* tone — shell background / border */
+	--s-card-tone-default-bg: var(--s-color-bg-app);
+	--s-card-tone-default-border-width: 0;
+	--s-card-tone-default-border-color: transparent;
+	--s-card-tone-default-bg-hover: var(--s-color-bg-muted);
+
+	--s-card-tone-admin-bg: var(--s-lens-admin-bg);
+	--s-card-tone-admin-border-width: 1px;
+	--s-card-tone-admin-border-color: var(--s-color-border-subtle);
+	--s-card-tone-admin-bg-hover: var(--s-lens-admin-bg-hover);
+
+	--s-card-tone-product-bg: var(--s-lens-product-bg);
+	--s-card-tone-product-border-width: 1px;
+	--s-card-tone-product-border-color: var(--s-color-border-subtle);
+	--s-card-tone-product-bg-hover: var(--s-lens-product-bg-hover);
+
+	--s-card-tone-warning-bg: var(--s-color-status-warning-bg);
+	--s-card-tone-warning-border-width: 1px;
+	--s-card-tone-warning-border-color: var(--s-color-status-warning-border);
+	--s-card-tone-warning-bg-hover: color-mix(
+		in oklch,
+		var(--s-color-status-warning-bg) 88%,
+		var(--s-color-bg-surface)
+	);
+
+	--s-card-tone-success-bg: var(--s-color-status-success-bg);
+	--s-card-tone-success-border-width: 1px;
+	--s-card-tone-success-border-color: var(--s-color-status-success-border);
+	--s-card-tone-success-bg-hover: color-mix(
+		in oklch,
+		var(--s-color-status-success-bg) 88%,
+		var(--s-color-bg-surface)
+	);
+
+	/* tier — additive shadow when tier A on default tone */
+	--s-card-tier-a-shadow: var(--s-shadow-hairline);
+	--s-card-tier-b-shadow: none;
+
+	/* density — padding + internal gap */
+	--s-card-density-compact-padding-block: var(--s-space-1);
+	--s-card-density-compact-padding-inline: var(--s-space-2);
+	--s-card-density-compact-gap: var(--s-space-tight-2);
+
+	--s-card-density-regular-padding-block: var(--s-space-2);
+	--s-card-density-regular-padding-inline: var(--s-space-3);
+	--s-card-density-regular-gap: var(--s-space-1);
+}
