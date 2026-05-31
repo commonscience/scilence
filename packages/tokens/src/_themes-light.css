@@ -116,8 +116,9 @@
 	/* Border semantic alias */
 	--s-color-border-default: var(--s-color-border-strong);
 
-	/* Accent tier — blue-teal (hue 200) scale for focal/interactive UI */
-	--s-color-accent-default: oklch(0.62 0.18 200);
-	--s-color-accent-muted: oklch(0.78 0.10 200);
-	--s-color-accent-subtle: oklch(0.96 0.04 200);
+	/* Accent tier — unified to the brand hue (180), least-bright/least-jewel of the two
+	   (2026-05-31, Caitlin): default = brand-700; muted/subtle re-hued + chroma-calmed. */
+	--s-color-accent-default: var(--s-brand-700);
+	--s-color-accent-muted: oklch(0.78 0.08 180);
+	--s-color-accent-subtle: oklch(0.96 0.03 180);
 }
