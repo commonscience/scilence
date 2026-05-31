@@ -8,13 +8,13 @@
 	--s-status-success-C: 0.12;
 	--s-status-success-H: 156;
 	--s-status-warning-O: 0.73;
-	--s-status-warning-C: 0.17;
+	--s-status-warning-C: 0.12; /* desaturated 0.17→0.12 (2026-05-31, Caitlin: calmer yellow everywhere) */
 	--s-status-warning-H: 74;
 	--s-status-danger-O: 0.56;
 	--s-status-danger-C: 0.23;
 	--s-status-danger-H: 19;
 	--s-status-info-O: 0.44;
-	--s-status-info-C: 0.32;
+	--s-status-info-C: 0.12; /* desaturated 0.32→0.12 (2026-05-31, Caitlin: the vivid purple was too loud). Open: re-home info hue off 289-purple toward brand-teal? tracked in #386 */
 	--s-status-info-H: 289;
 
 	/* Primary status colors */
@@ -40,18 +40,18 @@
 	--s-color-success-border: oklch(0.7 0.1 156);
 	--s-color-success-fg: oklch(0.35 0.12 156);
 
-	/* Warning variations */
+	/* Warning variations (chroma calmed 2026-05-31 to match the desaturated base) */
 	--s-color-warning-bg: oklch(0.97 0.03 74);
-	--s-color-warning-border: oklch(0.85 0.14 74);
-	--s-color-warning-fg: oklch(0.45 0.17 74);
+	--s-color-warning-border: oklch(0.85 0.11 74);
+	--s-color-warning-fg: oklch(0.45 0.12 74);
 
 	/* Error variations */
 	--s-color-error-bg: oklch(0.96 0.04 19);
 	--s-color-error-border: oklch(0.72 0.2 19);
 	--s-color-error-fg: oklch(0.4 0.23 19);
 
-	/* Info variations */
-	--s-color-info-bg: oklch(0.94 0.05 289);
-	--s-color-info-border: oklch(0.62 0.28 289);
-	--s-color-info-fg: oklch(0.32 0.32 289);
+	/* Info variations (chroma calmed 2026-05-31 — purple was the loudest in the palette) */
+	--s-color-info-bg: oklch(0.94 0.04 289);
+	--s-color-info-border: oklch(0.62 0.13 289);
+	--s-color-info-fg: oklch(0.32 0.16 289);
 }

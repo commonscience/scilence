@@ -1,0 +1,26 @@
+/* scilence — STEAMCO Design System Foundation
+   Canonical pan-app tokens (@scilence/tokens).
+
+   ===== FORM CONTROLS — native accent =====
+
+   Native form controls (checkbox, radio, range, progress) otherwise render
+   with the browser/OS default accent (blue), which is off-system. `accent-color`
+   tints the control's checked/filled state with the brand accent — a single,
+   tokenized, zero-markup fix that applies everywhere a native control is used.
+
+   This is the lightweight baseline. A fully styled Checkbox/Radio primitive
+   (custom box, focus ring, indeterminate state) lands in @scilence/primitives
+   — tracked in DS-convergence epic #386. Until then, this keeps native controls
+   on-brand instead of browser-blue. */
+
+:root {
+	/* Alias so call sites and future primitives share one source of truth. */
+	--s-form-accent: var(--s-color-accent-default);
+}
+
+input[type="checkbox"],
+input[type="radio"],
+input[type="range"],
+progress {
+	accent-color: var(--s-form-accent);
+}
