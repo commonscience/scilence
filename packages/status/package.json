@@ -1,0 +1,32 @@
+{
+  "name": "@scilence/status",
+  "version": "0.1.0",
+  "description": "STEAMCO status code registry — typed StatusEntry catalog with ICU-subset resolve() (var interpolation + plural one/other). Zero runtime deps.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "src",
+    "README.md"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsc -p tsconfig.json --watch",
+    "clean": "rm -rf dist",
+    "test": "tsc -p tsconfig.json && node --test tests/*.test.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}
