@@ -49,3 +49,16 @@ export type {
 	Size,
 	Tone as ChipTone,
 } from './components/Chip/index.js';
+
+// ── InspectorStack (Brief library-inspector-section-stack — Increment 1) ─
+// Reusable ordered collapsible right-rail section list — drag + keyboard
+// reorder + ARIA live announce + per-surface localStorage persistence.
+// Generalized from the notebook inspector widget+stack.
+export { createInspectorStack } from './inspector-stack/index.js';
+export type {
+	InspectorSectionDescriptor,
+	InspectorSectionRender,
+	InspectorStackHandle,
+	InspectorStackOptions,
+	InspectorStackStorage,
+} from './inspector-stack/index.js';
