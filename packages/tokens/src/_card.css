@@ -50,7 +50,7 @@
 	/* density — padding + internal gap */
 	--s-card-density-compact-padding-block: var(--s-space-1);
 	--s-card-density-compact-padding-inline: var(--s-space-2);
-	--s-card-density-compact-gap: var(--s-space-tight-2);
+	--s-card-density-compact-gap: var(--s-space-twohair);
 
 	--s-card-density-regular-padding-block: var(--s-space-2);
 	--s-card-density-regular-padding-inline: var(--s-space-3);

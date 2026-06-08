@@ -1,0 +1,27 @@
+export { Modal, createModal } from './Modal.js';
+export { mergeModalVariants, resolveModalTokens } from './resolve-modal-tokens.js';
+export type {
+	BodySlot,
+	BreadcrumbItem,
+	BreadcrumbSlot,
+	Cleanup,
+	CloseReason,
+	FooterAction,
+	FooterSlot,
+	HeaderAction,
+	HeaderSlot,
+	ModalConfig,
+	ModalHandle,
+	ModalLifecycle,
+	ModalMode,
+	ModalModifier,
+	ModalSize,
+	ModalSlots,
+	ModalVariants,
+	SidebarItem,
+	SidebarSlot,
+	StatusBarSlot,
+	StatusItem,
+	ToolbarSlot,
+	ToolbarTool,
+} from './types.js';

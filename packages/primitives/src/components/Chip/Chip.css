@@ -81,6 +81,30 @@
 	display: none;
 }
 
+/* label-value slot — microLabel + value composite (e.g., "TIER: A").
+ * Uppercase micro-label in mono, smaller than chip text, followed by
+ * the value (the chip's primary text). Separator rendered via ::after
+ * so it's not part of the label string. */
+.s-chip__micro-label {
+	display: inline;
+	font-family: var(--s-font-mono);
+	font-size: 0.85em;
+	font-weight: var(--s-font-weight-semibold);
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: inherit;
+	opacity: 0.7;
+}
+
+.s-chip__micro-label[hidden] {
+	display: none;
+}
+
+.s-chip__micro-label::after {
+	content: ':';
+	margin-right: 0.25em;
+}
+
 /* Filter rail — selected chip uses accent tone via data attribute */
 .s-chip[data-selected='true'] {
 	--s-chip-bg: var(--s-chip-tone-accent-bg);

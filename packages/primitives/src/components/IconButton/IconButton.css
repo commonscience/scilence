@@ -1,0 +1,100 @@
+/**
+ * @scilence/primitives — IconButton CSS
+ *
+ * Variant treatment driven by resolved `--s-icon-button-*` custom
+ * properties set on the root by IconButton.ts. Surfaces must NOT
+ * re-layer rules on `.icon-btn` or `.s-icon-button--whatever` selectors —
+ * use variant props on createIconButton instead.
+ */
+
+.s-icon-button {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	position: relative;
+	width: var(--s-icon-button-size);
+	height: var(--s-icon-button-size);
+	padding: 0;
+	background: var(--s-icon-button-bg);
+	color: var(--s-icon-button-fg);
+	border: 1px solid var(--s-icon-button-border-color);
+	border-radius: var(--s-icon-button-radius);
+	cursor: pointer;
+	transition:
+		background var(--s-duration-fast) var(--s-ease-out),
+		color var(--s-duration-fast) var(--s-ease-out),
+		border-color var(--s-duration-fast) var(--s-ease-out);
+}
+
+.s-icon-button:is(button) {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.s-icon-button:focus-visible {
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: 2px;
+}
+
+.s-icon-button:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-icon-button-hover-bg);
+	color: var(--s-color-fg-primary);
+}
+
+.s-icon-button:disabled,
+.s-icon-button[aria-disabled='true'] {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* Toggle-style (aria-pressed) — pressed treatment uses the brand-alpha
+ * overlay, same as nav active-state per chrome-shell convention. */
+.s-icon-button[aria-pressed='true'] {
+	background: var(--s-brand-alpha-5);
+	color: var(--s-color-fg-primary);
+}
+
+.s-icon-button[aria-pressed='true']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-brand-alpha-10);
+}
+
+/* Icon container — sized via custom property; the actual SVG fills it. */
+.s-icon-button__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--s-icon-button-icon-size);
+	height: var(--s-icon-button-icon-size);
+}
+
+.s-icon-button__icon svg {
+	width: 100%;
+	height: 100%;
+	display: block;
+}
+
+/* Optional count badge — top-right overlay. */
+.s-icon-button__badge {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 14px;
+	height: 14px;
+	padding: 0 4px;
+	background: var(--s-color-status-info);
+	color: var(--s-color-fg-oncolor);
+	border-radius: var(--s-radius-pill);
+	font-family: var(--s-font-mono);
+	font-size: var(--s-font-size-min);
+	font-weight: var(--s-font-weight-bold);
+	line-height: 14px;
+	font-variant-numeric: tabular-nums;
+	text-align: center;
+	pointer-events: none;
+}
+
+.s-icon-button__badge[hidden] {
+	display: none;
+}

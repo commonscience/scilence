@@ -12,7 +12,13 @@ function effectiveSlot(
 	variants: ChipVariants,
 	icon?: HTMLElement | SVGElement,
 	number?: string | number,
+	microLabel?: string,
 ): ChipVariants['slot'] {
+	// label-value falls back to text-only when microLabel is missing
+	// (permissive — keep chip rendering even if the consumer forgot the label).
+	if (variants.slot === 'label-value') {
+		return microLabel ? 'label-value' : 'text-only';
+	}
 	if (variants.slot !== 'text-only') return variants.slot;
 	if (icon) return 'icon-left';
 	if (number != null) return 'number-right';
@@ -24,17 +30,20 @@ export class Chip implements ChipHandle {
 	private variants: ChipVariants;
 	private iconEl: HTMLElement | SVGElement | undefined;
 	private numberValue: string | number | undefined;
+	private microLabelValue: string | undefined;
 	private readonly labelEl: HTMLSpanElement;
 	private readonly numberEl: HTMLSpanElement;
 	private readonly iconWrap: HTMLSpanElement;
+	private readonly microLabelEl: HTMLSpanElement;
 	private styleOverrides: Record<string, string> | undefined;
 
 	constructor(opts: ChipOptions) {
 		this.variants = mergeChipVariants(opts.variants);
 		this.iconEl = opts.icon;
 		this.numberValue = opts.number;
+		this.microLabelValue = opts.microLabel;
 		this.styleOverrides = opts.styleOverrides;
-		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue);
+		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue, this.microLabelValue);
 
 		const tag = opts.tagName ?? 'span';
 		this.element = document.createElement(tag);
@@ -61,7 +70,11 @@ export class Chip implements ChipHandle {
 		this.numberEl.className = 's-chip__number';
 		this.numberEl.setAttribute('aria-hidden', 'true');
 
+		this.microLabelEl = document.createElement('span');
+		this.microLabelEl.className = 's-chip__micro-label';
+
 		this.labelEl.textContent = opts.text;
+		if (this.microLabelValue != null) this.microLabelEl.textContent = this.microLabelValue;
 		this.applyVariantDataset();
 		this.applyTokens();
 		this.mountChildren();
@@ -90,6 +103,12 @@ export class Chip implements ChipHandle {
 		this.element.replaceChildren();
 		const slot = this.variants.slot;
 		const parts: Node[] = [];
+
+		if (slot === 'label-value' && this.microLabelValue != null) {
+			this.microLabelEl.textContent = this.microLabelValue;
+			this.microLabelEl.hidden = false;
+			parts.push(this.microLabelEl);
+		}
 
 		if (slot === 'number-left' && this.numberValue != null) {
 			this.numberEl.textContent = String(this.numberValue);
@@ -122,7 +141,7 @@ export class Chip implements ChipHandle {
 
 	setVariants(partial: Partial<ChipVariants>): void {
 		this.variants = mergeChipVariants({ ...this.variants, ...partial });
-		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue);
+		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue, this.microLabelValue);
 		this.applyVariantDataset();
 		this.applyTokens();
 		this.mountChildren();
@@ -130,6 +149,20 @@ export class Chip implements ChipHandle {
 
 	setText(text: string): void {
 		this.labelEl.textContent = text;
+	}
+
+	setMicroLabel(microLabel: string | undefined): void {
+		this.microLabelValue = microLabel;
+		if (microLabel == null) {
+			this.microLabelEl.hidden = true;
+			this.microLabelEl.textContent = '';
+		} else {
+			this.microLabelEl.hidden = false;
+			this.microLabelEl.textContent = microLabel;
+		}
+		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue, this.microLabelValue);
+		this.applyVariantDataset();
+		this.mountChildren();
 	}
 
 	setNumber(value: string | number | undefined): void {
@@ -141,14 +174,14 @@ export class Chip implements ChipHandle {
 			this.numberEl.hidden = false;
 			this.numberEl.textContent = String(value);
 		}
-		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue);
+		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue, this.microLabelValue);
 		this.applyVariantDataset();
 		this.mountChildren();
 	}
 
 	setIcon(icon: HTMLElement | SVGElement | undefined): void {
 		this.iconEl = icon;
-		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue);
+		this.variants.slot = effectiveSlot(this.variants, this.iconEl, this.numberValue, this.microLabelValue);
 		this.applyVariantDataset();
 		this.mountChildren();
 	}

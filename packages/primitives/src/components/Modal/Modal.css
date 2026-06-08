@@ -1,0 +1,521 @@
+/**
+ * @scilence/primitives — Modal substrate CSS
+ *
+ * Canonical source. guide/shell/css/components/modal.css is the GUIDE
+ * mirror (synced manually until scilence is a real npm dep).
+ *
+ * Variant axes (per research/specs/GUIDE_MODAL_CONTRACT.md §2):
+ *   - size: sm | md | lg | xl | xxl | cas | full | lightbox | contained
+ *   - mode: docked (substrate; popout mechanics separate brief)
+ *   - modifiers: animated
+ *
+ * Slot inventory locked at 7:
+ *   - breadcrumb · header · toolbar · sidebar · body · status-bar · footer
+ *
+ * Z-axis: modal is a raised surface per feedback_box_shadow_carveouts —
+ * always carries shadow.
+ */
+
+.s-modal-host {
+	display: contents;
+}
+
+.s-modal-dialog {
+	padding: 0;
+	border: none;
+	background: transparent;
+	max-width: none;
+	max-height: none;
+	margin: auto;
+	font-family: var(--s-font-sans);
+}
+
+.s-modal-dialog::backdrop {
+	background: var(--s-color-backdrop-scrim);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.s-modal-dialog,
+	.s-modal-dialog::backdrop {
+		animation-duration: 0.001ms;
+	}
+}
+
+.s-modal-dialog__surface {
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	background: var(--s-color-bg-surface);
+	border-radius: var(--s-radius-window);
+	box-shadow: var(--s-shadow-xl);
+	max-height: 85vh;
+	overflow: hidden;
+}
+
+/* ── Size variants ───────────────────────────────────────────────────── */
+
+.s-modal-dialog--sm .s-modal-dialog__surface { width: min(92vw, 480px); }
+.s-modal-dialog--md .s-modal-dialog__surface { width: min(92vw, 640px); }
+.s-modal-dialog--lg .s-modal-dialog__surface { width: min(92vw, 800px); }
+.s-modal-dialog--xl .s-modal-dialog__surface { width: min(92vw, 960px); }
+
+.s-modal-dialog--full .s-modal-dialog__surface {
+	width: min(95vw, 1200px);
+	height: min(95vh, 900px);
+}
+
+.s-modal-dialog--xxl .s-modal-dialog__surface {
+	width: min(92vw, 1200px);
+	height: min(92vh, 900px);
+}
+
+.s-modal-dialog--cas .s-modal-dialog__surface {
+	width: min(96vw, 1480px);
+	height: 94vh;
+}
+
+.s-modal-dialog--lightbox .s-modal-dialog__surface {
+	width: min(75vw, 1200px);
+	height: min(75vh, 880px);
+	max-width: 75vw;
+	max-height: 75vh;
+}
+
+.s-modal-dialog--contained {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	max-width: none;
+	max-height: none;
+	margin: 0;
+}
+
+.s-modal-dialog--contained::backdrop {
+	background: var(--s-color-backdrop-scrim);
+}
+
+.s-modal-dialog--contained .s-modal-dialog__surface {
+	width: min(92%, 1200px);
+	height: min(85%, 880px);
+	max-width: min(92%, 1200px);
+	max-height: min(85%, 880px);
+	margin: auto;
+}
+
+/* Mobile fullscreen drop for popout-sized variants. */
+@media (max-width: 768px) {
+	.s-modal-dialog--xxl .s-modal-dialog__surface,
+	.s-modal-dialog--cas .s-modal-dialog__surface,
+	.s-modal-dialog--full .s-modal-dialog__surface,
+	.s-modal-dialog--lightbox .s-modal-dialog__surface {
+		width: 100vw;
+		height: 100vh;
+		max-width: 100vw;
+		max-height: 100vh;
+		border-radius: 0;
+	}
+	@supports (height: 100dvh) {
+		.s-modal-dialog--xxl .s-modal-dialog__surface,
+		.s-modal-dialog--cas .s-modal-dialog__surface,
+		.s-modal-dialog--full .s-modal-dialog__surface,
+		.s-modal-dialog--lightbox .s-modal-dialog__surface {
+			height: 100dvh;
+			max-height: 100dvh;
+		}
+	}
+}
+
+/* ── Breadcrumb slot (above header; bumper-car back-nav target) ────── */
+
+.s-modal__breadcrumb {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-2);
+	padding: var(--s-space-2) var(--s-space-6);
+	border-bottom: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	font-size: var(--s-font-size-0);
+	color: var(--s-color-fg-muted);
+	flex-shrink: 0;
+}
+
+.s-modal__breadcrumb-item {
+	background: transparent;
+	border: none;
+	padding: 0;
+	color: inherit;
+	cursor: pointer;
+	font: inherit;
+	border-radius: var(--s-radius-1);
+}
+
+.s-modal__breadcrumb-item:hover:not(:disabled) {
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__breadcrumb-item.is-current {
+	color: var(--s-color-fg-primary);
+	cursor: default;
+}
+
+.s-modal__breadcrumb-item--back::before {
+	content: '← ';
+}
+
+.s-modal__breadcrumb-sep {
+	color: var(--s-color-fg-muted);
+}
+
+/* ── Header slot ──────────────────────────────────────────────────────── */
+
+.s-modal__header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--s-space-4) var(--s-space-6);
+	border-bottom: 1px solid var(--s-color-border-subtle);
+	gap: var(--s-space-3);
+	flex-shrink: 0;
+}
+
+.s-modal__header-inner {
+	display: flex;
+	flex-direction: column;
+	gap: var(--s-space-2);
+	flex: 1;
+	min-width: 0;
+}
+
+.s-modal__title {
+	margin: 0;
+	font-size: var(--s-font-size-2);
+	font-weight: 600;
+	color: var(--s-color-fg-primary);
+	line-height: 1.25;
+}
+
+.s-modal__subtitle {
+	margin: 0;
+	font-size: var(--s-font-size-1);
+	font-weight: 400;
+	color: var(--s-color-fg-muted);
+	line-height: 1.4;
+}
+
+.s-modal__header-actions {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-1);
+	flex-shrink: 0;
+}
+
+.s-modal__header-action {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--s-space-2);
+	border: none;
+	background: transparent;
+	border-radius: var(--s-radius-1);
+	cursor: pointer;
+	color: var(--s-color-fg-muted);
+	transition: background 100ms ease, color 100ms ease;
+}
+
+.s-modal__header-action:hover:not(:disabled) {
+	background: var(--s-color-hover-bg);
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__close {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--s-space-2);
+	border: none;
+	background: transparent;
+	border-radius: var(--s-radius-1);
+	cursor: pointer;
+	color: var(--s-color-fg-muted);
+	transition: background 100ms ease, color 100ms ease;
+	box-sizing: border-box;
+}
+
+.s-modal__close:hover {
+	background: var(--s-color-hover-bg);
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__close:focus-visible {
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: 2px;
+}
+
+.s-modal__close svg {
+	width: var(--s-icon-sm);
+	height: var(--s-icon-sm);
+	flex-shrink: 0;
+	display: block;
+}
+
+/* ── Toolbar slot ─────────────────────────────────────────────────────── */
+
+.s-modal__toolbar {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-2);
+	padding: var(--s-space-2) var(--s-space-6);
+	border-bottom: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	flex-shrink: 0;
+	overflow-x: auto;
+}
+
+.s-modal__toolbar--segmented {
+	gap: 0;
+}
+
+.s-modal__toolbar-separator {
+	width: 1px;
+	align-self: stretch;
+	background: var(--s-color-border-subtle);
+	margin: 0 var(--s-space-1);
+}
+
+.s-modal__toolbar-button,
+.s-modal__toolbar-toggle {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s-space-1);
+	padding: var(--s-space-1) var(--s-space-2);
+	border: 1px solid transparent;
+	background: transparent;
+	color: var(--s-color-fg-primary);
+	font: inherit;
+	font-size: var(--s-font-size-1);
+	border-radius: var(--s-radius-1);
+	cursor: pointer;
+}
+
+.s-modal__toolbar-button:hover:not(:disabled),
+.s-modal__toolbar-toggle:hover:not(:disabled) {
+	background: var(--s-color-hover-bg);
+}
+
+.s-modal__toolbar-toggle[aria-pressed='true'] {
+	background: var(--s-color-bg-surface);
+	border-color: var(--s-color-border-subtle);
+}
+
+.s-modal__toolbar-select {
+	font: inherit;
+	font-size: var(--s-font-size-1);
+	padding: var(--s-space-1) var(--s-space-2);
+	border: 1px solid var(--s-color-border-subtle);
+	border-radius: var(--s-radius-1);
+	background: var(--s-color-bg-surface);
+	color: var(--s-color-fg-primary);
+}
+
+/* ── Main (sidebar + body) ────────────────────────────────────────────── */
+
+.s-modal__main {
+	display: flex;
+	flex-direction: row;
+	flex: 1;
+	min-height: 0;
+}
+
+/* When sidebar is hidden, main collapses to body-only (still flex-row,
+ * works because hidden element has display: none and doesn't take width). */
+
+.s-modal__sidebar {
+	display: flex;
+	flex-direction: column;
+	width: 200px;
+	flex-shrink: 0;
+	padding: var(--s-space-2);
+	gap: var(--s-space-hair);
+	border-right: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	overflow-y: auto;
+}
+
+.s-modal__sidebar-item {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-2);
+	padding: var(--s-space-2) var(--s-space-3);
+	background: transparent;
+	border: none;
+	border-radius: var(--s-radius-1);
+	color: var(--s-color-fg-primary);
+	font: inherit;
+	font-size: var(--s-font-size-1);
+	text-align: left;
+	cursor: pointer;
+	width: 100%;
+}
+
+.s-modal__sidebar-item:hover:not(:disabled) {
+	background: var(--s-color-hover-bg);
+}
+
+.s-modal__sidebar-item.is-active {
+	background: var(--s-brand-alpha-5);
+	color: var(--s-color-fg-primary);
+	font-weight: var(--s-font-weight-semibold);
+}
+
+.s-modal__sidebar-item-icon {
+	display: inline-flex;
+	flex-shrink: 0;
+}
+
+.s-modal__sidebar-item-label {
+	flex: 1;
+}
+
+.s-modal__sidebar-item-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 1.25rem;
+	height: 1.25rem;
+	padding: 0 var(--s-space-1);
+	font-size: var(--s-font-size-0);
+	font-weight: var(--s-font-weight-semibold);
+	background: var(--s-color-bg-card);
+	color: var(--s-color-fg-muted);
+	border-radius: var(--s-radius-pill);
+}
+
+/* ── Body slot ───────────────────────────────────────────────────────── */
+
+.s-modal__body {
+	flex: 1;
+	overflow-y: auto;
+	font-size: var(--s-font-size-1);
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__body--padded {
+	padding: var(--s-space-6);
+}
+
+.s-modal__body--padded > :first-child {
+	margin-block-start: 0;
+}
+
+.s-modal__body--padded > :last-child {
+	margin-block-end: 0;
+}
+
+/* ── Status-bar slot ─────────────────────────────────────────────────── */
+
+.s-modal__status-bar {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-3);
+	padding: var(--s-space-2) var(--s-space-6);
+	border-top: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	font-size: var(--s-font-size-0);
+	color: var(--s-color-fg-muted);
+	flex-shrink: 0;
+	overflow-x: auto;
+}
+
+.s-modal__status-item {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--s-space-1);
+	white-space: nowrap;
+}
+
+.s-modal__status-item--chip {
+	padding: var(--s-space-hair) var(--s-space-2);
+	border-radius: var(--s-radius-pill);
+	background: var(--s-color-bg-card);
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__status-item--indicator::before {
+	content: '';
+	display: inline-block;
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: currentColor;
+}
+
+.s-modal__status-item[data-tone='info'] { color: var(--s-color-status-info); }
+.s-modal__status-item[data-tone='success'] { color: var(--s-color-status-success); }
+.s-modal__status-item[data-tone='warning'] { color: var(--s-color-status-warning); }
+.s-modal__status-item[data-tone='danger'] { color: var(--s-color-status-danger); }
+
+/* ── Footer slot ─────────────────────────────────────────────────────── */
+
+.s-modal__footer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: var(--s-space-3);
+	padding: var(--s-space-4) var(--s-space-6);
+	border-top: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	flex-shrink: 0;
+}
+
+.s-modal__btn {
+	font-family: var(--s-font-sans);
+	font-size: var(--s-font-size-1);
+	padding: var(--s-space-2) var(--s-space-4);
+	border-radius: var(--s-radius-2);
+	border: 1px solid var(--s-color-border-subtle);
+	cursor: pointer;
+	background: var(--s-color-bg-surface);
+	color: var(--s-color-fg-primary);
+}
+
+.s-modal__btn--primary,
+.s-modal__btn--is-primary {
+	background: var(--s-color-accent-active);
+	color: var(--s-color-on-accent);
+	border-color: var(--s-color-accent-active);
+}
+
+.s-modal__btn--cancel {
+	background: transparent;
+	border-color: transparent;
+	color: var(--s-color-fg-muted);
+}
+
+.s-modal__btn--danger {
+	background: var(--s-color-status-danger);
+	color: var(--s-color-on-danger, var(--s-color-fg-oncolor));
+	border-color: var(--s-color-status-danger);
+}
+
+.s-modal__btn:focus-visible {
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: 2px;
+}
+
+.s-modal__btn:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+/* ── Chrome modifiers ────────────────────────────────────────────────── */
+
+.s-modal-dialog--animated .s-modal-dialog__surface {
+	animation: s-modal-dialog-in var(--s-duration-normal) var(--s-ease-in-out) both;
+}
+
+@keyframes s-modal-dialog-in {
+	from { opacity: 0; transform: scale(0.97); }
+	to   { opacity: 1; transform: scale(1); }
+}

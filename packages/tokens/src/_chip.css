@@ -4,17 +4,27 @@
 
 :root {
 	/* size — font + padding + gap */
+
+	/* xs — micro-size for kbd hints, H-level badges, wb-region__kind tags.
+	 * 10px font, ~zero padding-block, hair padding-inline. Use for tags
+	 * that need to read at small scale without competing with body text. */
+	--s-chip-size-xs-font-size: var(--s-font-size-min);
+	--s-chip-size-xs-line-height: var(--s-font-line-height-tight);
+	--s-chip-size-xs-padding-block: 0;
+	--s-chip-size-xs-padding-inline: var(--s-space-hair);
+	--s-chip-size-xs-gap: 0;
+
 	--s-chip-size-sm-font-size: var(--s-font-size-condensed);
 	--s-chip-size-sm-line-height: var(--s-font-line-height-normal);
-	--s-chip-size-sm-padding-block: var(--s-space-tight-1);
+	--s-chip-size-sm-padding-block: var(--s-space-hair);
 	--s-chip-size-sm-padding-inline: var(--s-space-1);
-	--s-chip-size-sm-gap: var(--s-space-tight-1);
+	--s-chip-size-sm-gap: var(--s-space-hair);
 
 	--s-chip-size-md-font-size: var(--s-font-size-0);
 	--s-chip-size-md-line-height: var(--s-font-line-height-normal);
-	--s-chip-size-md-padding-block: var(--s-space-tight-1);
+	--s-chip-size-md-padding-block: var(--s-space-hair);
 	--s-chip-size-md-padding-inline: var(--s-space-1);
-	--s-chip-size-md-gap: var(--s-space-tight-1);
+	--s-chip-size-md-gap: var(--s-space-hair);
 
 	/* shape — border radius */
 	--s-chip-shape-square-radius: var(--s-radius-1);
@@ -46,12 +56,24 @@
 	--s-chip-tone-success-border-width: 1px;
 	--s-chip-tone-success-border-color: var(--s-color-status-success-border);
 
+	/* info — status communication (loading / in-progress / async pending).
+	 * NOT primary action — primary uses `accent` per
+	 * feedback_primary_action_tone_is_accent (Caitlin direct 2026-06-07).
+	 * Defined via color-mix on --s-color-status-info; no dead-token refs
+	 * (the *-bg/*-fg/*-border variants for warning/success above are
+	 * dead refs — followup brief tracks lifting all 3 status tones to
+	 * concrete defs). */
+	--s-chip-tone-info-bg: color-mix(in oklch, var(--s-color-status-info) 12%, var(--s-color-bg-surface));
+	--s-chip-tone-info-fg: var(--s-color-status-info);
+	--s-chip-tone-info-border-width: 1px;
+	--s-chip-tone-info-border-color: color-mix(in oklch, var(--s-color-status-info) 22%, transparent);
+
 	/* number badge (slot variants) */
 	--s-chip-number-bg: var(--s-color-bg-subtle);
 	--s-chip-number-fg: var(--s-color-fg-tertiary);
 	--s-chip-number-radius: var(--s-radius-pill);
 	--s-chip-number-min-width: var(--s-space-3);
-	--s-chip-number-padding-inline: var(--s-space-tight-1);
+	--s-chip-number-padding-inline: var(--s-space-hair);
 
 	/* icon slot */
 	--s-chip-icon-size: 1em;

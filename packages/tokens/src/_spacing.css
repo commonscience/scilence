@@ -18,11 +18,12 @@
 	--s-space-6: calc(var(--s-space-density) * var(--s-padding-scale, 1) * 34px);
 	--s-space-7: calc(var(--s-space-density) * var(--s-padding-scale, 1) * 55px);
 
-	/* Tight scale — dense-data exception only.
+	/* Sub-Fibonacci hairline scale — dense-data exception only.
 	   Use only in tabular, sequence, or instrument-dense contexts where
-	   Fibonacci floor (--s-space-1: 3px) is too loose. */
-	--s-space-tight-1: 1px;
-	--s-space-tight-2: 2px;
+	   the Fibonacci floor (--s-space-1: 3px) is too loose for hairline
+	   separators and tight gap chains. Caitlin direct 2026-06-06. */
+	--s-space-hair: 1px;
+	--s-space-twohair: 2px;
 	--s-space-tight-3: 4px;
 
 	/* Semantic spacing tokens */

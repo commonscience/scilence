@@ -1,0 +1,56 @@
+/* scilence — Button primitive tokens (@scilence/tokens)
+   Variant axes resolve to these custom properties; Button.ts sets
+   --s-button-* resolved values on the element (single lookup, no cascade wars).
+
+   Primary tone = accent (brand-700 greenscale) per
+   feedback_primary_action_tone_is_accent (Caitlin direct 2026-06-07). */
+
+:root {
+	/* size — height + font + padding + gap */
+
+	--s-button-size-sm-font-size: var(--s-font-size-0);
+	--s-button-size-sm-padding-block: var(--s-space-1);
+	--s-button-size-sm-padding-inline: var(--s-space-3);
+	--s-button-size-sm-gap: var(--s-space-1);
+	--s-button-size-sm-height: var(--s-space-5);
+
+	--s-button-size-md-font-size: var(--s-font-size-1);
+	--s-button-size-md-padding-block: var(--s-space-2);
+	--s-button-size-md-padding-inline: var(--s-space-4);
+	--s-button-size-md-gap: var(--s-space-2);
+	--s-button-size-md-height: var(--s-space-6);
+
+	--s-button-size-lg-font-size: var(--s-font-size-1);
+	--s-button-size-lg-padding-block: var(--s-space-3);
+	--s-button-size-lg-padding-inline: var(--s-space-5);
+	--s-button-size-lg-gap: var(--s-space-2);
+	--s-button-size-lg-height: var(--s-space-7);
+
+	/* variant — bg + fg + border + hover */
+
+	--s-button-variant-primary-bg: var(--s-color-accent-active);
+	--s-button-variant-primary-fg: var(--s-color-on-accent);
+	--s-button-variant-primary-border-color: var(--s-color-accent-active);
+	--s-button-variant-primary-hover-bg: color-mix(in oklch, var(--s-color-accent-active) 88%, oklch(0% 0 0));
+
+	--s-button-variant-secondary-bg: var(--s-color-bg-surface);
+	--s-button-variant-secondary-fg: var(--s-color-fg-primary);
+	--s-button-variant-secondary-border-color: var(--s-color-border-subtle);
+
+	--s-button-variant-ghost-bg: transparent;
+	--s-button-variant-ghost-fg: var(--s-color-fg-primary);
+	--s-button-variant-ghost-border-color: transparent;
+
+	--s-button-variant-danger-bg: var(--s-color-status-danger);
+	--s-button-variant-danger-fg: var(--s-color-fg-oncolor);
+	--s-button-variant-danger-border-color: var(--s-color-status-danger);
+	--s-button-variant-danger-hover-bg: color-mix(in oklch, var(--s-color-status-danger) 88%, oklch(0% 0 0));
+
+	/* add — dashed-ghost affordance per 2026-06-07 componentization audit.
+	 * Replaces 3+ surface reimplementations (sibling-projects__new-btn,
+	 * right-rail-add-widget, project-notebook__add-cell). border-style:
+	 * dashed applied via .s-button[data-variant='add'] rule in Button.css. */
+	--s-button-variant-add-bg: transparent;
+	--s-button-variant-add-fg: var(--s-color-fg-muted);
+	--s-button-variant-add-border-color: var(--s-color-border-subtle);
+}

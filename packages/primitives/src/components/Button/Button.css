@@ -1,0 +1,149 @@
+/**
+ * @scilence/primitives — Button CSS
+ *
+ * Variant treatment driven by resolved `--s-button-*` custom properties
+ * set on the root by Button.ts (variant token lookup). Surfaces must
+ * NOT re-layer rules on `.btn-*` or `.s-button--whatever` selectors —
+ * use variant props on createButton instead.
+ *
+ * Primary tone = accent (brand-700 greenscale) per
+ * feedback_primary_action_tone_is_accent.
+ */
+
+.s-button {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--s-button-gap);
+	padding: var(--s-button-padding-block) var(--s-button-padding-inline);
+	min-height: var(--s-button-height);
+	background: var(--s-button-bg);
+	color: var(--s-button-fg);
+	border: 1px solid var(--s-button-border-color);
+	border-radius: var(--s-radius-2);
+	font-family: var(--s-font-sans);
+	font-size: var(--s-button-font-size);
+	font-weight: var(--s-font-weight-medium);
+	line-height: var(--s-font-line-height-tight);
+	cursor: pointer;
+	user-select: none;
+	text-decoration: none;
+	transition:
+		background var(--s-duration-fast) var(--s-ease-out),
+		color var(--s-duration-fast) var(--s-ease-out),
+		border-color var(--s-duration-fast) var(--s-ease-out);
+}
+
+.s-button:is(button) {
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.s-button:focus-visible {
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: 2px;
+}
+
+.s-button:disabled,
+.s-button[aria-disabled='true'] {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.s-button--full-width {
+	display: flex;
+	width: 100%;
+}
+
+/* ── Add variant — dashed border (structural, not just color) ────────── */
+
+.s-button[data-variant='add'] {
+	border-style: dashed;
+}
+
+/* ── Hover treatments ──────────────────────────────────────────────────
+ * Each variant's hover is one greenscale step (brand-700 → brand-800 for
+ * primary, hover-bg overlay for ghost/secondary, status-danger → -danger-strong
+ * for danger). Tokens defined in scilence/packages/tokens/src/_button.css. */
+
+.s-button[data-variant='primary']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-button-variant-primary-hover-bg);
+}
+
+.s-button[data-variant='secondary']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-color-hover-bg);
+	border-color: var(--s-color-border-default);
+}
+
+.s-button[data-variant='ghost']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-color-hover-bg);
+	color: var(--s-color-fg-primary);
+}
+
+.s-button[data-variant='danger']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-button-variant-danger-hover-bg);
+}
+
+.s-button[data-variant='add']:hover:not(:disabled):not([aria-disabled='true']) {
+	background: var(--s-color-hover-bg);
+	border-color: var(--s-color-border-default);
+	color: var(--s-color-fg-primary);
+}
+
+/* ── Icon + label + spinner ────────────────────────────────────────────── */
+
+.s-button__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 1.2em;
+	height: 1.2em;
+}
+
+.s-button__icon:empty,
+.s-button__icon[hidden] {
+	display: none;
+}
+
+.s-button__icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.s-button__label {
+	display: inline;
+}
+
+.s-button__label[hidden] {
+	display: none;
+}
+
+.s-button__spinner {
+	display: inline-flex;
+	width: 1em;
+	height: 1em;
+	border: 1.5px solid currentColor;
+	border-right-color: transparent;
+	border-radius: 50%;
+	animation: s-button-spin 0.6s linear infinite;
+}
+
+.s-button__spinner[hidden] {
+	display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.s-button__spinner {
+		animation-duration: 2s;
+	}
+}
+
+@keyframes s-button-spin {
+	to { transform: rotate(360deg); }
+}
+
+.s-button--loading {
+	cursor: progress;
+}

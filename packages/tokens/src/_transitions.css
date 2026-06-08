@@ -17,6 +17,11 @@
 	--s-ease-out: cubic-bezier(0, 0, 0.2, 1);
 	--s-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 	--s-ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+	/* Canonical "standard" ease — alias of in-out (Material/iOS convention).
+	   Fills the --s-ease-standard / --s-motion-ease-standard naming gap
+	   that defensive-fallback sites in admin-shell.css used. */
+	--s-ease-standard: var(--s-ease-in-out);
+	--s-motion-ease-standard: var(--s-ease-in-out);
 
 	/* Transition shorthand combinations */
 	--s-transition-colors: color var(--s-duration-fast) var(--s-ease-out), background-color var(--s-duration-fast) var(--s-ease-out), border-color var(--s-duration-fast) var(--s-ease-out);

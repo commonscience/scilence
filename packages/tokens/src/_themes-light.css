@@ -23,6 +23,13 @@
 	--s-color-fg-primary: var(--s-brand-950);
 	--s-color-fg-muted: var(--s-brand-700);
 	--s-color-fg-soft: var(--s-brand-600);
+	/* "On-color" text — for use on brand-accent or status-color backgrounds.
+	   Paper-white at light theme; same at dark since we want contrast on
+	   filled accent surfaces regardless of theme. Caitlin direct 2026-06-07
+	   (DS sweep — fills the --s-color-fg-oncolor / --s-color-fg-on-warning
+	   gap that 4+ surfaces were silently relying on via defensive fallbacks). */
+	--s-color-fg-oncolor: var(--s-cream-50);
+	--s-color-fg-on-warning: var(--s-cream-50);
 
 	/* Surface elevation — cream ground vs cream-tinted raised surfaces.
 	   Elevation-1 uses creamscale-25 (nearly white with hint of warmth). */

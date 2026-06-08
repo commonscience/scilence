@@ -1,0 +1,38 @@
+/* scilence — IconButton primitive tokens (@scilence/tokens)
+   Variant axes resolve to these custom properties; IconButton.ts sets
+   --s-icon-button-* resolved values on the element. */
+
+:root {
+	/* size — container + icon dimensions */
+
+	--s-icon-button-size-sm-container: 22px;
+	--s-icon-button-size-sm-icon: 14px;
+
+	--s-icon-button-size-md-container: 28px;
+	--s-icon-button-size-md-icon: 16px;
+
+	--s-icon-button-size-lg-container: 36px;
+	--s-icon-button-size-lg-icon: 20px;
+
+	/* shape — corner radius */
+
+	--s-icon-button-shape-square-radius: var(--s-radius-1);
+	--s-icon-button-shape-round-radius: var(--s-radius-pill);
+
+	/* tone — bg + fg + border + hover */
+
+	--s-icon-button-tone-default-bg: var(--s-color-bg-subtle);
+	--s-icon-button-tone-default-fg: var(--s-color-fg-muted);
+	--s-icon-button-tone-default-border-color: transparent;
+	--s-icon-button-tone-default-hover-bg: var(--s-color-hover-bg);
+
+	--s-icon-button-tone-ghost-bg: transparent;
+	--s-icon-button-tone-ghost-fg: var(--s-color-fg-muted);
+	--s-icon-button-tone-ghost-border-color: transparent;
+	--s-icon-button-tone-ghost-hover-bg: var(--s-color-hover-bg);
+
+	--s-icon-button-tone-outlined-bg: var(--s-color-bg-surface);
+	--s-icon-button-tone-outlined-fg: var(--s-color-fg-primary);
+	--s-icon-button-tone-outlined-border-color: var(--s-color-border-subtle);
+	--s-icon-button-tone-outlined-hover-bg: var(--s-color-hover-bg);
+}

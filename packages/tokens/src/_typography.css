@@ -27,6 +27,18 @@
 	/* Active font size */
 	--s-font-size-active: var(--s-font-size-standard);
 	--s-font-size-min: 10px;
+
+	/* Line heights — small scale for paragraph/body text.
+	   --s-line-height-tight: dense lists, table cells, chip text
+	   --s-line-height-standard: default body text
+	   --s-line-height-relaxed: reading copy, long-form paragraphs
+	   Caitlin direct 2026-06-07 (DS sweep — fills the --s-line-height-relaxed
+	   gap that notebook-shell.css and a few other surfaces were using via
+	   defensive fallback). */
+	--s-line-height-tight: 1.25;
+	--s-line-height-standard: 1.4;
+	--s-line-height-relaxed: 1.45;
+
 	/* Aliases / dense labels — shell surfaces reference these names */
 	--s-font-size-xxs: var(--s-font-size-min);
 	--s-font-size-micro: 9px;
