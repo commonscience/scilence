@@ -1,0 +1,22 @@
+/* scilence — "calm" chrome variant.
+ *
+ * A peer of [data-theme] and [data-density]: any subtree marked
+ * [data-chrome='calm'] gets a de-tinted neutral foreground ramp.
+ *
+ * The brand's neutral fg tokens are hue-tinted by design
+ * (fg-secondary == --s-brand-700, fg-tertiary == fg-soft == --s-brand-600).
+ * This variant pulls their chroma toward neutral while preserving the brand
+ * lightness AND hue via relative color syntax — so it BRANDSCALES: change
+ * --brand-hue (or the brand ramp) and calm tracks it automatically. No
+ * literal hue, no magic numbers beyond the calm chroma target.
+ *
+ * Used by the GUIDE notebook chrome (left navigator rail + right inspector)
+ * so the chrome reads quiet while the center stream stays the main attraction.
+ * Caitlin 2026-06-07 — replaces the interim per-surface --nb-rail-fg literals.
+ */
+[data-chrome='calm'] {
+  --s-color-fg-muted: oklch(from var(--s-brand-700) l 0.04 h);
+  --s-color-fg-soft: oklch(from var(--s-brand-600) l 0.045 h);
+  --s-color-fg-secondary: oklch(from var(--s-brand-700) l 0.04 h);
+  --s-color-fg-tertiary: oklch(from var(--s-brand-600) l 0.045 h);
+}
