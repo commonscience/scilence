@@ -1,11 +1,10 @@
 # Tooltip (`@scilence/primitives`)
 
 Pan-app **touch-gated, dictionary-driven** tooltip primitive. The canonical
-pan-app home for the tooltip per
-[`research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md`](../../../../../research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md)
-(LOCKED 2026-06-29): _every on-surface affordance or indicator that is not plain
-readable prose exposes a hover tooltip, wherever the user has a fine cursor +
-hover._
+pan-app home for the tooltip per the consuming workspace's
+`research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md` (LOCKED 2026-06-29): _every
+on-surface affordance or indicator that is not plain readable prose exposes a
+hover tooltip, wherever the user has a fine cursor + hover._
 
 Authored as vanilla JS (production origin:
 `guide/shell/js/components/tooltip/`, PR #572) and mirrored here **byte-for-byte**
@@ -57,11 +56,11 @@ an unknown key returns a structured miss and warns once in dev (declare-or-warn)
 ## Consumer-supplied data (stays guide-local)
 
 This primitive is the canonical **code**. Its two data sources are **authored
-under the consuming surface** (the GUIDE shell), per
-[`research/specs/TOOLTIP_DICTIONARY_SPEC.md`](../../../../../research/specs/TOOLTIP_DICTIONARY_SPEC.md)
-— "authored under the `guide` repo because that's the consuming surface; later
-lifted to `@scilence/primitives` if cross-app demand emerges." Until then the
-consuming surface provides, as siblings of the primitive:
+under the consuming surface** (the GUIDE shell), per the consuming workspace's
+`research/specs/TOOLTIP_DICTIONARY_SPEC.md` — "authored under the `guide` repo
+because that's the consuming surface; later lifted to `@scilence/primitives` if
+cross-app demand emerges." Until then the consuming surface provides, as
+siblings of the primitive:
 
 | Dependency | What the consumer supplies | GUIDE source |
 |---|---|---|
