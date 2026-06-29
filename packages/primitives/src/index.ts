@@ -62,3 +62,16 @@ export type {
 	InspectorStackOptions,
 	InspectorStackStorage,
 } from './inspector-stack/index.js';
+
+// ── Tooltip (touch-gated, dictionary-driven) ────────────────────────────
+// Canonical pan-app tooltip primitive per
+// research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md (LOCKED 2026-06-29).
+// Authored as vanilla JS (production origin: guide/shell/js/components/tooltip,
+// PR #572) and mirrored byte-for-byte at ./tooltip as the canonical source; the
+// GUIDE importmap + bootstrap consume the guide-local mirror.
+//
+// Intentionally NOT re-exported here: the resolver's dictionary registry
+// (tooltips.json) and glossary adapter (../../data/glossary-data.js) are
+// consumer-supplied and remain guide-local (TOOLTIP_DICTIONARY_SPEC.md), so the
+// module is JS reference source rather than part of the typed
+// @scilence/primitives public API. See ./tooltip/README.md.
