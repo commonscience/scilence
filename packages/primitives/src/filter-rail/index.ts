@@ -130,6 +130,9 @@ export function createFilterRail(
 					syncHeader();
 					currentConfig.onFiltersChange({ ...selection });
 				},
+				onExpandedChange: (groupId, expanded) => {
+					currentConfig.onGroupExpandedChange?.(groupId, expanded);
+				},
 				datePickerFactory: currentConfig.datePickerFactory,
 			});
 			groupHandles.push(handle);
