@@ -509,6 +509,27 @@
 	cursor: not-allowed;
 }
 
+/* ── Optional-region hidden-state fix ────────────────────────────────────
+   Each optional slot region above declares an explicit `display: flex`
+   (needed so it lays out correctly when the slot IS present). Modal.ts
+   toggles `.hidden = !slot` on the same element when the slot is omitted,
+   but the `hidden` attribute's UA rule (`[hidden]{display:none}`) is
+   NORMAL-origin — author-origin CSS always wins the cascade over
+   user-agent CSS regardless of specificity, so the region's own
+   `display: flex` silently overrode `hidden` and rendered anyway (caught
+   2026-07-03: an omitted header slot still painted its close button,
+   duplicating a consumer's own custom close affordance). Re-assert
+   `display: none` at author origin, scoped to `[hidden]`, for every
+   optional region. ─────────────────────────────────────────────────── */
+.s-modal__breadcrumb[hidden],
+.s-modal__header[hidden],
+.s-modal__toolbar[hidden],
+.s-modal__sidebar[hidden],
+.s-modal__status-bar[hidden],
+.s-modal__footer[hidden] {
+	display: none;
+}
+
 /* ── Chrome modifiers ────────────────────────────────────────────────── */
 
 .s-modal-dialog--animated .s-modal-dialog__surface {
