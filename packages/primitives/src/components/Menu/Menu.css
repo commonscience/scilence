@@ -17,7 +17,7 @@
 	padding: var(--s-space-1) 0;
 	font-family: var(--s-font-sans);
 	font-size: var(--s-menu-font-size);
-	color: var(--s-color-fg-default);
+	color: var(--s-color-fg-primary);
 }
 
 .s-menu[data-chrome='surface'] {
@@ -49,7 +49,9 @@
 }
 
 .s-menu__item:focus-visible {
-	outline: 2px solid var(--s-color-focus);
+	/* --s-color-focus-border is the visible focus color in this token
+	   system (focus-ring is intentionally transparent — calm palette). */
+	outline: 2px solid var(--s-color-focus-border);
 	outline-offset: -2px;
 }
 
