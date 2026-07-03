@@ -7,11 +7,13 @@
 :root {
 	/* size — font + item padding + gap + icon box */
 
-	/* sm — compact chrome menus (shell footer account menu, switchers). */
-	--s-menu-size-sm-font-size: var(--s-font-size-condensed);
-	--s-menu-size-sm-item-padding-block: var(--s-space-1);
-	--s-menu-size-sm-item-padding-inline: var(--s-space-2);
-	--s-menu-size-sm-item-gap: var(--s-space-1);
+	/* sm — compact chrome menus (shell footer account menu, switchers).
+	   Mirrors the pre-Menu-primitive .menu-item metrics (admin-shell.css) —
+	   14px icons need this much breathing room or the row reads cramped. */
+	--s-menu-size-sm-font-size: var(--s-font-size-1);
+	--s-menu-size-sm-item-padding-block: var(--s-space-2);
+	--s-menu-size-sm-item-padding-inline: var(--s-space-4);
+	--s-menu-size-sm-item-gap: var(--s-space-3);
 	--s-menu-size-sm-icon-size: 14px;
 
 	/* md — standard surface menus. */
