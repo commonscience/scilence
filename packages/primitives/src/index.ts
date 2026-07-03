@@ -50,6 +50,22 @@ export type {
 	Tone as ChipTone,
 } from './components/Chip/index.js';
 
+// ── Menu (DS_COMPONENTIZATION_CATALOG §A21 — Menu/MenuItem net-new gap) ──
+export { Menu, createMenu, isMenuItemDescriptor } from './components/Menu/index.js';
+export { mergeMenuVariants, resolveMenuTokens } from './components/Menu/index.js';
+export type {
+	MenuChrome,
+	MenuConfig,
+	MenuCustomRow,
+	MenuEntry,
+	MenuHandle,
+	MenuHeader,
+	MenuItemDescriptor,
+	MenuSeparator,
+	MenuSize,
+	MenuVariants,
+} from './components/Menu/index.js';
+
 // ── InspectorStack (Brief library-inspector-section-stack — Increment 1) ─
 // Reusable ordered collapsible right-rail section list — drag + keyboard
 // reorder + ARIA live announce + per-surface localStorage persistence.
