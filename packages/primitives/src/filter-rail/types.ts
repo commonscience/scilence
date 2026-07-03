@@ -103,6 +103,20 @@ export interface FilterGroupConfig {
 	defaultExpanded: boolean;
 	/** Selection mode for this group. */
 	selectionMode: FilterSelectionMode;
+	/**
+	 * Option presentation for `single` / `multi` / `toggle-pair` groups.
+	 *
+	 * - `chips` (default) — dense inline chip strip with count badges.
+	 *   Best when the rail is short and the option labels are terse.
+	 * - `list`  — one scannable row per option: a leading checkbox (multi)
+	 *   or radio (single), the label, and a right-aligned count. Best when
+	 *   the group is the daily working axis and the user scans/toggles many
+	 *   options (e.g. a biological-target facet where the user scans a column
+	 *   of targets rather than a wrapping chip cloud).
+	 *
+	 * `range` groups ignore this (they always render the range picker).
+	 */
+	layout?: 'chips' | 'list';
 	/** Options for `single` / `multi` / `toggle-pair` modes. */
 	options?: FilterOption[];
 	/** Range configuration for `range` mode. */
