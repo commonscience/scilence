@@ -35,7 +35,7 @@
 }
 
 .s-chip:is(button, [role='button']):focus-visible {
-	outline: 2px solid var(--s-color-focus);
+	outline: 2px solid var(--s-color-focus-border);
 	outline-offset: 1px;
 }
 

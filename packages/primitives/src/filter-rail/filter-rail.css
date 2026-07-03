@@ -55,7 +55,7 @@
 }
 
 .s-filter-rail__clear-all:focus-visible {
-	outline: 2px solid var(--s-color-focus);
+	outline: 2px solid var(--s-color-focus-border);
 	outline-offset: 1px;
 }
 
@@ -165,7 +165,7 @@
 }
 
 .s-filter-rail__group-header:focus-visible {
-	outline: 2px solid var(--s-color-focus);
+	outline: 2px solid var(--s-color-focus-border);
 	outline-offset: 2px;
 	border-radius: var(--s-radius-1);
 }
