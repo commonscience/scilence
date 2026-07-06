@@ -82,6 +82,7 @@ export function attachTooltip(el, options = {}) {
   let position = options.position || "top";
   let delay = typeof options.delay === "number" ? options.delay : 200;
   let timeout = null;
+  let hideTimeout = null;
   let portalEl = null;
 
   // Resolve content: explicit text wins; else dictionary key; else data-tip.
@@ -111,12 +112,21 @@ export function attachTooltip(el, options = {}) {
   function show() {
     if (!supportsHoverPointer()) return; // touch-only: never paint
     if (!text) return;
+    clearTimeout(hideTimeout);
     timeout = setTimeout(positionPortal, delay);
+  }
+
+  function cancelHide() {
+    clearTimeout(hideTimeout);
   }
 
   function hide() {
     clearTimeout(timeout);
-    removePortal();
+    // Grace period so the cursor can travel from the trigger into the portal
+    // (a document.body child, not a descendant of the trigger) to reach the
+    // "more in glossary" link before mouseleave tears it down.
+    clearTimeout(hideTimeout);
+    hideTimeout = setTimeout(removePortal, 140);
   }
 
   function positionPortal() {
@@ -130,6 +140,10 @@ export function attachTooltip(el, options = {}) {
     Object.assign(node.style, portalBaseStyles());
     document.body.appendChild(node);
     portalEl = node;
+    // Keep the portal alive while the cursor is over it, so a glossary link
+    // inside it is clickable; leaving the portal dismisses it.
+    node.addEventListener("mouseenter", cancelHide);
+    node.addEventListener("mouseleave", hide);
 
     const tipRect = node.getBoundingClientRect();
     const gap = 6;
@@ -188,7 +202,9 @@ export function attachTooltip(el, options = {}) {
   }
 
   function destroy() {
-    hide();
+    clearTimeout(timeout);
+    clearTimeout(hideTimeout);
+    removePortal();
     el.removeEventListener("mouseenter", show);
     el.removeEventListener("mouseleave", hide);
     el.removeEventListener("focusin", show);
