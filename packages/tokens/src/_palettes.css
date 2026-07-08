@@ -110,7 +110,7 @@
 	   Subtle-brandscale experiment (2026-07-08): --s-brand-chroma-scale multiplies
 	   chroma across the ladder; 1 = full brand, lower = subtler Weave register.
 	   Tune here; white-label via --brand-hue. SESSION-CANON V6 / notebook spoke. */
-	--s-brand-chroma-scale: 0.4;
+	--s-brand-chroma-scale: 0.36;
 
 	--s-brand-25:  oklch(0.97 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-brand-50:  oklch(0.95 calc(0.04 * var(--s-brand-chroma-scale)) var(--brand-hue));
