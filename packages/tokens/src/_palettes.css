@@ -106,32 +106,37 @@
 	--s-cream-alpha-40: oklch(0.90 0.01 80 / 0.40);
 
 	/* ===== BRANDSCALE (Dynamic, follows --brand-hue) =====
-	   Same chroma curve as tealscale but keyed to --brand-hue. */
-	--s-brand-25:  oklch(0.97 0.03  var(--brand-hue));
-	--s-brand-50:  oklch(0.95 0.04  var(--brand-hue));
-	--s-brand-75:  oklch(0.93 0.05  var(--brand-hue));
-	--s-brand-100: oklch(0.91 0.06  var(--brand-hue));
-	--s-brand-150: oklch(0.88 0.07  var(--brand-hue));
-	--s-brand-200: oklch(0.84 0.08  var(--brand-hue));
-	--s-brand-300: oklch(0.76 0.10  var(--brand-hue));
-	--s-brand-400: oklch(0.68 0.11  var(--brand-hue));
-	--s-brand-500: oklch(0.60 0.12  var(--brand-hue));
-	--s-brand-600: oklch(0.52 0.11  var(--brand-hue));
-	--s-brand-700: oklch(0.44 0.10  var(--brand-hue));
-	--s-brand-800: oklch(0.36 0.08  var(--brand-hue));
-	--s-brand-850: oklch(0.30 0.06  var(--brand-hue));
-	--s-brand-900: oklch(0.24 0.05  var(--brand-hue));
-	--s-brand-925: oklch(0.19 0.04  var(--brand-hue));
-	--s-brand-950: oklch(0.14 0.03  var(--brand-hue));
-	--s-brand-975: oklch(0.10 0.02  var(--brand-hue));
+	   Same chroma curve as tealscale but keyed to --brand-hue.
+	   Subtle-brandscale experiment (2026-07-08): --s-brand-chroma-scale multiplies
+	   chroma across the ladder; 1 = full brand, lower = subtler Weave register.
+	   Tune here; white-label via --brand-hue. SESSION-CANON V6 / notebook spoke. */
+	--s-brand-chroma-scale: 0.4;
+
+	--s-brand-25:  oklch(0.97 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-50:  oklch(0.95 calc(0.04 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-75:  oklch(0.93 calc(0.05 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-100: oklch(0.91 calc(0.06 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-150: oklch(0.88 calc(0.07 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-200: oklch(0.84 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-300: oklch(0.76 calc(0.10 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-400: oklch(0.68 calc(0.11 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-500: oklch(0.60 calc(0.12 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-600: oklch(0.52 calc(0.11 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-700: oklch(0.44 calc(0.10 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-800: oklch(0.36 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-850: oklch(0.30 calc(0.06 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-900: oklch(0.24 calc(0.05 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-925: oklch(0.19 calc(0.04 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-950: oklch(0.14 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-brand-975: oklch(0.10 calc(0.02 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Brandscale alpha variants */
-	--s-brand-alpha-5:  oklch(0.60 0.12 var(--brand-hue) / 0.05);
-	--s-brand-alpha-10: oklch(0.60 0.12 var(--brand-hue) / 0.10);
-	--s-brand-alpha-15: oklch(0.56 0.11 var(--brand-hue) / 0.15);
-	--s-brand-alpha-20: oklch(0.52 0.11 var(--brand-hue) / 0.20);
-	--s-brand-alpha-30: oklch(0.44 0.10 var(--brand-hue) / 0.30);
-	--s-brand-alpha-50: oklch(0.36 0.08 var(--brand-hue) / 0.50);
+	--s-brand-alpha-5:  oklch(0.60 calc(0.12 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.05);
+	--s-brand-alpha-10: oklch(0.60 calc(0.12 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.10);
+	--s-brand-alpha-15: oklch(0.56 calc(0.11 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.15);
+	--s-brand-alpha-20: oklch(0.52 calc(0.11 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.20);
+	--s-brand-alpha-30: oklch(0.44 calc(0.10 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.30);
+	--s-brand-alpha-50: oklch(0.36 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.50);
 
 	/* ===== BRANDSCALE SECONDARY (follows --brand-hue-secondary) =====
 	   Complement scale for secondary categorization, info states, and
