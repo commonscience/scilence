@@ -33,11 +33,11 @@
 	--s-color-backdrop-scrim: var(--s-brand-alpha-50);
 
 	/* Material overrides for dark theme */
-	--mat-solid-bg: oklch(0.12 0.018 var(--brand-hue) / 0.3);
+	--mat-solid-bg: oklch(0.12 calc(0.018 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.3);
 
 	/* Prominent button — slightly brighter in dark mode */
-	--s-color-prominent-bg: oklch(0.5 0.13 var(--brand-hue));
-	--s-color-prominent-bg-hover: oklch(0.55 0.14 var(--brand-hue));
+	--s-color-prominent-bg: oklch(0.5 calc(0.13 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-prominent-bg-hover: oklch(0.55 calc(0.14 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Accent colors for dark theme (inverted) */
 	--s-color-accent-quiet: var(--accent-brand-dark);
@@ -63,12 +63,12 @@
 	--s-color-hover-bg-strong: var(--s-brand-800);
 	--s-color-hover-fg: var(--s-brand-50);
 	--s-color-hover-border: var(--s-brand-700);
-	--s-color-hover-accent: oklch(0.42 0.05 var(--brand-hue));
+	--s-color-hover-accent: oklch(0.42 calc(0.05 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Focus states */
 	--s-color-focus-ring: transparent;
-	--s-color-focus-bg: oklch(0.22 0.03 var(--brand-hue));
-	--s-color-focus-border: oklch(0.55 0.1 var(--brand-hue));
+	--s-color-focus-bg: oklch(0.22 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-focus-border: oklch(0.55 calc(0.10 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */
@@ -77,9 +77,9 @@
 	--s-color-active-border: var(--s-brand-700);
 
 	/* Selected states */
-	--s-color-selected-bg: oklch(0.25 0.04 var(--brand-hue));
-	--s-color-selected-fg: oklch(0.9 0.03 var(--brand-hue));
-	--s-color-selected-border: oklch(0.5 0.08 var(--brand-hue));
+	--s-color-selected-bg: oklch(0.25 calc(0.04 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-selected-fg: oklch(0.9 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-selected-border: oklch(0.5 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Disabled states */
 	--s-color-disabled-bg: var(--s-brand-925);
@@ -91,19 +91,19 @@
 	--s-color-fg-icon-muted: var(--s-brand-150);
 	--s-color-fg-icon-hover: var(--s-brand-50);
 
-	/* Override alpha variants for dark theme */
-	--s-brand-alpha-5: oklch(0.18 0.08 var(--brand-hue) / 0.15);
-	--s-brand-alpha-10: oklch(0.18 0.08 var(--brand-hue) / 0.2);
-	--s-brand-alpha-20: oklch(0.18 0.08 var(--brand-hue) / 0.25);
-	--s-brand-alpha-30: oklch(0.18 0.08 var(--brand-hue) / 0.3);
-	--s-brand-alpha-50: oklch(0.18 0.08 var(--brand-hue) / 0.4);
+	/* Override alpha variants for dark theme — chroma tracks --s-brand-chroma-scale */
+	--s-brand-alpha-5: oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.15);
+	--s-brand-alpha-10: oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.2);
+	--s-brand-alpha-20: oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.25);
+	--s-brand-alpha-30: oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.3);
+	--s-brand-alpha-50: oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.4);
 
 	/* Dark theme shadows */
-	--s-shadow-xs: 0 1px 1px oklch(0.18 0.08 var(--brand-hue) / 0.1);
-	--s-shadow-sm: 0 1px 2px oklch(0.18 0.08 var(--brand-hue) / 0.2), 0 1px 3px oklch(0.18 0.08 var(--brand-hue) / 0.12);
-	--s-shadow-md: 0 2px 4px oklch(0.18 0.08 var(--brand-hue) / 0.24), 0 4px 8px oklch(0.18 0.08 var(--brand-hue) / 0.16);
-	--s-shadow-lg: 0 8px 16px oklch(0.18 0.08 var(--brand-hue) / 0.3), 0 4px 8px oklch(0.18 0.08 var(--brand-hue) / 0.2);
-	--s-shadow-xl: 0 12px 24px oklch(0.18 0.08 var(--brand-hue) / 0.36), 0 6px 12px oklch(0.18 0.08 var(--brand-hue) / 0.24);
+	--s-shadow-xs: 0 1px 1px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.1);
+	--s-shadow-sm: 0 1px 2px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.2), 0 1px 3px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.12);
+	--s-shadow-md: 0 2px 4px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.24), 0 4px 8px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.16);
+	--s-shadow-lg: 0 8px 16px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.3), 0 4px 8px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.2);
+	--s-shadow-xl: 0 12px 24px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.36), 0 6px 12px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.24);
 
 	/* Additional semantic tokens for dark theme — track elevation levels */
 	--s-color-fg-heading: var(--s-brand-50);
