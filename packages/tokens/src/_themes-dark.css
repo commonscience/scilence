@@ -3,14 +3,21 @@
 
 /* ===== 13. DARK THEME ===== */
 :root[data-theme='dark'] {
-	/* Gentle contrast — canvas lifted one brand step; body fg softened (see fg-*). */
-	--s-color-bg-app: var(--s-brand-950);
-	--s-color-bg-page: var(--s-brand-925);
-	--s-color-bg-panel: var(--s-brand-950);
-	--s-color-bg-subtle: var(--s-brand-925);
-	--s-color-bg-surface: var(--s-brand-950);
+	/* Dark-only desaturation — scales the entire brand ramp + derived tokens;
+	   light theme keeps --s-brand-chroma-scale: 0.36 in _palettes.css. */
+	--s-brand-chroma-scale: 0.28;
+
+	/* Gentle contrast — flat dark register: one canvas tone; separation via border/fg only. */
+	--s-color-bg-app: var(--s-brand-925);
+	--s-color-bg-page: var(--s-color-bg-app);
+	--s-color-bg-panel: var(--s-color-bg-app);
+	/* Hairline tints for chips/controls — not card elevation */
+	--s-color-bg-subtle: color-mix(in oklch, var(--s-brand-400) 10%, var(--s-color-bg-app));
+	--s-color-bg-muted: color-mix(in oklch, var(--s-brand-400) 16%, var(--s-color-bg-app));
+	--s-color-bg-surface: var(--s-color-bg-app);
+	--s-color-bg-surface-hover: var(--s-color-hover-bg);
 	--s-color-bg-titlebar: var(--s-brand-alpha-30);
-	--s-color-bg-footer: var(--s-brand-950);          /* pass 11: dark-mode footer parallels light cream-15 above cream-75 — brand-950 (L 0.14) above bg-app brand-975 (L 0.10), delta 0.04 */
+	--s-color-bg-footer: var(--s-color-bg-app);
 
 	/* Borders */
 	--s-color-border-subtle: var(--s-brand-850);
@@ -25,11 +32,10 @@
 	--s-color-fg-oncolor: var(--s-cream-50);
 	--s-color-fg-on-warning: var(--s-cream-50);
 
-	/* Surface elevation — gradient renders ~0.06–0.11, so e1 must clear 0.16+
-	   e0 (gradient avg ~0.09) → e1 0.16 (Δ0.07) → e2 0.21 (Δ0.05) */
+	/* Flat elevation — all tiers match canvas; depth via border/shadow/hover alpha only */
 	--s-surface-elevation-0-bg: var(--s-color-bg-app);
-	--s-surface-elevation-1-bg: var(--s-brand-925);
-	--s-surface-elevation-2-bg: var(--s-brand-900);
+	--s-surface-elevation-1-bg: var(--s-color-bg-app);
+	--s-surface-elevation-2-bg: var(--s-color-bg-app);
 	--s-color-backdrop-scrim: var(--s-brand-alpha-50);
 
 	/* Material overrides for dark theme */
@@ -42,6 +48,7 @@
 	/* Accent colors for dark theme (inverted) */
 	--s-color-accent-quiet: var(--accent-brand-dark);
 	--s-color-accent-active: var(--accent-brand-light);
+	/* Dark text on mid-tone accent fills (segmented controls, chips) */
 	--s-color-accent-foreground: var(--s-brand-950);
 
 	/* Secondary accent — lighter in dark mode for legibility */
@@ -82,7 +89,7 @@
 	--s-color-selected-border: oklch(0.5 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Disabled states */
-	--s-color-disabled-bg: var(--s-brand-925);
+	--s-color-disabled-bg: var(--s-color-bg-app);
 	--s-color-disabled-fg: var(--s-brand-600);
 	--s-color-disabled-border: var(--s-brand-850);
 
@@ -105,21 +112,21 @@
 	--s-shadow-lg: 0 8px 16px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.3), 0 4px 8px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.2);
 	--s-shadow-xl: 0 12px 24px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.36), 0 6px 12px oklch(0.18 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue) / 0.24);
 
-	/* Additional semantic tokens for dark theme — track elevation levels */
+	/* Cards / tables — flat; hover uses alpha overlay not a lighter fill */
 	--s-color-fg-heading: var(--s-brand-50);
 	--s-color-fg-code: var(--accent-brand-light);
 	--s-color-fg-label: var(--s-brand-150);
-	--s-color-bg-card: var(--s-brand-925);
-	--s-color-bg-card-hover: var(--s-brand-900);
-	--s-color-bg-table-header: var(--s-brand-850);
-	--s-color-bg-table-row-hover: var(--s-brand-925);
+	--s-color-bg-card: var(--s-color-bg-app);
+	--s-color-bg-card-hover: var(--s-color-hover-bg);
+	--s-color-bg-table-header: var(--s-color-bg-app);
+	--s-color-bg-table-row-hover: var(--s-color-hover-bg);
 
 	/* Navigation colors */
-	--s-color-nav-hover-bg: var(--s-brand-900);
+	--s-color-nav-hover-bg: var(--s-color-hover-bg);
 	--s-color-nav-active-bg: var(--s-color-bg-strong);
 	--s-color-nav-active-fg: var(--s-color-fg-on-strong);
 
-	/* Dark overrides for surface semantic aliases */
-	--s-color-surface-raised: oklch(0.20 0 0);
+	/* Dark overrides for surface semantic aliases — flat register */
+	--s-color-surface-raised: var(--s-color-bg-app);
 	--s-color-border-default: oklch(0.30 0 0);
 }
