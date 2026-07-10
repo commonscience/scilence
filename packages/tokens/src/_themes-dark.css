@@ -3,9 +3,9 @@
 
 /* ===== 13. DARK THEME ===== */
 :root[data-theme='dark'] {
-	/* App background — flat brandscale, opaque */
-	--s-color-bg-app: var(--s-brand-975);
-	--s-color-bg-page: var(--s-brand-950);
+	/* Gentle contrast — canvas lifted one brand step; body fg softened (see fg-*). */
+	--s-color-bg-app: var(--s-brand-950);
+	--s-color-bg-page: var(--s-brand-925);
 	--s-color-bg-panel: var(--s-brand-950);
 	--s-color-bg-subtle: var(--s-brand-925);
 	--s-color-bg-surface: var(--s-brand-950);
@@ -16,10 +16,10 @@
 	--s-color-border-subtle: var(--s-brand-850);
 	--s-color-border-strong: var(--s-brand-700);
 
-	/* Text colors */
-	--s-color-fg-primary: var(--s-brand-50);
-	--s-color-fg-muted: var(--s-brand-100);
-	--s-color-fg-soft: var(--s-brand-150);
+	/* Text colors — body one step softer; headings stay brighter */
+	--s-color-fg-primary: var(--s-brand-75);
+	--s-color-fg-muted: var(--s-brand-150);
+	--s-color-fg-soft: var(--s-brand-200);
 	/* "On-color" text — same paper-cream for both themes since accent fills
 	   want the same high-contrast text regardless of theme. */
 	--s-color-fg-oncolor: var(--s-cream-50);
