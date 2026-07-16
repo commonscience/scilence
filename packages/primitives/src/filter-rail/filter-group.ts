@@ -33,6 +33,12 @@ export interface FilterGroupOptions {
 	config: FilterGroupConfig;
 	selection: FilterGroupSelection;
 	onSelectionChange: (next: FilterGroupSelection) => void;
+	/**
+	 * Called when the user toggles this group's expand/collapse chevron.
+	 * Receives the group id and its new expanded state. FilterRail threads
+	 * this up to `FilterRailConfig.onGroupExpandedChange`.
+	 */
+	onExpandedChange?: (groupId: string, expanded: boolean) => void;
 	datePickerFactory?: DatePickerFactory;
 }
 
@@ -51,7 +57,12 @@ export interface FilterGroupHandle {
 export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	let config: FilterGroupConfig = opts.config;
 	let selection: FilterGroupSelection = opts.selection;
-	let expanded = !!config.defaultExpanded;
+	// `config.expanded` (an explicit per-group override, e.g. a persisted
+	// collapse state restored by the host) wins over `defaultExpanded`.
+	let expanded =
+		typeof config.expanded === 'boolean'
+			? config.expanded
+			: !!config.defaultExpanded;
 	let showHidden = false;
 	let showAllOverflow = false;
 
@@ -255,6 +266,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	header.addEventListener('click', () => {
 		expanded = !expanded;
 		applyHeaderState();
+		opts.onExpandedChange?.(config.id, expanded);
 	});
 
 	section.append(header, body);

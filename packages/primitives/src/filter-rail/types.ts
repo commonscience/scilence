@@ -101,6 +101,14 @@ export interface FilterGroupConfig {
 	 * default to collapsed.
 	 */
 	defaultExpanded: boolean;
+	/**
+	 * Explicit per-group expand override (e.g. a persisted collapse state
+	 * restored by the host). When set to `true` / `false` it WINS over
+	 * `defaultExpanded`; when omitted the group falls back to
+	 * `defaultExpanded`. Lets a surface round-trip the user's open/closed
+	 * choice across sessions.
+	 */
+	expanded?: boolean;
 	/** Selection mode for this group. */
 	selectionMode: FilterSelectionMode;
 	/** Options for `single` / `multi` / `toggle-pair` modes. */
@@ -245,6 +253,13 @@ export interface FilterRailConfig {
 	 * `search.onSearch` for that). Receives the full current selection.
 	 */
 	onFiltersChange: (selection: FilterSelection) => void;
+	/**
+	 * Called when the user toggles a group's expand/collapse chevron.
+	 * Receives the group id and its new expanded state. Surfaces use this
+	 * to persist per-group collapse state (e.g. to localStorage) and
+	 * restore it via each group's `expanded` override on next mount.
+	 */
+	onGroupExpandedChange?: (groupId: string, expanded: boolean) => void;
 }
 
 /**
