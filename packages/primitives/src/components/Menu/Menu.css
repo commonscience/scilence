@@ -1,0 +1,130 @@
+/**
+ * @scilence/primitives — Menu CSS
+ *
+ * Sizing is driven by resolved `--s-menu-*` custom properties set on the root
+ * by Menu.ts (variant token lookup). Item tones ride per-item data attributes.
+ * Raised-plane chrome (bg + border + shadow) applies only on
+ * [data-chrome='surface'] — embedded menus ([data-chrome='bare']) inherit the
+ * host popover's surface (shadow carve-out doctrine:
+ * feedback_box_shadow_carveouts).
+ */
+
+.s-menu {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	min-width: 180px;
+	padding: var(--s-space-1) 0;
+	font-family: var(--s-font-sans);
+	font-size: var(--s-menu-font-size);
+	color: var(--s-color-fg-primary);
+}
+
+.s-menu[data-chrome='surface'] {
+	background: var(--s-color-bg-panel);
+	border: 1px solid var(--s-color-border-subtle);
+	border-radius: var(--s-radius-md);
+	box-shadow: var(--s-shadow-raised);
+	z-index: var(--s-z-dropdown);
+}
+
+.s-menu__item {
+	display: flex;
+	align-items: center;
+	gap: var(--s-menu-item-gap);
+	width: 100%;
+	padding: var(--s-menu-item-padding-block) var(--s-menu-item-padding-inline);
+	border: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+	appearance: none;
+	-webkit-appearance: none;
+}
+
+.s-menu__item:hover:not(:disabled) {
+	background: var(--s-color-bg-hover);
+}
+
+.s-menu__item:focus-visible {
+	/* --s-color-focus-border is the visible focus color in this token
+	   system (focus-ring is intentionally transparent — calm palette). */
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: -2px;
+}
+
+.s-menu__item:disabled {
+	color: var(--s-color-fg-muted);
+	cursor: default;
+}
+
+.s-menu__item[data-tone='danger'] {
+	color: var(--s-color-status-danger);
+}
+
+.s-menu__item[aria-current='true'] {
+	background: var(--s-color-bg-subtle);
+}
+
+.s-menu__icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: var(--s-menu-icon-size);
+	height: var(--s-menu-icon-size);
+	color: var(--s-color-fg-icon);
+}
+
+.s-menu__item[data-tone='danger'] .s-menu__icon {
+	color: inherit;
+}
+
+.s-menu__icon svg {
+	width: 100%;
+	height: 100%;
+}
+
+.s-menu__label {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.s-menu__hint {
+	flex-shrink: 0;
+	margin-left: auto;
+	color: var(--s-color-fg-muted);
+	font-size: var(--s-font-size-caption);
+}
+
+.s-menu__trailing {
+	display: inline-flex;
+	align-items: center;
+	flex-shrink: 0;
+	color: var(--s-color-fg-icon-muted);
+}
+
+.s-menu__separator {
+	height: 1px;
+	margin: var(--s-space-1) 0;
+	background: var(--s-color-border-subtle);
+}
+
+.s-menu__header {
+	padding: var(--s-menu-item-padding-block) var(--s-menu-item-padding-inline);
+	color: var(--s-color-fg-muted);
+	font-size: var(--s-font-size-caption);
+	font-weight: var(--s-font-weight-medium);
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+}
+
+.s-menu__custom {
+	/* Free-form presentation row — consumer content owns its own layout. */
+	padding: 0;
+}
