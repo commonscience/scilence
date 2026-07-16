@@ -219,6 +219,14 @@
 	gap: var(--s-space-hair);
 }
 
+/* Honor the `hidden` attribute — author `display:flex` above otherwise wins
+   over the UA `[hidden]{display:none}`, leaving an empty flex item (and its
+   parent `gap`) in the body when the group renders the `list` layout or a
+   range picker instead of chips. */
+.s-filter-rail__group-chips[hidden] {
+	display: none;
+}
+
 .s-filter-rail__group-more,
 .s-filter-rail__group-show-hidden {
 	align-self: flex-start;
@@ -243,6 +251,66 @@
 .s-filter-rail__group-more[hidden],
 .s-filter-rail__group-show-hidden[hidden] {
 	display: none;
+}
+
+/* ── List layout (config.layout === 'list') ──────────────────────────────────
+   Scannable one-row-per-option register: a leading checkbox/radio, the label,
+   and a right-aligned count. Opt-in alternative to the wrapping chip cloud for
+   groups that are the daily working axis (e.g. a biological-target facet where
+   a scientist scans a column of targets). */
+.s-filter-rail__group-list {
+	display: flex;
+	flex-direction: column;
+}
+
+/* Honor the `hidden` attribute (see note on `__group-chips[hidden]`): in the
+   default `chips` layout this container is empty + hidden, and without this it
+   would remain a 0-height flex item that adds a stray `gap` below the chips. */
+.s-filter-rail__group-list[hidden] {
+	display: none;
+}
+
+.s-filter-rail__option-row {
+	display: flex;
+	align-items: center;
+	gap: var(--s-space-2);
+	padding: var(--s-space-1);
+	font-size: var(--s-font-size-condensed);
+	color: var(--s-color-fg-secondary);
+	border-radius: var(--s-radius-1);
+	cursor: pointer;
+	transition: background var(--s-duration-fast) var(--s-ease-out);
+}
+
+.s-filter-rail__option-row:hover {
+	background: var(--s-color-hover-bg);
+}
+
+.s-filter-rail__option-check {
+	flex: none;
+	margin: 0;
+	accent-color: var(--s-color-accent-default);
+	cursor: pointer;
+}
+
+.s-filter-rail__option-label {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.s-filter-rail__option-row[data-selected='true'] .s-filter-rail__option-label {
+	color: var(--s-color-fg-primary);
+	font-weight: var(--s-font-weight-medium);
+}
+
+.s-filter-rail__option-count {
+	margin-left: auto;
+	padding-left: var(--s-space-2);
+	font-size: var(--s-font-size-condensed);
+	color: var(--s-color-fg-tertiary);
+	font-variant-numeric: tabular-nums;
 }
 
 /* ── Chips (count badge extension on top of pill-filter base) ──────── */

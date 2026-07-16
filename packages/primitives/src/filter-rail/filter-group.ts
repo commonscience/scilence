@@ -107,6 +107,14 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	const chipStrip = document.createElement('div');
 	chipStrip.className = 's-filter-rail__group-chips';
 
+	// List layout (opt-in via config.layout === 'list'): one scannable row per
+	// option — leading checkbox/radio + label + right-aligned count. Renders
+	// into this container instead of the chip strip. Both are always in the DOM;
+	// renderOptions() shows exactly one.
+	const optionList = document.createElement('div');
+	optionList.className = 's-filter-rail__group-list';
+	optionList.hidden = true;
+
 	const moreBtn = document.createElement('button');
 	moreBtn.type = 'button';
 	moreBtn.className = 's-filter-rail__group-more';
@@ -117,10 +125,21 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	showHiddenBtn.className = 's-filter-rail__group-show-hidden';
 	showHiddenBtn.hidden = true;
 
-	body.append(chipStrip, moreBtn, showHiddenBtn);
+	body.append(chipStrip, optionList, moreBtn, showHiddenBtn);
 
 	let chipHandles: FilterChipHandle[] = [];
+	/** Row handles for the `list` layout (parallel to chipHandles). */
+	let rowHandles: Array<{
+		element: HTMLElement;
+		id: string;
+		setSelected: (selected: boolean) => void;
+		destroy: () => void;
+	}> = [];
 	let rangeHandle: RangePickerHandle | null = null;
+
+	function usesListLayout(): boolean {
+		return config.layout === 'list' && config.selectionMode !== 'range';
+	}
 
 	// ── Selection helpers ─────────────────────────────────────────────────
 	function isMulti(): boolean {
@@ -166,6 +185,140 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 			const id = handle.element.dataset.id || '';
 			handle.setSelected(active.has(id));
 		}
+		for (const row of rowHandles) {
+			row.setSelected(active.has(row.id));
+		}
+	}
+
+	/**
+	 * Dispatch to the configured option presentation. `list` layout renders
+	 * scannable checkbox/radio rows; everything else renders the chip strip
+	 * (which also owns the `range` picker path).
+	 */
+	function renderOptions(): void {
+		if (usesListLayout()) renderListRows();
+		else renderChips();
+	}
+
+	/**
+	 * Build a single option row for the `list` layout: a `<label>` wrapping a
+	 * checkbox (multi) or radio (single), the option label, and a right-aligned
+	 * count. The label element makes the whole row a native click target; the
+	 * input's `change` routes through the same toggle handler as chips.
+	 */
+	function createOptionRow(
+		option: { id: string; label: string; count?: number },
+		selected: boolean,
+		isRadio: boolean,
+	): {
+		element: HTMLElement;
+		id: string;
+		setSelected: (s: boolean) => void;
+		destroy: () => void;
+	} {
+		const row = document.createElement('label');
+		row.className = 's-filter-rail__option-row';
+		row.dataset.id = option.id;
+		row.dataset.tagDimension = config.id;
+		row.dataset.tagValue = option.id;
+		row.dataset.selected = selected ? 'true' : 'false';
+
+		const input = document.createElement('input');
+		input.type = isRadio ? 'radio' : 'checkbox';
+		input.className = 's-filter-rail__option-check';
+		if (isRadio) input.name = `s-filter-rail__radio-${config.id}`;
+		input.checked = selected;
+		input.setAttribute('aria-label', option.label);
+
+		const labelEl = document.createElement('span');
+		labelEl.className = 's-filter-rail__option-label';
+		labelEl.textContent = option.label;
+
+		row.append(input, labelEl);
+
+		if (option.count != null) {
+			const countEl = document.createElement('span');
+			countEl.className = 's-filter-rail__option-count';
+			countEl.textContent = String(option.count);
+			row.appendChild(countEl);
+		}
+
+		const onChange = () => handleChipToggle(option.id);
+		input.addEventListener('change', onChange);
+
+		return {
+			element: row,
+			id: option.id,
+			setSelected(s: boolean): void {
+				input.checked = s;
+				row.dataset.selected = s ? 'true' : 'false';
+			},
+			destroy(): void {
+				input.removeEventListener('change', onChange);
+				row.remove();
+			},
+		};
+	}
+
+	/**
+	 * Render the `list` layout — checkbox/radio rows with the same overflow
+	 * (`+N more`) and hidden-by-default affordances as the chip strip.
+	 */
+	function renderListRows(): void {
+		chipStrip.hidden = true;
+		// Tear down any chip strip left over from a prior layout so only one
+		// presentation is live at a time (mirror of renderChips()'s optionList
+		// teardown — keeps `updateConfig` layout swaps leak-free).
+		chipStrip.replaceChildren();
+		for (const h of chipHandles) h.destroy();
+		chipHandles = [];
+		optionList.hidden = false;
+		optionList.replaceChildren();
+		for (const h of rowHandles) h.destroy();
+		rowHandles = [];
+
+		const hiddenSet = new Set(config.hiddenByDefaultIds ?? []);
+		const allOptions = config.options ?? [];
+		const visiblePool = allOptions.filter(
+			(o) => !hiddenSet.has(o.id) || showHidden,
+		);
+		const showCount = config.collapsedShowCount ?? DEFAULT_SHOW_COUNT;
+		const overflow = visiblePool.length > showCount && !showAllOverflow;
+		const rendered = overflow ? visiblePool.slice(0, showCount) : visiblePool;
+
+		const active = new Set(selectedIds());
+		const isRadio = config.selectionMode === 'single';
+		for (const option of rendered) {
+			const handle = createOptionRow(option, active.has(option.id), isRadio);
+			optionList.appendChild(handle.element);
+			rowHandles.push(handle);
+		}
+
+		// "+N more" affordance (shared button, re-dispatches through renderOptions)
+		moreBtn.hidden = !overflow;
+		moreBtn.textContent = overflow
+			? `+${visiblePool.length - showCount} more`
+			: '';
+		moreBtn.onclick = () => {
+			showAllOverflow = true;
+			renderOptions();
+		};
+
+		// "Show <Hidden>" toggle
+		const hasHidden = (config.hiddenByDefaultIds ?? []).length > 0;
+		showHiddenBtn.hidden = !hasHidden;
+		if (hasHidden) {
+			const labels = (config.hiddenByDefaultIds || [])
+				.map((id) => allOptions.find((o) => o.id === id)?.label || id)
+				.join(' / ');
+			showHiddenBtn.textContent = showHidden
+				? `Hide ${labels}`
+				: `Show ${labels}`;
+			showHiddenBtn.onclick = () => {
+				showHidden = !showHidden;
+				renderOptions();
+			};
+		}
 	}
 
 	// ── Render chip strip ─────────────────────────────────────────────────
@@ -173,6 +326,12 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		chipStrip.replaceChildren();
 		for (const h of chipHandles) h.destroy();
 		chipHandles = [];
+		// Tear down any list rows left over from a prior layout so only one
+		// presentation is live at a time.
+		optionList.hidden = true;
+		optionList.replaceChildren();
+		for (const h of rowHandles) h.destroy();
+		rowHandles = [];
 
 		if (config.selectionMode === 'range') {
 			chipStrip.hidden = true;
@@ -209,7 +368,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 			: '';
 		moreBtn.onclick = () => {
 			showAllOverflow = true;
-			renderChips();
+			renderOptions();
 		};
 
 		// "Show <Hidden>" toggle
@@ -224,7 +383,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 				: `Show ${labels}`;
 			showHiddenBtn.onclick = () => {
 				showHidden = !showHidden;
-				renderChips();
+				renderOptions();
 			};
 		}
 	}
@@ -271,13 +430,14 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 
 	section.append(header, body);
 
-	renderChips();
+	renderOptions();
 	applyHeaderState();
 
 	return {
 		element: section,
 		destroy(): void {
 			for (const h of chipHandles) h.destroy();
+			for (const h of rowHandles) h.destroy();
 			rangeHandle?.destroy();
 			section.remove();
 		},
@@ -296,7 +456,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		updateConfig(nextConfig: FilterGroupConfig): void {
 			config = nextConfig;
 			labelSpan.textContent = config.label;
-			renderChips();
+			renderOptions();
 			applyHeaderState();
 		},
 	};
