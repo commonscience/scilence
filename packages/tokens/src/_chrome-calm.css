@@ -20,3 +20,13 @@
   --s-color-fg-secondary: oklch(from var(--s-brand-700) l 0.04 h);
   --s-color-fg-tertiary: oklch(from var(--s-brand-600) l 0.045 h);
 }
+
+/* Dark theme: anchor calm fg from the light end of the brand ramp (fg tiers
+   bind to brand-50/100/150 in _themes-dark.css). Preserves contrast on dark
+   surfaces while matching the desaturated register. */
+:root[data-theme='dark'] [data-chrome='calm'] {
+  --s-color-fg-muted: oklch(from var(--s-brand-100) l 0.035 h);
+  --s-color-fg-soft: oklch(from var(--s-brand-150) l 0.04 h);
+  --s-color-fg-secondary: oklch(from var(--s-brand-100) l 0.035 h);
+  --s-color-fg-tertiary: oklch(from var(--s-brand-150) l 0.04 h);
+}
