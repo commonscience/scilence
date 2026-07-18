@@ -50,6 +50,58 @@ export type {
 	Tone as ChipTone,
 } from './components/Chip/index.js';
 
+// ── Button (pan-app action control) ─────────────────────────────────────
+export { Button, createButton } from './components/Button/index.js';
+export { mergeButtonVariants, resolveButtonTokens } from './components/Button/index.js';
+export type {
+	ButtonHandle,
+	ButtonOptions,
+	ButtonVariants,
+	IconPosition,
+	Size as ButtonSize,
+	Variant as ButtonVariant,
+} from './components/Button/index.js';
+
+// ── IconButton (icon-only affordance) ───────────────────────────────────
+export { IconButton, createIconButton } from './components/IconButton/index.js';
+export { mergeIconButtonVariants, resolveIconButtonTokens } from './components/IconButton/index.js';
+export type {
+	IconButtonHandle,
+	IconButtonOptions,
+	IconButtonVariants,
+	IconButtonShape,
+	IconButtonSize,
+	IconButtonTone,
+} from './components/IconButton/index.js';
+
+// ── Modal (native dialog substrate) ─────────────────────────────────────
+export { Modal, createModal } from './components/Modal/index.js';
+export { mergeModalVariants, resolveModalTokens } from './components/Modal/index.js';
+export type {
+	BodySlot,
+	BreadcrumbItem,
+	BreadcrumbSlot,
+	CloseReason,
+	FooterAction,
+	FooterSlot,
+	HeaderAction,
+	HeaderSlot,
+	ModalConfig,
+	ModalHandle,
+	ModalLifecycle,
+	ModalMode,
+	ModalModifier,
+	ModalSize,
+	ModalSlots,
+	ModalVariants,
+	SidebarItem,
+	SidebarSlot,
+	StatusBarSlot,
+	StatusItem,
+	ToolbarSlot,
+	ToolbarTool,
+} from './components/Modal/index.js';
+
 // ── Menu (DS_COMPONENTIZATION_CATALOG §A21 — Menu/MenuItem net-new gap) ──
 export { Menu, createMenu, isMenuItemDescriptor } from './components/Menu/index.js';
 export { mergeMenuVariants, resolveMenuTokens } from './components/Menu/index.js';
