@@ -34,6 +34,15 @@ import type {
 	ToolbarSlot,
 } from './types.js';
 
+/** Monotonic id source for aria-labelledby/aria-describedby — each Modal
+ * instance needs unique ids so multiple dialogs on one page (e.g. a
+ * lightbox preview whose own examples include a Modal demo) never collide. */
+let modalInstanceCounter = 0;
+function nextModalInstanceId(): number {
+	modalInstanceCounter += 1;
+	return modalInstanceCounter;
+}
+
 export class Modal implements ModalHandle {
 	readonly element: HTMLDialogElement;
 	private variants: ModalVariants;
@@ -88,11 +97,17 @@ export class Modal implements ModalHandle {
 		this.surfaceEl = document.createElement('div');
 		this.surfaceEl.className = 's-modal-dialog__surface';
 
+		const instanceId = nextModalInstanceId();
+		this.element.setAttribute('aria-labelledby', `s-modal-title-${instanceId}`);
+		this.element.setAttribute('aria-describedby', `s-modal-subtitle-${instanceId}`);
+
 		this.breadcrumbEl = this.makeRegion('breadcrumb');
 		this.headerEl = this.makeRegion('header');
 		this.headerTitleEl = document.createElement('h2');
+		this.headerTitleEl.id = `s-modal-title-${instanceId}`;
 		this.headerTitleEl.className = 's-modal__title';
 		this.headerSubtitleEl = document.createElement('p');
+		this.headerSubtitleEl.id = `s-modal-subtitle-${instanceId}`;
 		this.headerSubtitleEl.className = 's-modal__subtitle';
 		this.headerSubtitleEl.hidden = true;
 		this.headerActionsEl = document.createElement('div');
