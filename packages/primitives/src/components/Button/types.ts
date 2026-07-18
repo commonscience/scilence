@@ -62,6 +62,7 @@ export interface ButtonOptions {
 
 export interface ButtonHandle {
 	readonly element: HTMLElement;
+	render: () => HTMLElement;
 	setVariants: (partial: Partial<ButtonVariants>) => void;
 	setLabel: (label: string) => void;
 	setIcon: (icon: HTMLElement | SVGElement | undefined) => void;

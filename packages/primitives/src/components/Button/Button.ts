@@ -164,6 +164,10 @@ export class Button implements ButtonHandle {
 		this.mountChildren();
 	}
 
+	render(): HTMLElement {
+		return this.element;
+	}
+
 	setDisabled(disabled: boolean): void {
 		this.applyDisabled(disabled);
 	}
