@@ -424,6 +424,10 @@ export class Modal implements ModalHandle {
 		});
 	}
 
+	render(): HTMLDialogElement {
+		return this.element;
+	}
+
 	open(): void {
 		if (this.element.open) return;
 		this.returnFocusEl = (document.activeElement as HTMLElement) ?? null;

@@ -172,6 +172,7 @@ export interface ModalConfig {
 
 export interface ModalHandle {
 	readonly element: HTMLDialogElement;
+	render(): HTMLDialogElement;
 	open(): void;
 	close(reason?: CloseReason): void;
 	destroy(): void;

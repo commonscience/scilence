@@ -128,6 +128,10 @@ export class IconButton implements IconButtonHandle {
 		this.opts = { ...this.opts, icon };
 	}
 
+	render(): HTMLElement {
+		return this.element;
+	}
+
 	setLabel(label: string): void {
 		this.element.setAttribute('aria-label', label);
 		this.opts = { ...this.opts, label };
