@@ -50,6 +50,18 @@ export type {
 	Tone as ChipTone,
 } from './components/Chip/index.js';
 
+// ── Button (pan-app action primitive) ───────────────────────────────────
+export { Button, createButton } from './components/Button/index.js';
+export { mergeButtonVariants, resolveButtonTokens } from './components/Button/index.js';
+export type {
+	ButtonHandle,
+	ButtonOptions,
+	ButtonVariants,
+	IconPosition,
+	Size as ButtonSize,
+	Variant as ButtonVariant,
+} from './components/Button/index.js';
+
 // ── InspectorStack (Brief library-inspector-section-stack — Increment 1) ─
 // Reusable ordered collapsible right-rail section list — drag + keyboard
 // reorder + ARIA live announce + per-surface localStorage persistence.
