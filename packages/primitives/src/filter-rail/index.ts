@@ -25,8 +25,17 @@ import {
 	type FilterSearchHandle,
 } from './filter-search.js';
 import type { DatePickerFactory } from './range-picker.js';
+// Canonical filter-rail event name (domain:action). Kept as a local
+// constant so @scilence/primitives stays free of GUIDE's event-dictionary
+// dependency; GUIDE's FILTER_RAIL_VISIBILITY_CHANGED resolves to
+// the same on-wire spelling.
+const FILTER_RAIL_VISIBILITY_CHANGED = 'filter-rail:visibility-changed';
 import type {
 	FilterRailConfig,
+	FilterRailFooterAction,
+	FilterRailFooterConfig,
+	FilterRailFooterContext,
+	FilterRailFooterShowWhen,
 	FilterRailHandle,
 	FilterSelection,
 } from './types.js';
@@ -39,12 +48,36 @@ export type {
 	FilterRailSearch,
 	FilterSelection,
 	FilterSelectionMode,
+	FilterRailFooterAction,
+	FilterRailFooterConfig,
+	FilterRailFooterContext,
+	FilterRailFooterShowWhen,
 	RangeConfig,
+	TagDimension,
+	TagFilterRailConfig,
 } from './types.js';
 export type { DatePickerFactory, RangeSelection } from './range-picker.js';
 export type { FilterGroupSelection } from './filter-group.js';
 
 const DEFAULT_EMPTY_PROMPT = 'Pick a filter below';
+
+function actionVisible(
+	action: FilterRailFooterAction,
+	selectionCount: number,
+): boolean {
+	const when: FilterRailFooterShowWhen = action.showWhen ?? 'always';
+	if (when === 'selection') return selectionCount > 0;
+	if (when === 'no-selection') return selectionCount === 0;
+	return true;
+}
+
+function actionDisabled(
+	action: FilterRailFooterAction,
+	ctx: FilterRailFooterContext,
+): boolean {
+	if (typeof action.disabled === 'function') return action.disabled(ctx);
+	return action.disabled === true;
+}
 
 interface InternalOptions extends FilterRailConfig {
 	/**
@@ -67,9 +100,30 @@ export function createFilterRail(
 	config: InternalOptions,
 ): FilterRailHandle {
 	let currentConfig: InternalOptions = config;
+	let selectionCount = 0;
 	const selection: FilterSelection = {
 		...(config.initialSelection ?? {}),
 	};
+	const chromeVisibility: Record<string, boolean> = {
+		...(config.initialChromeVisibility ?? {}),
+	};
+
+	function chromeVisibleForGroup(groupId: string): boolean {
+		return chromeVisibility[groupId] !== false;
+	}
+
+	function notifyChromeVisibilityChange(groupId: string, visible: boolean): void {
+		chromeVisibility[groupId] = visible;
+		container.dispatchEvent(
+			new CustomEvent(FILTER_RAIL_VISIBILITY_CHANGED, {
+				detail: { groupId, visible },
+				bubbles: true,
+			}),
+		);
+		currentConfig.onChromeVisibilityChange?.(groupId, visible, {
+			...chromeVisibility,
+		});
+	}
 
 	container.replaceChildren();
 	container.classList.add('s-filter-rail');
@@ -99,10 +153,12 @@ export function createFilterRail(
 	// ── Search ────────────────────────────────────────────────────────────
 	const searchHandle: FilterSearchHandle = createFilterSearch(config.search);
 
-	// ── Empty-state prompt ────────────────────────────────────────────────
+	// ── Empty-state prompt (optional — internal-ops rail omits per A.3) ───
 	const promptEl = document.createElement('div');
 	promptEl.className = 's-filter-rail__prompt';
-	promptEl.textContent = config.emptyStatePrompt ?? DEFAULT_EMPTY_PROMPT;
+	const promptText = config.emptyStatePrompt ?? DEFAULT_EMPTY_PROMPT;
+	promptEl.textContent = promptText;
+	if (!promptText) promptEl.hidden = true;
 
 	// ── Groups ────────────────────────────────────────────────────────────
 	const groupsEl = document.createElement('div');
@@ -120,6 +176,10 @@ export function createFilterRail(
 			const handle = createFilterGroup({
 				config: groupConfig,
 				selection: initial,
+				chromeVisible: chromeVisibleForGroup(groupConfig.id),
+				onChromeVisibilityChange: (visible) => {
+					notifyChromeVisibilityChange(groupConfig.id, visible);
+				},
 				onSelectionChange: (next) => {
 					if (next == null || (Array.isArray(next) && next.length === 0)) {
 						delete selection[groupConfig.id];
@@ -157,26 +217,108 @@ export function createFilterRail(
 
 	function syncHeader(): void {
 		const n = activeCount();
-		if (currentConfig.showActiveCountInHeader !== false) {
+		const hideHeader = currentConfig.hideHeader === true;
+		const promptText = currentConfig.emptyStatePrompt ?? DEFAULT_EMPTY_PROMPT;
+		if (hideHeader) {
+			headerEl.hidden = true;
+		} else if (currentConfig.showActiveCountInHeader !== false) {
 			countEl.textContent = `Filters · ${n} active`;
+			clearAllBtn.hidden = n === 0;
+			// Hide the entire header when zero filters active so search reads
+			// as the first visible element (Brief 103 PART B + PART D).
+			headerEl.hidden = n === 0;
 		} else {
 			countEl.textContent = '';
+			clearAllBtn.hidden = n === 0;
+			headerEl.hidden = n === 0;
 		}
-		clearAllBtn.hidden = n === 0;
-		// Hide the entire header when zero filters active so search reads
-		// as the first visible element (Brief 103 PART B + PART D).
-		headerEl.hidden = n === 0;
-		promptEl.hidden = n !== 0;
+		// Empty prompt string = permanently omit (Library / internal-ops A.3).
+		promptEl.hidden = !promptText || n !== 0;
+	}
+
+	// ── Scrollable body + footer action zone ──────────────────────────────
+	const bodyEl = document.createElement('div');
+	bodyEl.className = 's-filter-rail__body';
+
+	const footerEl = document.createElement('div');
+	footerEl.className = 's-filter-rail__footer';
+	footerEl.hidden = true;
+
+	const footerSummaryEl = document.createElement('div');
+	footerSummaryEl.className = 's-filter-rail__footer-summary';
+
+	const footerActionsEl = document.createElement('div');
+	footerActionsEl.className = 's-filter-rail__footer-actions';
+	footerActionsEl.setAttribute('role', 'toolbar');
+
+	footerEl.append(footerSummaryEl, footerActionsEl);
+
+	function footerContext(): FilterRailFooterContext {
+		return { selectionCount };
+	}
+
+	function syncFooter(): void {
+		const footerCfg: FilterRailFooterConfig | undefined = currentConfig.footer;
+		if (!footerCfg?.actions?.length) {
+			footerEl.hidden = true;
+			return;
+		}
+
+		const ctx = footerContext();
+		const visible = footerCfg.actions.filter((a) => actionVisible(a, selectionCount));
+
+		// Hide the footer entirely when nothing would render — no currently-visible
+		// actions and no selection summary — so a rail whose footer holds only
+		// selection-scoped actions doesn't show an empty bordered bar at rest.
+		if (visible.length === 0 && selectionCount === 0) {
+			footerEl.hidden = true;
+			return;
+		}
+		footerEl.hidden = false;
+
+		footerSummaryEl.replaceChildren();
+		if (selectionCount > 0) {
+			const summaryText =
+				footerCfg.selectionSummary?.(selectionCount) ??
+				`${selectionCount.toLocaleString()} selected`;
+			const summary = document.createElement('span');
+			summary.className = 's-filter-rail__footer-count';
+			summary.textContent = summaryText;
+			footerSummaryEl.appendChild(summary);
+
+			if (footerCfg.clearSelection) {
+				const clearBtn = document.createElement('button');
+				clearBtn.type = 'button';
+				clearBtn.className = 's-filter-rail__footer-clear';
+				clearBtn.textContent = footerCfg.clearSelection.label ?? 'Clear';
+				clearBtn.addEventListener('click', () => footerCfg.clearSelection?.onClick());
+				footerSummaryEl.appendChild(clearBtn);
+			}
+			footerSummaryEl.hidden = false;
+		} else {
+			footerSummaryEl.hidden = true;
+		}
+
+		footerActionsEl.replaceChildren();
+		for (const action of visible) {
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 's-filter-rail__footer-action';
+			btn.dataset.footerActionId = action.id;
+			btn.textContent = action.label;
+			btn.disabled = actionDisabled(action, ctx);
+			btn.addEventListener('click', () => action.onClick(ctx));
+			footerActionsEl.appendChild(btn);
+		}
 	}
 
 	// ── Assemble ──────────────────────────────────────────────────────────
-	// Search input is the FIRST child of the container (Brief 103 PART B).
-	// The "Filters · N active" + "Clear all" header sits ABOVE search ONLY
-	// when at least one filter is active (PART D) — otherwise it stays
-	// hidden so the empty-state prompt + groups read as the primary surface.
-	container.append(searchHandle.element, headerEl, promptEl, groupsEl);
+	// Search input is the FIRST child of the body (Brief 103 PART B).
+	bodyEl.append(searchHandle.element, headerEl, promptEl, groupsEl);
+	container.append(bodyEl, footerEl);
 	mountGroups();
 	syncHeader();
+	syncFooter();
 
 	return {
 		destroy(): void {
@@ -191,11 +333,14 @@ export function createFilterRail(
 			if (patch.search) {
 				searchHandle.setPlaceholder(patch.search.placeholder);
 			}
-			if (patch.emptyStatePrompt) {
+			if (patch.emptyStatePrompt !== undefined) {
 				promptEl.textContent = patch.emptyStatePrompt;
 			}
 			if (patch.groups) {
 				mountGroups();
+			}
+			if (patch.footer) {
+				syncFooter();
 			}
 			syncHeader();
 		},
@@ -220,6 +365,30 @@ export function createFilterRail(
 		},
 		focusSearch(): void {
 			searchHandle.focus();
+		},
+		getChromeVisibility(): Record<string, boolean> {
+			const out: Record<string, boolean> = {};
+			for (const handle of groupHandles) {
+				const gid = handle.element.dataset.groupId || '';
+				if (gid) out[gid] = handle.getChromeVisible();
+			}
+			return out;
+		},
+		setChromeVisibility(map: Record<string, boolean>): void {
+			for (const handle of groupHandles) {
+				const gid = handle.element.dataset.groupId || '';
+				if (!gid || !(gid in map)) continue;
+				const visible = map[gid] !== false;
+				chromeVisibility[gid] = visible;
+				handle.setChromeVisible(visible);
+			}
+		},
+		setSelectionCount(count: number): void {
+			selectionCount = Math.max(0, Number(count) || 0);
+			syncFooter();
+		},
+		getSelectionCount(): number {
+			return selectionCount;
 		},
 	};
 }

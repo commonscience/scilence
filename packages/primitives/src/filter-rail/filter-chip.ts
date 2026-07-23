@@ -7,15 +7,26 @@
 import { createChip } from '../components/Chip/index.js';
 import type { FilterOption } from './types.js';
 
+/**
+ * Public chip options.
+ */
 export interface FilterChipOptions {
 	option: FilterOption;
+	/** Tag dimension slug for `[data-tag-dimension]` / `[data-tag-value]` selectors. */
 	tagDimension?: string;
+	/** Whether the chip is currently selected. */
 	selected: boolean;
+	/** Greyed reverse-progressive-disclosure state (still clickable). */
 	greyed?: boolean;
+	/** Multi-select group → `aria-pressed`; single → `aria-checked` (role=radio). */
 	role: 'toggle' | 'radio';
+	/** Called when the user clicks / Space / Enter. */
 	onToggle: (id: string) => void;
 }
 
+/**
+ * Handle for a mounted chip.
+ */
 export interface FilterChipHandle {
 	element: HTMLButtonElement;
 	setSelected: (selected: boolean) => void;
@@ -24,6 +35,9 @@ export interface FilterChipHandle {
 	destroy: () => void;
 }
 
+/**
+ * Build a single chip button with optional count badge via Chip primitive.
+ */
 export function createFilterChip(opts: FilterChipOptions): FilterChipHandle {
 	const hasCount = opts.option.count != null;
 	const chip = createChip({
@@ -37,7 +51,9 @@ export function createFilterChip(opts: FilterChipOptions): FilterChipHandle {
 		},
 		tagName: 'button',
 		className: 's-filter-rail__chip s-filter-chip',
-		attributes: { tabindex: '0' },
+		attributes: {
+			tabindex: '0',
+		},
 	});
 
 	const btn = chip.element as HTMLButtonElement;

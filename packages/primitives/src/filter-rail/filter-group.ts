@@ -23,6 +23,22 @@ import type { FilterGroupConfig } from './types.js';
 
 const DEFAULT_SHOW_COUNT = 6;
 
+const EYE_ON_SVG =
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+	'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+	'stroke-linejoin="round" aria-hidden="true">' +
+	'<path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>' +
+	'<circle cx="12" cy="12" r="3"/></svg>';
+
+const EYE_OFF_SVG =
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
+	'stroke="currentColor" stroke-width="2" stroke-linecap="round" ' +
+	'stroke-linejoin="round" aria-hidden="true">' +
+	'<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>' +
+	'<path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/>' +
+	'<path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.548 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.205"/>' +
+	'<path d="m2 2 20 20"/></svg>';
+
 export type FilterGroupSelection =
 	| string
 	| string[]
@@ -33,13 +49,16 @@ export interface FilterGroupOptions {
 	config: FilterGroupConfig;
 	selection: FilterGroupSelection;
 	onSelectionChange: (next: FilterGroupSelection) => void;
+	datePickerFactory?: DatePickerFactory;
+	/** Card-chrome visibility for this group (eye on = true). Default true. */
+	chromeVisible?: boolean;
+	onChromeVisibilityChange?: (visible: boolean) => void;
 	/**
-	 * Called when the user toggles this group's expand/collapse chevron.
-	 * Receives the group id and its new expanded state. FilterRail threads
-	 * this up to `FilterRailConfig.onGroupExpandedChange`.
+	 * Fired when the user toggles this group's collapse (chevron) state. Lets
+	 * the host persist open/closed per group so the rail stays navigable
+	 * across visits (the rail otherwise only honors `defaultExpanded`).
 	 */
 	onExpandedChange?: (groupId: string, expanded: boolean) => void;
-	datePickerFactory?: DatePickerFactory;
 }
 
 export interface FilterGroupHandle {
@@ -49,6 +68,8 @@ export interface FilterGroupHandle {
 	getSelection: () => FilterGroupSelection;
 	/** Update the rendered counts on options (live data refresh). */
 	updateConfig: (config: FilterGroupConfig) => void;
+	setChromeVisible: (visible: boolean) => void;
+	getChromeVisible: () => boolean;
 }
 
 /**
@@ -60,21 +81,25 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	// `config.expanded` (an explicit per-group override, e.g. a persisted
 	// collapse state restored by the host) wins over `defaultExpanded`.
 	let expanded =
-		typeof config.expanded === 'boolean'
-			? config.expanded
-			: !!config.defaultExpanded;
+		typeof config.expanded === 'boolean' ? config.expanded : !!config.defaultExpanded;
 	let showHidden = false;
 	let showAllOverflow = false;
+	let chromeVisible = opts.chromeVisible !== false;
 
 	const section = document.createElement('section');
 	section.className = 's-filter-rail__group';
 	section.dataset.groupId = config.id;
+	section.dataset.filterGroupId = config.id;
+	section.dataset.tagDimension = config.id;
 	section.setAttribute('role', 'region');
 
 	const headerId = `s-filter-rail__group-label-${config.id}`;
 	section.setAttribute('aria-labelledby', headerId);
 
-	// ── Header ────────────────────────────────────────────────────────────
+	// ── Header row (expand + eye toggle) ───────────────────────────────────
+	const headerRow = document.createElement('div');
+	headerRow.className = 's-filter-rail__group-header-row';
+
 	const header = document.createElement('button');
 	header.type = 'button';
 	header.className = 's-filter-rail__group-header';
@@ -84,7 +109,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	chevron.className = 's-filter-rail__group-chevron';
 	chevron.setAttribute('aria-hidden', 'true');
 	chevron.innerHTML =
-		'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" ' +
+		'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" ' +
 		'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
 		'stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 
@@ -98,6 +123,45 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	activeBadge.setAttribute('aria-hidden', 'true');
 
 	header.append(chevron, labelSpan, activeBadge);
+
+	// Only render eye toggle for groups whose chrome appears on card faces.
+	const chromeRenders = (config as { chromeRenders?: boolean }).chromeRenders !== false;
+	let visibilityBtn: HTMLButtonElement | null = null;
+	function applyVisibilityState() {
+		if (!visibilityBtn) return;
+		visibilityBtn.innerHTML = chromeVisible ? EYE_ON_SVG : EYE_OFF_SVG;
+		visibilityBtn.dataset.visible = String(chromeVisible);
+		visibilityBtn.classList.toggle(
+			's-filter-rail__visibility-toggle--off',
+			!chromeVisible,
+		);
+		visibilityBtn.setAttribute(
+			'aria-label',
+			`${chromeVisible ? 'Hide' : 'Show'} ${config.label} on cards`,
+		);
+		visibilityBtn.title = `${chromeVisible ? 'Hide' : 'Show'} ${config.label} on card faces`;
+	}
+	if (chromeRenders) {
+		visibilityBtn = document.createElement('button');
+		visibilityBtn.type = 'button';
+		visibilityBtn.className = 's-filter-rail__visibility-toggle';
+		visibilityBtn.setAttribute(
+			'aria-label',
+			`${chromeVisible ? 'Hide' : 'Show'} ${config.label} on cards`,
+		);
+		visibilityBtn.title = `${chromeVisible ? 'Hide' : 'Show'} ${config.label} on card faces`;
+		visibilityBtn.innerHTML = chromeVisible ? EYE_ON_SVG : EYE_OFF_SVG;
+		visibilityBtn.dataset.visible = String(chromeVisible);
+		visibilityBtn.addEventListener('click', (ev) => {
+			ev.stopPropagation();
+			chromeVisible = !chromeVisible;
+			applyVisibilityState();
+			opts.onChromeVisibilityChange?.(chromeVisible);
+		});
+		headerRow.append(header, visibilityBtn);
+	} else {
+		headerRow.append(header);
+	}
 
 	// ── Body ──────────────────────────────────────────────────────────────
 	const body = document.createElement('div');
@@ -201,7 +265,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	}
 
 	/**
-	 * Build a single option row for the `list` layout: a `<label>` wrapping a
+	 * Build a single option row for the `list` layout: `<label>` wrapping a
 	 * checkbox (multi) or radio (single), the option label, and a right-aligned
 	 * count. The label element makes the whole row a native click target; the
 	 * input's `change` routes through the same toggle handler as chips.
@@ -209,6 +273,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 	function createOptionRow(
 		option: { id: string; label: string; count?: number },
 		selected: boolean,
+		greyed: boolean,
 		isRadio: boolean,
 	): {
 		element: HTMLElement;
@@ -222,6 +287,7 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		row.dataset.tagDimension = config.id;
 		row.dataset.tagValue = option.id;
 		row.dataset.selected = selected ? 'true' : 'false';
+		if (greyed) row.classList.add('s-filter-rail__option-row--greyed');
 
 		const input = document.createElement('input');
 		input.type = isRadio ? 'radio' : 'checkbox';
@@ -287,9 +353,15 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		const rendered = overflow ? visiblePool.slice(0, showCount) : visiblePool;
 
 		const active = new Set(selectedIds());
+		const greyedSet = new Set(config.greyedOptionIds ?? []);
 		const isRadio = config.selectionMode === 'single';
 		for (const option of rendered) {
-			const handle = createOptionRow(option, active.has(option.id), isRadio);
+			const handle = createOptionRow(
+				option,
+				active.has(option.id),
+				greyedSet.has(option.id),
+				isRadio,
+			);
 			optionList.appendChild(handle.element);
 			rowHandles.push(handle);
 		}
@@ -350,10 +422,13 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		const rendered = overflow ? visiblePool.slice(0, showCount) : visiblePool;
 
 		const active = new Set(selectedIds());
+		const greyedSet = new Set(config.greyedOptionIds ?? []);
 		for (const option of rendered) {
 			const chip = createFilterChip({
 				option,
+				tagDimension: config.id,
 				selected: active.has(option.id),
+				greyed: greyedSet.has(option.id),
 				role: config.selectionMode === 'single' ? 'radio' : 'toggle',
 				onToggle: handleChipToggle,
 			});
@@ -407,6 +482,15 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 
 	// ── Chip click handler ────────────────────────────────────────────────
 	function handleChipToggle(id: string): void {
+		const greyedSet = new Set(config.greyedOptionIds ?? []);
+		if (greyedSet.has(id) && typeof config.onGreyedChipActivate === 'function') {
+			config.onGreyedChipActivate(id);
+			// In list layout the browser already flipped the checkbox on click;
+			// re-sync from the source of truth since a greyed activation does not
+			// change selection.
+			applyChipSelectionState();
+			return;
+		}
 		if (config.selectionMode === 'single') {
 			selection = selection === id ? null : id;
 		} else {
@@ -428,10 +512,11 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 		opts.onExpandedChange?.(config.id, expanded);
 	});
 
-	section.append(header, body);
+	section.append(headerRow, body);
 
 	renderOptions();
 	applyHeaderState();
+	applyVisibilityState();
 
 	return {
 		element: section,
@@ -458,6 +543,14 @@ export function createFilterGroup(opts: FilterGroupOptions): FilterGroupHandle {
 			labelSpan.textContent = config.label;
 			renderOptions();
 			applyHeaderState();
+			applyVisibilityState();
+		},
+		setChromeVisible(visible: boolean): void {
+			chromeVisible = visible;
+			applyVisibilityState();
+		},
+		getChromeVisible(): boolean {
+			return chromeVisible;
 		},
 	};
 }

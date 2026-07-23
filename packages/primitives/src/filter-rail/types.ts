@@ -75,6 +75,56 @@ export interface RangeConfig {
 	}>;
 }
 
+// ── Footer action zone ─────────────────────────────────────────────────────
+
+/**
+ * When a footer action is visible.
+ *
+ * - `always`        — page-level actions (always shown)
+ * - `selection`     — bulk actions (shown when selectionCount > 0)
+ * - `no-selection`  — shown only when nothing is selected
+ */
+export type FilterRailFooterShowWhen =
+	| 'always'
+	| 'selection'
+	| 'no-selection';
+
+/** Context passed to footer action handlers. */
+export interface FilterRailFooterContext {
+	selectionCount: number;
+}
+
+/**
+ * A single action in the rail's footer zone.
+ *
+ * Page-level actions use `showWhen: 'always'` (default). Bulk/selection
+ * actions use `showWhen: 'selection'`.
+ */
+export interface FilterRailFooterAction {
+	id: string;
+	label: string;
+	showWhen?: FilterRailFooterShowWhen;
+	disabled?: boolean | ((ctx: FilterRailFooterContext) => boolean);
+	onClick: (ctx: FilterRailFooterContext) => void;
+}
+
+/**
+ * Footer action-zone configuration — pinned to the bottom of the rail.
+ *
+ * Per the unified left-rail pattern: page actions always; bulk actions
+ * appear on selection. Center panels stay content-only.
+ */
+export interface FilterRailFooterConfig {
+	actions: FilterRailFooterAction[];
+	/** Label when selectionCount > 0. Default: `"N selected"`. */
+	selectionSummary?: (count: number) => string;
+	/** Optional clear-selection control when selectionCount > 0. */
+	clearSelection?: {
+		label?: string;
+		onClick: () => void;
+	};
+}
+
 // ── Group + rail shapes ────────────────────────────────────────────────────
 
 /**
@@ -102,11 +152,9 @@ export interface FilterGroupConfig {
 	 */
 	defaultExpanded: boolean;
 	/**
-	 * Explicit per-group expand override (e.g. a persisted collapse state
-	 * restored by the host). When set to `true` / `false` it WINS over
-	 * `defaultExpanded`; when omitted the group falls back to
-	 * `defaultExpanded`. Lets a surface round-trip the user's open/closed
-	 * choice across sessions.
+	 * Explicit collapse-state override. When a boolean is supplied it WINS over
+	 * `defaultExpanded` — the host uses this to restore a persisted open/closed
+	 * choice. Omit to fall back to `defaultExpanded`.
 	 */
 	expanded?: boolean;
 	/** Selection mode for this group. */
@@ -119,8 +167,7 @@ export interface FilterGroupConfig {
 	 * - `list`  — one scannable row per option: a leading checkbox (multi)
 	 *   or radio (single), the label, and a right-aligned count. Best when
 	 *   the group is the daily working axis and the user scans/toggles many
-	 *   options (e.g. a biological-target facet where the user scans a column
-	 *   of targets rather than a wrapping chip cloud).
+	 *   options (the library design-spike biological-target facet register).
 	 *
 	 * `range` groups ignore this (they always render the range picker).
 	 */
@@ -143,6 +190,17 @@ export interface FilterGroupConfig {
 	 * hide SHIPPED briefs from the default Status view.
 	 */
 	hiddenByDefaultIds?: string[];
+	/**
+	 * Option ids rendered greyed (reverse progressive disclosure) but still
+	 * clickable — triggers `onGreyedChipActivate` instead of toggling selection.
+	 */
+	greyedOptionIds?: string[];
+	/** Called when a greyed chip is activated (e.g. reverse lens filter). */
+	onGreyedChipActivate?: (id: string) => void;
+	/**
+	 * When false, the eye toggle is omitted (group has no card-face chrome).
+	 */
+	chromeRenders?: boolean;
 }
 
 /**
@@ -174,6 +232,33 @@ export type FilterSelection = Record<
 	string,
 	string | string[] | [Date | null, Date | null] | null
 >;
+
+// ── Tag-dimension config (multi-dimension tag-chip filters) ───────────────
+
+/**
+ * A single tag dimension rendered as one FilterRail group.
+ * Maps to `FilterGroupConfig` at integration time (`id` = dimension slug).
+ */
+export interface TagDimension {
+	/** Dimension slug — e.g. `cluster`, `status`, `workstream`. */
+	id: string;
+	/** Mono-caps group label in the rail. */
+	label: string;
+	values: Array<{ value: string; count: number; label?: string }>;
+	/** OR-within-dimension when true (default). */
+	multiSelect?: boolean;
+}
+
+/**
+ * Tag-aware FilterRail surface config (dimensions + selection callback).
+ * Surfaces typically also pass `search` + legacy `groups` built from dimensions.
+ */
+export interface TagFilterRailConfig {
+	surface: string;
+	dimensions: TagDimension[];
+	initialSelections?: Record<string, string[]>;
+	onSelectionChange: (selections: Record<string, string[]>) => void;
+}
 
 /**
  * Top-level FilterRail configuration.
@@ -248,12 +333,17 @@ export interface FilterRailConfig {
 	groups: FilterGroupConfig[];
 	/**
 	 * Prompt rendered below the search input when zero filters are active.
-	 * Default: `"Pick a filter below"`.
+	 * Default: `"Pick a filter below"`. Pass `""` to omit.
 	 */
 	emptyStatePrompt?: string;
 	/**
-	 * Whether to render the "Filters · N active" header above the search.
-	 * Default `true`.
+	 * When true, never render the in-rail "Filters · N active" header
+	 * (surface chrome already owns Filters title + count). Default `false`.
+	 */
+	hideHeader?: boolean;
+	/**
+	 * Whether to render the "Filters · N active" count text in the header.
+	 * Default `true`. Ignored when `hideHeader` is true.
 	 */
 	showActiveCountInHeader?: boolean;
 	/**
@@ -268,12 +358,30 @@ export interface FilterRailConfig {
 	 */
 	onFiltersChange: (selection: FilterSelection) => void;
 	/**
-	 * Called when the user toggles a group's expand/collapse chevron.
-	 * Receives the group id and its new expanded state. Surfaces use this
-	 * to persist per-group collapse state (e.g. to localStorage) and
-	 * restore it via each group's `expanded` override on next mount.
+	 * Fired when a group's collapse (chevron) state changes. The host can
+	 * persist per-group open/closed so the rail stays navigable across visits.
 	 */
 	onGroupExpandedChange?: (groupId: string, expanded: boolean) => void;
+	/**
+	 * Optional per-group card-chrome visibility restored from localStorage.
+	 * Keys are FilterGroupConfig.id values; `true` = eye on (chrome visible).
+	 */
+	initialChromeVisibility?: Record<string, boolean>;
+	/**
+	 * Called when the user toggles a group's eye icon. Also emitted as
+	 * `filter-rail:visibility-changed` on the rail container.
+	 */
+	onChromeVisibilityChange?: (
+		groupId: string,
+		visible: boolean,
+		map: Record<string, boolean>,
+	) => void;
+	/**
+	 * Optional footer action zone — page actions always; bulk actions on
+	 * selection (`showWhen: 'selection'`). Surfaces call
+	 * `handle.setSelectionCount(n)` to drive bulk visibility.
+	 */
+	footer?: FilterRailFooterConfig;
 }
 
 /**
@@ -301,4 +409,12 @@ export interface FilterRailHandle {
 	setQuery: (query: string) => void;
 	/** Focus the search input (called by the `⌘F` shortcut handler). */
 	focusSearch: () => void;
+	/** Snapshot of per-group card-chrome visibility (eye on/off). */
+	getChromeVisibility: () => Record<string, boolean>;
+	/** Programmatically apply chrome visibility (does NOT fire callbacks). */
+	setChromeVisibility: (map: Record<string, boolean>) => void;
+	/** Update selection count — drives bulk footer actions. */
+	setSelectionCount: (count: number) => void;
+	/** Current selection count exposed to footer actions. */
+	getSelectionCount: () => number;
 }
