@@ -509,6 +509,20 @@
 	cursor: not-allowed;
 }
 
+/* ── Mobile footer touch targets (phone widths — see scilence
+   _viewport-bands.css / admin-shell.js syncViewportDataset()). Desktop
+   padding alone renders footer action buttons well under the 44px
+   minimum; every openModal() / modal.confirm() / modal.confirmDanger()
+   caller shares this via .s-modal__btn. ── */
+@media (max-width: 767px) {
+	html[data-viewport^="mobile-"] .s-modal__btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-height: var(--s-size-touch-target-min);
+	}
+}
+
 /* ── Optional-region hidden-state fix ────────────────────────────────────
    Each optional slot region above declares an explicit `display: flex`
    (needed so it lays out correctly when the slot IS present). Modal.ts
