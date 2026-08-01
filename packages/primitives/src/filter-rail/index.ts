@@ -58,6 +58,8 @@ export type {
 } from './types.js';
 export type { DatePickerFactory, RangeSelection } from './range-picker.js';
 export type { FilterGroupSelection } from './filter-group.js';
+export { createFilterChip } from './filter-chip.js';
+export type { FilterChipHandle, FilterChipOptions } from './filter-chip.js';
 
 const DEFAULT_EMPTY_PROMPT = 'Pick a filter below';
 
