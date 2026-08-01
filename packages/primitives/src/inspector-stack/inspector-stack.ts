@@ -44,15 +44,17 @@ const CHEVRON_SVG =
 	'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
 	'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 
-/** 6-dot grab affordance — tokens-only, matches admin density. */
+/** 6-dot grab affordance — matches the notebook middle-column cell drag
+ * handle exactly (14x14, viewBox 24, r1.4) so handles read at one size across
+ * the stream and the inspector. Caitlin 2026-06-07. */
 const GRIP_SVG =
-	'<svg width="12" height="16" viewBox="0 0 12 16" aria-hidden="true" focusable="false">' +
-	'<circle cx="3" cy="3" r="1.2" fill="currentColor"/>' +
-	'<circle cx="9" cy="3" r="1.2" fill="currentColor"/>' +
-	'<circle cx="3" cy="8" r="1.2" fill="currentColor"/>' +
-	'<circle cx="9" cy="8" r="1.2" fill="currentColor"/>' +
-	'<circle cx="3" cy="13" r="1.2" fill="currentColor"/>' +
-	'<circle cx="9" cy="13" r="1.2" fill="currentColor"/>' +
+	'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' +
+	'<circle cx="9" cy="6" r="1.4"/>' +
+	'<circle cx="9" cy="12" r="1.4"/>' +
+	'<circle cx="9" cy="18" r="1.4"/>' +
+	'<circle cx="15" cy="6" r="1.4"/>' +
+	'<circle cx="15" cy="12" r="1.4"/>' +
+	'<circle cx="15" cy="18" r="1.4"/>' +
 	'</svg>';
 
 interface PersistedState {

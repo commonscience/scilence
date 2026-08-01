@@ -14,12 +14,18 @@ export type {
 	FilterGroupSelection,
 	FilterOption,
 	FilterRailConfig,
+	FilterRailFooterAction,
+	FilterRailFooterConfig,
+	FilterRailFooterContext,
+	FilterRailFooterShowWhen,
 	FilterRailHandle,
 	FilterRailSearch,
 	FilterSelection,
 	FilterSelectionMode,
 	RangeConfig,
 	RangeSelection,
+	TagDimension,
+	TagFilterRailConfig,
 } from './filter-rail/index.js';
 
 // ── Card (kanban shell extraction) ──────────────────────────────────────
