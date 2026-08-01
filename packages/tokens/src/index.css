@@ -8,6 +8,8 @@
 
 @import './_fonts.css';
 @import './_palettes.css';
+/* Commons foundation before themes/typography so --s-* can alias into it. */
+@import './_commons-public.css';
 @import './_spacing.css';
 @import './_interactive.css';
 @import './_typography.css';

@@ -1,131 +1,123 @@
 /* scilence — STEAMCO Design System Foundation
    Canonical pan-app tokens (@scilence/tokens). */
 
-/* ===== 12. LIGHT THEME (default) ===== */
+/* ===== 12. LIGHT THEME (default) =====
+   Commons foundation: surfaces, neutrals, and type color alias `--s-commons-*`
+   so GUIDE / Motif / marketing / Commons feel related.
+   Brand teal + status accents stay for interactive/semantic color.
+   Density packing stays on `--s-space-*` / `data-density` — not a second palette. */
 :root,
 :root[data-theme='light'] {
-	/* Calm-UI light substrate — creamscale lightening pass 184715 (2026-05-17).
-	   Re-lightens darker tiers after pass 7 widened contrast; cards stay cream-25.
-	   Canvas/chrome cream-50; subtle/sunken cream-75; adjacent tier L delta ≤ 0.025.
-	   Hierarchy: raised(25) > hover(35) > default(50) > sunken(75). */
-	--s-color-bg-app: var(--s-cream-50);
-	--s-color-bg-page: var(--s-cream-50);
-	--s-color-bg-panel: var(--s-cream-50);
-	--s-color-bg-subtle: var(--s-cream-75);
-	--s-color-bg-surface: var(--s-cream-25);
-	--s-color-bg-titlebar: var(--s-cream-alpha-10);
+	/* Surfaces — Commons calm ground */
+	--s-color-bg-app: var(--s-commons-bg);
+	--s-color-bg-page: var(--s-commons-bg);
+	--s-color-bg-panel: var(--s-commons-bg);
+	--s-color-bg-subtle: var(--s-commons-bg-subtle);
+	--s-color-bg-surface: var(--s-commons-bg);
+	--s-color-bg-titlebar: color-mix(in oklch, var(--s-commons-bg) 92%, transparent);
 
 	/* Borders */
-	--s-color-border-subtle: var(--s-cream-150);
-	--s-color-border-strong: var(--s-cream-200);
+	--s-color-border-subtle: var(--s-commons-border-muted);
+	--s-color-border-strong: var(--s-commons-border);
 
 	/* Text colors */
-	--s-color-fg-primary: var(--s-brand-950);
-	--s-color-fg-muted: var(--s-brand-700);
-	--s-color-fg-soft: var(--s-brand-600);
-	/* "On-color" text — for use on brand-accent or status-color backgrounds.
-	   Paper-white at light theme; same at dark since we want contrast on
-	   filled accent surfaces regardless of theme. Caitlin direct 2026-06-07
-	   (DS sweep — fills the --s-color-fg-oncolor / --s-color-fg-on-warning
-	   gap that 4+ surfaces were silently relying on via defensive fallbacks). */
-	--s-color-fg-oncolor: var(--s-cream-50);
-	--s-color-fg-on-warning: var(--s-cream-50);
+	--s-color-fg-primary: var(--s-commons-fg);
+	--s-color-fg-muted: var(--s-commons-fg-muted);
+	--s-color-fg-soft: var(--s-commons-fg-subtle);
+	/* "On-color" text — for use on brand-accent or status-color backgrounds. */
+	--s-color-fg-oncolor: var(--s-commons-bg);
+	--s-color-fg-on-warning: var(--s-commons-bg);
 
-	/* Surface elevation — cream ground vs cream-tinted raised surfaces.
-	   Elevation-1 uses creamscale-25 (nearly white with hint of warmth). */
-	--s-surface-elevation-0-bg: var(--s-color-bg-app);
-	--s-surface-elevation-1-bg: var(--s-cream-25);
-	--s-surface-elevation-2-bg: var(--s-cream-35);
+	/* Surface elevation — Commons tiers */
+	--s-surface-elevation-0-bg: var(--s-commons-bg);
+	--s-surface-elevation-1-bg: var(--s-commons-bg);
+	--s-surface-elevation-2-bg: var(--s-commons-bg-subtle);
 	--s-color-backdrop-scrim: var(--s-brand-alpha-20);
 
 	/* Material overrides for light theme */
 	--mat-solid-bg: oklch(from var(--s-brand-50) l c h / 0.1);
 
-	/* Accent colors for light theme */
+	/* Accent colors for light theme — keep brand interactive hue */
 	--s-color-accent-quiet: var(--accent-brand-light);
 	--s-color-accent-active: var(--accent-brand-dark);
-	--s-color-accent-foreground: var(--s-brand-25);
+	--s-color-accent-foreground: var(--s-commons-bg);
 
 	/* Secondary accent — complement hue for categorization and info states */
 	--s-color-accent-secondary: var(--s-brand-sec-600);
 	--s-color-accent-secondary-soft: var(--s-brand-sec-500);
 
-	/* Warm focal accent — studio "heat" / playback states (sweep-2 2026-05-12).
-	   Pairs with --accent-luminous-warm defined in _prominent-oncolor.css. */
+	/* Warm focal accent — studio "heat" / playback states */
 	--s-color-accent-warm: var(--accent-luminous-warm);
 	--s-color-accent-luminous-warm-subtle: color-mix(in oklch, var(--accent-luminous-warm) 14%, var(--s-color-bg-surface));
 	--s-color-accent-luminous-cool-subtle: color-mix(in oklch, var(--accent-luminous-cool) 14%, var(--s-color-bg-surface));
 
 	/* Strong/filled surfaces */
 	--s-color-bg-strong: var(--s-color-accent-active);
-	--s-color-fg-on-strong: var(--s-brand-25);
+	--s-color-fg-on-strong: var(--s-commons-bg);
 
-	/* Hover states */
-	--s-color-hover-bg: var(--s-brand-alpha-5);      /* pass 12: green-tone hover per Caitlin direct (matches .tree-item.active) */
-	--s-color-hover-bg-strong: var(--s-cream-75);
-	--s-color-hover-fg: var(--s-brand-900);
-	--s-color-hover-border: var(--s-cream-200);
-	--s-color-hover-accent: oklch(0.32 0.045 var(--brand-hue));
+	/* Hover states — charcoal-adjacent, not cream green-cast */
+	--s-color-hover-bg: color-mix(in oklch, var(--s-commons-fg) 4%, var(--s-commons-bg));
+	--s-color-hover-bg-strong: var(--s-commons-bg-subtle);
+	--s-color-hover-fg: var(--s-commons-fg);
+	--s-color-hover-border: var(--s-commons-border);
+	--s-color-hover-accent: var(--s-commons-link-hover);
 
 	/* Focus states */
 	--s-color-focus-ring: transparent;
-	--s-color-focus-bg: oklch(0.95 0.02 var(--brand-hue));
-	--s-color-focus-border: oklch(0.45 0.12 var(--brand-hue));
+	--s-color-focus-bg: color-mix(in oklch, var(--s-brand-700) 8%, var(--s-commons-bg));
+	--s-color-focus-border: var(--s-brand-700);
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */
-	--s-color-active-bg: var(--s-cream-50);
-	--s-color-active-fg: var(--s-brand-950);
-	--s-color-active-border: var(--s-cream-150);
+	--s-color-active-bg: var(--s-commons-bg-subtle);
+	--s-color-active-fg: var(--s-commons-fg);
+	--s-color-active-border: var(--s-commons-border-muted);
 
-	/* Selected states */
-	--s-color-selected-bg: oklch(0.92 0.03 var(--brand-hue));
-	--s-color-selected-fg: oklch(0.25 0.04 var(--brand-hue));
-	--s-color-selected-border: oklch(0.45 0.1 var(--brand-hue));
+	/* Selected states — quiet brand tint on Commons ground */
+	--s-color-selected-bg: color-mix(in oklch, var(--s-brand-700) 10%, var(--s-commons-bg));
+	--s-color-selected-fg: var(--s-commons-fg);
+	--s-color-selected-border: color-mix(in oklch, var(--s-brand-700) 35%, var(--s-commons-border));
 
 	/* Disabled states */
-	--s-color-disabled-bg: var(--s-cream-35);
-	--s-color-disabled-fg: var(--s-brand-400);
-	--s-color-disabled-border: var(--s-cream-50);
+	--s-color-disabled-bg: var(--s-commons-bg-subtle);
+	--s-color-disabled-fg: var(--s-commons-fg-subtle);
+	--s-color-disabled-border: var(--s-commons-border-muted);
 
 	/* Icon colors */
-	--s-color-fg-icon: var(--s-brand-700);
-	--s-color-fg-icon-muted: var(--s-brand-500);
-	--s-color-fg-icon-hover: var(--s-brand-900);
+	--s-color-fg-icon: var(--s-commons-fg-muted);
+	--s-color-fg-icon-muted: var(--s-commons-fg-subtle);
+	--s-color-fg-icon-hover: var(--s-commons-fg);
 
 	/* Additional semantic tokens */
-	--s-color-fg-heading: var(--s-brand-900);
-	--s-color-fg-code: var(--accent-brand-dark);
-	--s-color-fg-label: var(--s-brand-600);
-	--s-color-bg-card: var(--s-cream-25);            /* pass 7: cards near-white per Caitlin direct */
-	--s-color-bg-footer: var(--s-cream-15);          /* pass 8: warm near-white footer per Caitlin direct */
-	--s-color-bg-card-hover: var(--s-cream-35);
-	--s-color-bg-table-header: var(--s-cream-50);
-	--s-color-bg-table-row-hover: var(--s-cream-35);
+	--s-color-fg-heading: var(--s-commons-fg);
+	--s-color-fg-code: var(--s-commons-link);
+	--s-color-fg-label: var(--s-commons-fg-muted);
+	--s-color-bg-card: var(--s-commons-bg);
+	--s-color-bg-footer: var(--s-commons-bg-subtle);
+	--s-color-bg-card-hover: var(--s-commons-bg-subtle);
+	--s-color-bg-table-header: var(--s-commons-bg-subtle);
+	--s-color-bg-table-row-hover: var(--s-commons-bg-subtle);
 
 	/* Navigation colors */
-	--s-color-nav-hover-bg: var(--s-cream-50);
+	--s-color-nav-hover-bg: var(--s-commons-bg-subtle);
 	--s-color-nav-active-bg: var(--s-color-bg-strong);
 	--s-color-nav-active-fg: var(--s-color-fg-on-strong);
 
-	/* Surface elevation — semantic aliases: lightening pass 184715.
-	   Hierarchy (lightest → darkest): raised > hover > default > sunken.
-	   --s-cream-25 (#fefdfd, L≈0.994) → raised
-	   --s-cream-35 (#fdfcfb, L≈0.990) → hover (between raised and default)
-	   --s-cream-50 (#fbfbf9, L≈0.985) → default (canvas)
-	   --s-cream-75 (#f9f9f6, L≈0.981) → sunken (inset/well)
-	   Adjacent tier L deltas: ~0.004, 0.005, 0.013 (all ≤ 0.025). */
-	--s-color-surface-raised: var(--s-cream-25);
-	--s-color-surface-hover: var(--s-cream-35);
-	--s-color-surface-default: var(--s-cream-50);
-	--s-color-surface-sunken: var(--s-cream-75);
+	/* Surface elevation — semantic aliases */
+	--s-color-surface-raised: var(--s-commons-bg);
+	--s-color-surface-hover: var(--s-commons-bg-subtle);
+	--s-color-surface-default: var(--s-commons-bg);
+	--s-color-surface-sunken: var(--s-commons-bg-inset);
 
 	/* Border semantic alias */
 	--s-color-border-default: var(--s-color-border-strong);
 
-	/* Accent tier — unified to the brand hue (180), least-bright/least-jewel of the two
-	   (2026-05-31, Caitlin): default = brand-700; muted/subtle re-hued + chroma-calmed. */
+	/* Accent tier — brand interactive hue on Commons neutrals */
 	--s-color-accent-default: var(--s-brand-700);
 	--s-color-accent-muted: oklch(0.78 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
-	--s-color-accent-subtle: oklch(0.96 0.03 180);
+	--s-color-accent-subtle: color-mix(in oklch, var(--s-brand-700) 8%, var(--s-commons-bg));
+
+	/* Link semantics — Commons charcoal (public + app relatedness) */
+	--s-color-link: var(--s-commons-link);
+	--s-color-link-hover: var(--s-commons-link-hover);
 }

@@ -1,0 +1,57 @@
+/* scilence — Commons foundation (pan-app)
+   Named `--s-commons-*` tokens are the chromatic / type / calm-surface foundation
+   for ALL STEAMCO surfaces (GUIDE, Commons, marketing, Motif).
+
+   Semantic `--s-color-*` / `--s-font-*` in themes + typography alias into these
+   so the product family looks related. Density remains a separate axis
+   (`data-density`, Fibonacci `--s-space-*`) — instrument tables can pack tight
+   without a second palette.
+
+   Public section rhythm (Study heroes, marketing calm bands) may still use
+   `--s-commons-space-*` directly for looser section gaps.
+
+   Consumers:
+   - `@scilence/tokens` light theme + typography (this package)
+   - steamco-website/commons/css/commons.css (--st-* aliases)
+   - marketing site.css calm adoption
+   - Motif /scilence/build/ shell
+*/
+
+:root {
+	/* Surfaces */
+	--s-commons-bg: oklch(99.2% 0.0015 185);
+	--s-commons-bg-subtle: oklch(97.5% 0.002 185);
+	--s-commons-bg-inset: oklch(95.5% 0.0025 185);
+	--s-commons-border: oklch(87.5% 0.003 185);
+	--s-commons-border-muted: oklch(92.5% 0.0025 185);
+
+	/* Type color */
+	--s-commons-fg: oklch(14% 0.004 185);
+	--s-commons-fg-muted: oklch(42% 0.006 185);
+	--s-commons-fg-subtle: oklch(57% 0.007 185);
+	--s-commons-link: oklch(31% 0.015 185);
+	--s-commons-link-hover: oklch(20% 0.012 185);
+
+	/* Type stacks — Apple-adjacent clarity; mono for data/handles only */
+	--s-commons-font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+	--s-commons-font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+
+	/* Section rhythm (public / calm bands). Instrument UI keeps Fibonacci --s-space-*. */
+	--s-commons-space-1: 4px;
+	--s-commons-space-2: 8px;
+	--s-commons-space-3: 12px;
+	--s-commons-space-4: 16px;
+	--s-commons-space-5: 24px;
+	--s-commons-space-6: 40px;
+	--s-commons-space-7: 56px;
+
+	--s-commons-radius: 10px;
+	--s-commons-radius-sm: 6px;
+	--s-commons-wide: 1200px;
+
+	/* Weights — hierarchy by weight, not decoration */
+	--s-commons-weight-regular: 400;
+	--s-commons-weight-medium: 550;
+	--s-commons-weight-semibold: 600;
+	--s-commons-weight-strong: 650;
+}

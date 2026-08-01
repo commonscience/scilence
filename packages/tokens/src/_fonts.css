@@ -1,4 +1,6 @@
-/* scilence — STEAMCO Design System Foundation
-   Canonical pan-app tokens (@scilence/tokens). */
+/* scilence — optional webfonts
+   Default UI type is the Commons system stack (`--s-commons-font-sans` /
+   `--s-font-sans`). Figtree + IBM Plex Serif remain available for
+   marketing-bridge niches and editorial serif moments — not the pan-app default. */
 
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600&family=IBM+Plex+Serif:wght@400;500;600;700&family=Inconsolata:wght@400;500&display=swap');
