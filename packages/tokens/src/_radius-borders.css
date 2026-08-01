@@ -11,11 +11,12 @@
 	--s-radius-3: calc(var(--s-radius-base) * 2.5);
 	--s-radius-4: calc(var(--s-radius-base) * 3.5);
 	--s-radius-round: 9999px;
-	--s-radius-window: 12px;
+	--s-radius-window: var(--s-commons-radius);
 
-	/* Semantic radius aliases — named tiers for component authoring */
-	--s-radius-sm: var(--s-radius-1);
-	--s-radius-md: var(--s-radius-2);
+	/* Semantic radius aliases — Commons foundation for control chrome;
+	   proportional ladder remains for density-derived atoms. */
+	--s-radius-sm: var(--s-commons-radius-sm);
+	--s-radius-md: var(--s-commons-radius);
 	--s-radius-xl: var(--s-radius-window);
 	--s-radius-full: var(--s-radius-round);
 
