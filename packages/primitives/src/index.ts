@@ -7,9 +7,11 @@
 // First occupant: FilterRail (see Brief 103 — guide-shell-v5-section-state-left-rail.md).
 
 // ── FilterRail (Brief 103) ──────────────────────────────────────────────
-export { createFilterRail } from './filter-rail/index.js';
+export { createFilterRail, createFilterChip } from './filter-rail/index.js';
 export type {
 	DatePickerFactory,
+	FilterChipHandle,
+	FilterChipOptions,
 	FilterGroupConfig,
 	FilterGroupSelection,
 	FilterOption,
