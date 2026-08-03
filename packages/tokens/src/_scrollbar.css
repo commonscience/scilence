@@ -1,0 +1,55 @@
+/* scilence — STEAMCO Design System Foundation
+   Canonical pan-app tokens (@scilence/tokens).
+
+   Thin overlay scrollbars. Tokens follow [data-theme] via existing fg/border
+   purpose colors — light and dark stay aligned without a second palette.
+   Surfaces that intentionally hide the bar keep `scrollbar-width: none` (and
+   matching WebKit display:none); those rules win on specificity over `*`. */
+
+:root,
+:root[data-theme='light'] {
+	--s-scrollbar-size: 6px;
+	/* Gap between thumb and gutter/content edge (--s-space-1 = xs / 3px). */
+	--s-scrollbar-inset: var(--s-space-1);
+	--s-scrollbar-track: transparent;
+	--s-scrollbar-thumb: color-mix(in oklch, var(--s-color-fg-muted) 34%, transparent);
+	--s-scrollbar-thumb-hover: color-mix(in oklch, var(--s-color-fg-muted) 58%, transparent);
+}
+
+:root[data-theme='dark'] {
+	/* Soft paper ink on charcoal — slightly stronger so the thumb reads on
+	   flat elevation without looking OS-chrome grey. */
+	--s-scrollbar-thumb: color-mix(in oklch, var(--s-color-fg-soft) 42%, transparent);
+	--s-scrollbar-thumb-hover: color-mix(in oklch, var(--s-color-fg-muted) 68%, transparent);
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--s-scrollbar-thumb) var(--s-scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+	/* Thumb visual width/height stays --s-scrollbar-size; inset pads both sides. */
+	width: calc(var(--s-scrollbar-size) + (2 * var(--s-scrollbar-inset)));
+	height: calc(var(--s-scrollbar-size) + (2 * var(--s-scrollbar-inset)));
+}
+
+*::-webkit-scrollbar-track {
+	background: var(--s-scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: var(--s-scrollbar-thumb);
+	border-radius: var(--s-radius-full);
+	/* Transparent border insets the thumb from the track edge. */
+	border: var(--s-scrollbar-inset) solid transparent;
+	background-clip: padding-box;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background-color: var(--s-scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-corner {
+	background: transparent;
+}
