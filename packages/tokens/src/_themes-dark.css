@@ -3,30 +3,32 @@
 
 /* ===== 13. DARK THEME ===== */
 :root[data-theme='dark'] {
-	/* Dark-only desaturation — scales the entire brand ramp + derived tokens;
-	   light theme keeps --s-brand-chroma-scale: 0.36 in _palettes.css. */
-	--s-brand-chroma-scale: 0.28;
+	/* Whisper charcoal — dark-only desaturation below light's 0.36 so the
+	   canvas reads brandscale-charcoal, not green void. */
+	--s-brand-chroma-scale: 0.14;
 
-	/* Gentle contrast — flat dark register: one canvas tone; separation via border/fg only. */
-	--s-color-bg-app: var(--s-brand-925);
+	/* Flat charcoal canvas (brand-850 ≈ L.30) — clearly off void, whisper brand.
+	   Separation via border/fg; cards stay on the same register. */
+	--s-color-bg-app: var(--s-brand-850);
 	--s-color-bg-page: var(--s-color-bg-app);
 	--s-color-bg-panel: var(--s-color-bg-app);
 	/* Hairline tints for chips/controls — not card elevation */
-	--s-color-bg-subtle: color-mix(in oklch, var(--s-brand-400) 10%, var(--s-color-bg-app));
-	--s-color-bg-muted: color-mix(in oklch, var(--s-brand-400) 16%, var(--s-color-bg-app));
+	--s-color-bg-subtle: color-mix(in oklch, var(--s-brand-300) 10%, var(--s-color-bg-app));
+	--s-color-bg-muted: color-mix(in oklch, var(--s-brand-300) 16%, var(--s-color-bg-app));
 	--s-color-bg-surface: var(--s-color-bg-app);
 	--s-color-bg-surface-hover: var(--s-color-hover-bg);
 	--s-color-bg-titlebar: var(--s-brand-alpha-30);
 	--s-color-bg-footer: var(--s-color-bg-app);
 
-	/* Borders */
-	--s-color-border-subtle: var(--s-brand-850);
-	--s-color-border-strong: var(--s-brand-700);
+	/* Borders — clear enough to parse chrome on charcoal without loud dividers */
+	--s-color-border-subtle: var(--s-brand-700);
+	--s-color-border-strong: var(--s-brand-500);
 
-	/* Text colors — body one step softer; headings stay brighter */
+	/* Text — soft paper ink (not pure white punch); muted tiers stay readable
+	   on the lifted charcoal ground (metadata / filter counts / soft labels). */
 	--s-color-fg-primary: var(--s-brand-75);
-	--s-color-fg-muted: var(--s-brand-150);
-	--s-color-fg-soft: var(--s-brand-200);
+	--s-color-fg-muted: var(--s-brand-100);
+	--s-color-fg-soft: var(--s-brand-150);
 	/* "On-color" text — same paper-cream for both themes since accent fills
 	   want the same high-contrast text regardless of theme. */
 	--s-color-fg-oncolor: var(--s-cream-50);
@@ -61,41 +63,41 @@
 	--s-color-accent-luminous-warm-subtle: color-mix(in oklch, var(--accent-luminous-warm) 18%, var(--s-color-bg-surface));
 	--s-color-accent-luminous-cool-subtle: color-mix(in oklch, var(--accent-luminous-cool) 18%, var(--s-color-bg-surface));
 
-	/* Strong/filled surfaces */
-	--s-color-bg-strong: var(--s-brand-850);
+	/* Strong/filled surfaces — one step above charcoal canvas */
+	--s-color-bg-strong: var(--s-brand-700);
 	--s-color-fg-on-strong: var(--s-brand-50);
 
-	/* Hover states — one step above elevation-1 (brandscale-925) */
-	--s-color-hover-bg: var(--s-brand-alpha-5);      /* pass 12: green-tone hover per Caitlin direct */
-	--s-color-hover-bg-strong: var(--s-brand-800);
+	/* Hover states — quiet lift on charcoal (not green wash) */
+	--s-color-hover-bg: var(--s-brand-alpha-5);
+	--s-color-hover-bg-strong: var(--s-brand-700);
 	--s-color-hover-fg: var(--s-brand-50);
-	--s-color-hover-border: var(--s-brand-700);
-	--s-color-hover-accent: oklch(0.42 calc(0.05 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-hover-border: var(--s-brand-500);
+	--s-color-hover-accent: oklch(0.48 calc(0.05 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
 	/* Focus states */
 	--s-color-focus-ring: transparent;
-	--s-color-focus-bg: oklch(0.22 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
-	--s-color-focus-border: oklch(0.55 calc(0.10 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-focus-bg: oklch(0.34 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-focus-border: oklch(0.62 calc(0.09 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */
-	--s-color-active-bg: var(--s-brand-850);
+	--s-color-active-bg: var(--s-brand-700);
 	--s-color-active-fg: var(--s-brand-50);
-	--s-color-active-border: var(--s-brand-700);
+	--s-color-active-border: var(--s-brand-500);
 
 	/* Selected states */
-	--s-color-selected-bg: oklch(0.25 calc(0.04 * var(--s-brand-chroma-scale)) var(--brand-hue));
-	--s-color-selected-fg: oklch(0.9 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
-	--s-color-selected-border: oklch(0.5 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-selected-bg: oklch(0.36 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-selected-fg: oklch(0.94 calc(0.02 * var(--s-brand-chroma-scale)) var(--brand-hue));
+	--s-color-selected-border: oklch(0.55 calc(0.06 * var(--s-brand-chroma-scale)) var(--brand-hue));
 
-	/* Disabled states */
+	/* Disabled states — keep readable vs crushed mid-brand */
 	--s-color-disabled-bg: var(--s-color-bg-app);
-	--s-color-disabled-fg: var(--s-brand-600);
-	--s-color-disabled-border: var(--s-brand-850);
+	--s-color-disabled-fg: var(--s-brand-300);
+	--s-color-disabled-border: var(--s-brand-700);
 
 	/* Icon colors */
-	--s-color-fg-icon: var(--s-brand-100);
-	--s-color-fg-icon-muted: var(--s-brand-150);
+	--s-color-fg-icon: var(--s-brand-75);
+	--s-color-fg-icon-muted: var(--s-brand-100);
 	--s-color-fg-icon-hover: var(--s-brand-50);
 
 	/* Override alpha variants for dark theme — chroma tracks --s-brand-chroma-scale */
@@ -115,7 +117,7 @@
 	/* Cards / tables — flat; hover uses alpha overlay not a lighter fill */
 	--s-color-fg-heading: var(--s-brand-50);
 	--s-color-fg-code: var(--accent-brand-light);
-	--s-color-fg-label: var(--s-brand-150);
+	--s-color-fg-label: var(--s-brand-100);
 	--s-color-bg-card: var(--s-color-bg-app);
 	--s-color-bg-card-hover: var(--s-color-hover-bg);
 	--s-color-bg-table-header: var(--s-color-bg-app);
@@ -126,7 +128,7 @@
 	--s-color-nav-active-bg: var(--s-color-bg-strong);
 	--s-color-nav-active-fg: var(--s-color-fg-on-strong);
 
-	/* Dark overrides for surface semantic aliases — flat register */
+	/* Dark overrides for surface semantic aliases — flat charcoal register */
 	--s-color-surface-raised: var(--s-color-bg-app);
-	--s-color-border-default: oklch(0.30 0 0);
+	--s-color-border-default: oklch(0.42 calc(0.02 * var(--s-brand-chroma-scale)) var(--brand-hue));
 }
