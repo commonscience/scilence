@@ -1,7 +1,22 @@
 # Datavis 2D (`@scilence/datavis-2d`)
 
-Two-dimensional data visualization — molecules, sunburst, scatterplot (population deferred to parent Phase 6).
+Shared 2D charts. Provenance and CAS consume the same `createChart`.
 
-**Expected components:** molecule-2D, sunburst, scatterplot.
+**Kinds:** `heatmap` (equal bins), `mosaic` (variable tiles), and `strip`
+(shared time / beeswarm). Densities: `pictogram | rail | portal`.
+GUIDE provenance mounts `strip` on the rail. Mosaic stays in the kit.
 
-**EMPTY — populated in Phase 2** of [scilence-migration-from-guide-shell](../../research/flywheel/handoffs/briefs/scilence-migration-from-guide-shell.md).
+```js
+import { createChart } from "@scilence/datavis-2d";
+
+createChart(host, {
+  kind: "heatmap",
+  density: "rail",
+  data: { rows, cols, cells },
+  selection: { eventId },
+  onHover,
+  onSelect,
+});
+```
+
+GUIDE adapts typed events into `data`. This package does not import notebook types.
