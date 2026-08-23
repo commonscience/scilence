@@ -4,10 +4,10 @@
 /* ===== 8. STATUS COLORS ===== */
 :root {
 	/* Status color components (for manipulation) */
-	--s-status-success-O: 0.58;
+	--s-status-success-O: 0.54; /* 0.58 → 0.54 (2026-08-23): 3.96:1 as text on the light ground, under the 4.5 floor. Now 4.66. */
 	--s-status-success-C: 0.12;
 	--s-status-success-H: 156;
-	--s-status-warning-O: 0.73;
+	--s-status-warning-O: 0.56; /* 0.73 → 0.56 (2026-08-23): 2.39:1 as text on the light ground — the worst in the family. Now 4.64. Deeper amber; Caitlin approved on the swatches. */
 	--s-status-warning-C: 0.12; /* desaturated 0.17→0.12 (2026-05-31, Caitlin: calmer yellow everywhere) */
 	--s-status-warning-H: 74;
 	--s-status-danger-O: 0.56;
@@ -54,4 +54,38 @@
 	--s-color-info-bg: oklch(0.94 0.04 289);
 	--s-color-info-border: oklch(0.62 0.13 289);
 	--s-color-info-fg: oklch(0.32 0.16 289);
+}
+
+/* ===== 8b. STATUS COLORS — DARK ANCHORS =====
+ *
+ * One lightness cannot serve both grounds. Measured 2026-08-23, five of the
+ * eight colour × theme combinations failed the 4.5:1 text floor, and they
+ * failed in BOTH directions — warning was fine in dark and 2.39:1 in light,
+ * while info was fine in light and 1.68:1 in dark:
+ *
+ *            light-now   dark-now        light-new   dark-new
+ *   info       7.94        1.68            7.94        4.57
+ *   success    3.96        3.37            4.66        4.64
+ *   warning    2.39        5.57            4.64        5.57
+ *   danger     5.05        2.64            5.05        4.51
+ *
+ * These are used as `color:` 28 times and as `background:` 32 times, so both
+ * roles matter. The fill role needs no companion change: --s-color-on-* is
+ * derived from the fill's own lightness (_prominent.css) via
+ * clamp(0.15, calc(2.9 - 5 * l), 0.97), which flips the text light or dark as
+ * the anchor moves.
+ *
+ * HUE AND CHROMA ARE UNTOUCHED. Only lightness moves, and only to the nearest
+ * 0.01 that clears 4.5:1 — so the family keeps its identity and the open
+ * question about re-homing the info hue off 289-purple (#386) stays open.
+ *
+ * Same shape as the accent anchors in _themes-{light,dark}.css, and for the
+ * same reason: no single ladder step clears both grounds.
+ *
+ * Gate: scripts/lib/token-contrast.test.mjs. */
+:root[data-theme='dark'] {
+	--s-status-info-O: 0.68;    /* 0.44 → 4.57:1 */
+	--s-status-success-O: 0.66; /* 0.54 → 4.64:1 */
+	--s-status-warning-O: 0.73; /* unchanged from the pre-2026-08-23 value, which was always the DARK-correct one */
+	--s-status-danger-O: 0.74;  /* 0.56 → 4.51:1 */
 }
