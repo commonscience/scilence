@@ -167,17 +167,45 @@ export class Modal implements ModalHandle {
 		}
 	}
 
+	/**
+	 * The CURRENT dismissal policy, read at event time rather than wire time so
+	 * a re-rendered header slot takes effect immediately.
+	 *
+	 * WHY THIS EXISTS. `close` was documented in types.ts as `false` = "no
+	 * dismissal at all" and `'esc-only'` = "ESC works, no X button", and the
+	 * implementation honoured neither: wireScrimClick() and wireCancelEvent()
+	 * were registered unconditionally in the constructor and never consulted
+	 * the option. `close: false` only hid the X — ESC and scrim-click still
+	 * dismissed — and `false` and `'esc-only'` were behaviourally identical.
+	 * A comment claimed ESC was "suppressed via cancel handler swap"; no such
+	 * swap existed anywhere.
+	 *
+	 * That is the wrong way round for the cases the option is for: a modal
+	 * declaring `close: false` is normally one where dismissal loses work or
+	 * abandons a required step.
+	 */
+	private dismissPolicy(): { x: boolean; esc: boolean; scrim: boolean } {
+		const value = this.slots.header?.close ?? true;
+		if (value === false) return { x: false, esc: false, scrim: false };
+		if (value === 'esc-only') return { x: false, esc: true, scrim: false };
+		return { x: true, esc: true, scrim: true };
+	}
+
 	private wireScrimClick(): void {
 		this.element.addEventListener('click', (ev) => {
-			if (ev.target === this.element) {
-				this.close('scrim-click');
-			}
+			if (ev.target !== this.element) return;
+			if (!this.dismissPolicy().scrim) return;
+			this.close('scrim-click');
 		});
 	}
 
 	private wireCancelEvent(): void {
 		this.element.addEventListener('cancel', (ev) => {
+			// Always preventDefault: the native <dialog> ESC would close without
+			// running our reason routing or the body cleanup. Whether we then
+			// close is the policy question.
 			ev.preventDefault();
+			if (!this.dismissPolicy().esc) return;
 			this.close('esc-key');
 		});
 	}
@@ -219,12 +247,10 @@ export class Modal implements ModalHandle {
 			}
 		}
 
-		const closeValue = slot.close ?? true;
-		// `false` = no dismissal at all (no X button, ESC suppressed via cancel handler swap)
-		// `'esc-only'` = no X button but ESC works
-		// `true` / `'always'` = both X button + ESC
-		const showXButton = closeValue !== false && closeValue !== 'esc-only';
-		this.headerCloseBtn.hidden = !showXButton;
+		// Single source of truth for all three dismissal affordances — see
+		// dismissPolicy(). The X button used to be decided here independently,
+		// which is how it stayed correct while ESC and scrim-click did not.
+		this.headerCloseBtn.hidden = !this.dismissPolicy().x;
 	}
 
 	private renderBody(): void {

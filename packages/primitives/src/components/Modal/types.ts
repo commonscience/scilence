@@ -56,8 +56,19 @@ export interface HeaderSlot {
 	title: string;
 	subtitle?: string;
 	actions?: HeaderAction[];
-	/** Close behavior. `true` = show X button + ESC; `false` = no
-	 * dismissal at all; `'esc-only'` = ESC works, no X button. Default true. */
+	/**
+	 * Dismissal policy. Governs all THREE routes -- the X button, ESC, and
+	 * scrim-click -- not just the button.
+	 *
+	 *   `true` / `'always'`  X + ESC + scrim-click   (default)
+	 *   `'esc-only'`         ESC only; no X, no scrim-click
+	 *   `false`              no dismissal at all
+	 *
+	 * This used to describe exactly that and implement none of it: the scrim
+	 * and cancel handlers were wired unconditionally and never read this value,
+	 * so `false` merely hid the X while ESC and scrim-click still dismissed,
+	 * and `false` and `'esc-only'` behaved identically. See Modal.dismissPolicy().
+	 */
 	close?: boolean | 'always' | 'esc-only';
 }
 
