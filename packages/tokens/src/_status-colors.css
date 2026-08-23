@@ -54,6 +54,58 @@
 	--s-color-info-bg: oklch(0.94 0.04 289);
 	--s-color-info-border: oklch(0.62 0.13 289);
 	--s-color-info-fg: oklch(0.32 0.16 289);
+
+	/* ===== status-prefixed aliases — THIS PACKAGE WAS REFERENCING THEM UNDECLARED
+	 *
+	 * The family diverged: the primary colour is --s-color-status-success, and
+	 * the variations are --s-color-success-bg / -fg / -border. Whoever wrote
+	 * _chip.css and _card.css reasonably assumed the variations followed the
+	 * primary, and referenced --s-color-status-success-bg. Nothing declared it.
+	 *
+	 * This was not cosmetic. Rendered in a browser with ONLY scilence loaded —
+	 * no GUIDE admin layer — a success chip came out:
+	 *
+	 *     border-radius: 0px          background: rgba(0, 0, 0, 0)
+	 *     color: rgb(0, 0, 0)         border-color: rgb(0, 0, 0)
+	 *
+	 * A square, transparent, black chip. Every naked var() to an undeclared
+	 * property makes the whole declaration invalid, so the browser drops it.
+	 * The primitives only looked right inside GUIDE, by accident, because
+	 * guide/shell/css/admin-tokens.css:205 happens to declare --s-radius-pill.
+	 *
+	 * An agent that tried createChip once, saw that, and went back to a <span>
+	 * was behaving correctly. This is the most concrete answer to "why does
+	 * nobody use the design system".
+	 *
+	 * Added as ALIASES rather than by rewriting the references, because the
+	 * status- names are referenced from guide/shell too and an alias fixes every
+	 * consumer at once with no chance of missing one. The divergence itself is
+	 * worth consolidating later — one family, one naming rule — but that is a
+	 * rename, not a repair. */
+	--s-color-status-success-bg: var(--s-color-success-bg);
+	--s-color-status-success-fg: var(--s-color-success-fg);
+	--s-color-status-success-border: var(--s-color-success-border);
+	--s-color-status-warning-bg: var(--s-color-warning-bg);
+	--s-color-status-warning-fg: var(--s-color-warning-fg);
+	--s-color-status-warning-border: var(--s-color-warning-border);
+	--s-color-status-danger-bg: var(--s-color-error-bg);
+	--s-color-status-danger-fg: var(--s-color-error-fg);
+	--s-color-status-danger-border: var(--s-color-error-border);
+	--s-color-status-info-bg: var(--s-color-info-bg);
+	--s-color-status-info-fg: var(--s-color-info-fg);
+	--s-color-status-info-border: var(--s-color-info-border);
+
+	/* --s-radius-pill was declared ONLY in guide/shell/css/admin-tokens.css, the
+	 * ADMIN-ONLY layer — while _chip.css and _icon-button.css, which are pan-app
+	 * primitives, reference it. A defensive-fallback sweep had also rewritten
+	 * `var(--s-radius-pill, 9999px)` to the naked form on the doctrine that
+	 * fallbacks are forbidden, removing the safety net for a token this package
+	 * never declared. Declared here, where its consumers live. */
+	--s-radius-pill: var(--s-radius-round);
+
+	/* Referenced by _lens-colors.css and four guide stylesheets; the declared
+	 * name is --s-color-fg-primary. */
+	--s-color-fg-default: var(--s-color-fg-primary);
 }
 
 /* ===== 8b. STATUS COLORS — DARK ANCHORS =====
