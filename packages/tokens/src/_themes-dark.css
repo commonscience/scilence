@@ -90,6 +90,21 @@
 	/* ACCENT ANCHOR (dark) — one ladder step lighter than light so it clears
 	   the charcoal canvas. See the light theme for the contrast measurements. */
 	--s-color-accent: var(--s-brand-400);
+
+	/* ACCENT TEXT (dark). This override was MISSING, and the omission was
+	 * silent: --s-color-accent-default is var(--s-brand-700) in light, and
+	 * with no dark sibling it kept the light value on the charcoal canvas —
+	 * measured 1.77:1, against a 4.5 requirement for text. ~49 declarations
+	 * across notebook-shell, library, rail-chrome, mme, whiteboard,
+	 * similarity-plot, project-new and guide-ai-composer render TEXT in it,
+	 * so every one of them was unreadable in dark theme.
+	 *
+	 * brand-400 measures 4.79:1 on the dark canvas. Same value as the accent
+	 * anchor here, which is correct and not a redundancy: on the dark ground
+	 * the step that clears the non-text floor also clears the text floor, so
+	 * fill and text coincide. They stay separate tokens because in LIGHT they
+	 * do not (brand-500 fill at 3.78 vs brand-700 text at 7.49). */
+	--s-color-accent-default: var(--s-brand-400);
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */
