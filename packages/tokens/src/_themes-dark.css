@@ -86,6 +86,10 @@
 	--s-color-focus-ring: transparent;
 	--s-color-focus-bg: oklch(0.34 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-color-focus-border: oklch(0.62 calc(0.09 * var(--s-brand-chroma-scale)) var(--brand-hue));
+
+	/* ACCENT ANCHOR (dark) — one ladder step lighter than light so it clears
+	   the charcoal canvas. See the light theme for the contrast measurements. */
+	--s-color-accent: var(--s-brand-400);
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */
