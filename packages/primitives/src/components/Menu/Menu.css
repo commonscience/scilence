@@ -2,7 +2,14 @@
  * @scilence/primitives — Menu CSS
  *
  * Sizing is driven by resolved `--s-menu-*` custom properties set on the root
- * by Menu.ts (variant token lookup). Item tones ride per-item data attributes.
+ * by Menu.ts (variant token lookup). Each var() carries the DEFAULT VARIANT
+ * (size 'sm') as its fallback, so the primitive renders correctly when those
+ * runtime properties have not been applied — server-rendered markup, a CSS-only
+ * usage, or a consumer that mounts the markup without Menu.ts. The fallback is
+ * the same token the default variant resolves to, so nothing changes when
+ * Menu.ts HAS run. Added 2026-08-23: without them these five were naked
+ * var() references and the browser dropped font-size, padding, gap and icon
+ * sizing outright. Item tones ride per-item data attributes.
  * Raised-plane chrome (bg + border + shadow) applies only on
  * [data-chrome='surface'] — embedded menus ([data-chrome='bare']) inherit the
  * host popover's surface (shadow carve-out doctrine:
@@ -16,7 +23,7 @@
 	min-width: 180px;
 	padding: var(--s-space-1) 0;
 	font-family: var(--s-font-sans);
-	font-size: var(--s-menu-font-size);
+	font-size: var(--s-menu-font-size, var(--s-menu-size-sm-font-size));
 	color: var(--s-color-fg-primary);
 }
 
@@ -31,9 +38,9 @@
 .s-menu__item {
 	display: flex;
 	align-items: center;
-	gap: var(--s-menu-item-gap);
+	gap: var(--s-menu-item-gap, var(--s-menu-size-sm-item-gap));
 	width: 100%;
-	padding: var(--s-menu-item-padding-block) var(--s-menu-item-padding-inline);
+	padding: var(--s-menu-item-padding-block, var(--s-menu-size-sm-item-padding-block)) var(--s-menu-item-padding-inline, var(--s-menu-size-sm-item-padding-inline));
 	border: none;
 	background: transparent;
 	color: inherit;
@@ -73,8 +80,8 @@
 	align-items: center;
 	justify-content: center;
 	flex-shrink: 0;
-	width: var(--s-menu-icon-size);
-	height: var(--s-menu-icon-size);
+	width: var(--s-menu-icon-size, var(--s-menu-size-sm-icon-size));
+	height: var(--s-menu-icon-size, var(--s-menu-size-sm-icon-size));
 	color: var(--s-color-fg-icon);
 }
 
@@ -116,7 +123,7 @@
 }
 
 .s-menu__header {
-	padding: var(--s-menu-item-padding-block) var(--s-menu-item-padding-inline);
+	padding: var(--s-menu-item-padding-block, var(--s-menu-size-sm-item-padding-block)) var(--s-menu-item-padding-inline, var(--s-menu-size-sm-item-padding-inline));
 	color: var(--s-color-fg-muted);
 	font-size: var(--s-font-size-caption);
 	font-weight: var(--s-font-weight-medium);
