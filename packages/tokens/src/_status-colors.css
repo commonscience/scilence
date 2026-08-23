@@ -140,4 +140,45 @@
 	--s-status-success-O: 0.66; /* 0.54 → 4.64:1 */
 	--s-status-warning-O: 0.73; /* unchanged from the pre-2026-08-23 value, which was always the DARK-correct one */
 	--s-status-danger-O: 0.74;  /* 0.56 → 4.51:1 */
+
+	/* The bg/border/fg VARIATIONS, which had no dark values at all.
+	 *
+	 * Every one of them was light-only, so a success chip on the charcoal
+	 * canvas painted a near-white green surface — a light-mode component
+	 * floating on a dark page. It was invisible as a bug because until today
+	 * nothing outside GUIDE could render these at all (the status-prefixed
+	 * aliases above were undeclared), and GUIDE's own layers supplied
+	 * substitutes.
+	 *
+	 * Derived by search over oklch with scripts/lib/token-contrast.mjs, not by
+	 * eye: hue fixed, bg pinned to a tinted charcoal at L 0.26, fg taking the
+	 * highest chroma ≤ its light chroma that reaches 7:1 IN GAMUT, border the
+	 * lowest lightness that reaches the 3:1 non-text floor. danger and info
+	 * cannot hold their light chroma up here — above L 0.7 at C 0.23/0.16 they
+	 * leave sRGB — so their chroma relaxes to 0.13, which is the ordinary
+	 * dark-theme trade and keeps the hue exactly.
+	 *
+	 *            fg-on-bg      border-on-bg
+	 *   success    12.73           3.08
+	 *   warning     9.73           3.00
+	 *   danger      7.20           3.06
+	 *   info        7.07           3.08
+	 *
+	 * Gate: scripts/lib/token-contrast.test.mjs measures these; it does not
+	 * take the numbers in this comment on faith. */
+	--s-color-success-bg: oklch(0.26 0.02 156);
+	--s-color-success-border: oklch(0.53 0.1 156);
+	--s-color-success-fg: oklch(0.92 0.12 156);
+
+	--s-color-warning-bg: oklch(0.26 0.03 74);
+	--s-color-warning-border: oklch(0.54 0.11 74);
+	--s-color-warning-fg: oklch(0.85 0.12 74);
+
+	--s-color-error-bg: oklch(0.26 0.04 19);
+	--s-color-error-border: oklch(0.56 0.2 19);
+	--s-color-error-fg: oklch(0.77 0.13 19);
+
+	--s-color-info-bg: oklch(0.26 0.04 289);
+	--s-color-info-border: oklch(0.55 0.13 289);
+	--s-color-info-fg: oklch(0.76 0.13 289);
 }
