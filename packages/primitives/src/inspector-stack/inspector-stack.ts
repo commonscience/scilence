@@ -42,7 +42,7 @@ import { createMenu } from '../components/Menu/index.js';
 
 /** Chevron used by the collapse button — matches the notebook widget glyph. */
 const CHEVRON_SVG =
-	'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" ' +
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
 	'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
 	'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 
@@ -210,6 +210,27 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		});
 	}
 
+	/* ── Pointer vs keyboard modality ──────────────────────────────────
+	   Caitlin 2026-08-23: "no focus ring [on click]".
+
+	   `:focus-visible` is supposed to be exactly this rule, and in Chromium it
+	   is — a real mouse click on these buttons already draws nothing (measured).
+	   Safari is more liberal and rings a clicked button, so the stylesheet alone
+	   makes the promise true on one engine and not the other.
+
+	   So the modality is recorded rather than inferred: a pointerdown anywhere in
+	   the stack stamps the root, and any key press clears it. CSS suppresses the
+	   ring only while that stamp is present, which means the keyboard reader
+	   never loses it — including the reader who clicks once and then tabs. */
+	const markPointer = (): void => {
+		root.dataset.pointerFocus = 'true';
+	};
+	const clearPointer = (): void => {
+		delete root.dataset.pointerFocus;
+	};
+	root.addEventListener('pointerdown', markPointer, true);
+	root.addEventListener('keydown', clearPointer, true);
+
 	// ── card overflow menus ───────────────────────────────────────────
 	// One open at a time, tracked here rather than per-card: opening a second
 	// kebab must close the first, and a stack of independently-open popovers is
@@ -269,6 +290,10 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 					// dialog, or re-render this very card, and a popover still open
 					// across that is a popover that outlives its anchor.
 					closeMenus();
+					// Focus has to go SOMEWHERE — it is currently inside a popover that
+					// is being hidden, and focus on a hidden element is focus lost. The
+					// kebab is the anchor, so it gets it back either way; the stamp is
+					// what decides whether that shows as a ring.
 					rec.kebab?.focus();
 					rec.onSelect?.(id, item, event);
 				},
@@ -282,7 +307,11 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		placeMenu(rec);
 		rec.kebab.setAttribute('aria-expanded', 'true');
 		openMenuId = rec.id;
-		rec.menu.focusFirst();
+		// Menu-button practice: opening with the keyboard puts you on the first
+		// row (you have no other way in); opening with a pointer does not, because
+		// you are already pointing at the row you want and a forced roving focus
+		// just paints a ring you did not ask for. Arrow keys still enter the menu.
+		if (root.dataset.pointerFocus !== 'true') rec.menu.focusFirst();
 	}
 
 	// Dismissal — outside pointer, Escape, scroll, resize. Registered once for
