@@ -4,13 +4,16 @@ import { renderMosaicSvg } from "./mosaic.js";
 import { renderStripSvg } from "./strip.js";
 
 const KINDS = new Set(["heatmap", "mosaic", "strip"]);
-const DENSITIES = new Set(["pictogram", "rail", "portal"]);
+const DENSITIES = new Set(["pictogram", "rail", "portal", "band"]);
 
 /**
  * @param {HTMLElement} host
  * @param {{
  *   kind: "heatmap" | "mosaic" | "strip",
- *   density?: "pictogram" | "rail" | "portal",
+ *   density?: "pictogram" | "rail" | "portal" | "band",
+ *   xScale?: "ordinal" | "time",
+ *   width?: number,
+ *   height?: number,
  *   data: object,
  *   selection?: { eventId?: string, cellId?: string },
  *   onHover?: (payload: { eventIds: string[], row: string, col: string } | null) => void,
@@ -45,7 +48,13 @@ export function createChart(host, opts) {
 			kind === "mosaic"
 				? renderMosaicSvg(data, { density, selection })
 				: kind === "strip"
-					? renderStripSvg(data, { density, selection })
+					? renderStripSvg(data, {
+							density,
+							selection,
+							xScale: opts?.xScale,
+							width: opts?.width,
+							height: opts?.height,
+						})
 					: renderHeatmapSvg(data, { density, selection });
 		const svg = wrap.firstElementChild;
 		if (svg) root.appendChild(svg);
