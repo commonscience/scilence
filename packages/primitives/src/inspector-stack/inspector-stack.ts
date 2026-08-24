@@ -380,24 +380,45 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		chevron.className = 'notebook-insp-widget__chevron';
 		chevron.innerHTML = CHEVRON_SVG;
 
-		// Chevron LEADS. Two reasons: it is the disclosure-triangle convention every
-		// collapsible card the reader already uses puts on the left, and it frees the
-		// spot immediately after the title — which is where Caitlin asked a card's own
-		// action to sit ("an expand icon right next to the 'provenance' header word").
-		header.append(chevron, title);
-		head.append(grip, header);
+		/* ── HEAD ANATOMY ─────────────────────────────────────────────────────
+		   Four zones. A reader does five things with a rail card, at very
+		   different rates — read it (nearly always), collapse it, expand it onto
+		   a bigger surface, configure it, reorder it (once, ever) — and the head
+		   is laid out so weight and position track that, rather than giving four
+		   controls the same glyph size and letting the reader sort it out.
 
-		// Inline head actions, between the collapse button and the kebab. They cannot
-		// live INSIDE the header — that is a <button>, and a button inside a button is
-		// invalid and unclickable — so the header shrinks to its content and these sit
-		// alongside it.
-		if (d.actions?.length) {
-			const actions = document.createElement('div');
-			actions.className = 'inspector-stack__actions';
-			actions.dataset.inspectorActions = d.id;
-			for (const el of d.actions) actions.appendChild(el);
-			head.append(actions);
-		}
+		     [grip]  [name + chevron]  ·spacer·  [kebab]  [actions]
+		      drag    identity + state            settings  surface
+
+		   - GRIP, far left. The rarest action, at an edge, because dragging
+		     starts from an edge. Faint at rest.
+		   - NAME + CHEVRON are ONE button, because the chevron describes the
+		     name's state rather than being a separate thing to hunt for. The
+		     chevron TRAILS the name (Caitlin 2026-08-23), which also keeps the
+		     name hard against the grip — the two leftmost things are then the
+		     card's identity and the handle for moving it, with every control
+		     that acts ON the card collected to the right. It is the only head
+		     control lit at full strength always: state is not something a reader
+		     should have to hover to learn.
+		   - KEBAB, inboard right. Settings that belong to this card.
+		   - ACTIONS, far right, LAST. These change which SURFACE the content
+		     lives on, and that corner is already surface-scoped everywhere else
+		     in the app — the portal puts its close button in exactly this spot.
+		     So expand-in-the-rail and close-in-the-portal are the same corner
+		     doing the same job, which is what makes the pair legible without a
+		     label. (Caitlin: the expansion affordance is "to be replaced on the
+		     open modal by the close affordance".)
+
+		   The spacer is an element rather than `margin-left:auto` on whichever
+		   control happens to come first, so the layout does not change shape when
+		   a card declares a kebab but no actions, or the reverse. */
+		header.append(title, chevron);
+
+		const spacer = document.createElement('span');
+		spacer.className = 'inspector-stack__spacer';
+		spacer.setAttribute('aria-hidden', 'true');
+
+		head.append(grip, header, spacer);
 
 		// The kebab is built eagerly (so it holds a stable place in the head row)
 		// but its popover is not — see openMenu. A card without a declared menu
@@ -432,6 +453,17 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 				openMenu(rec);
 			});
 			head.append(kebab);
+		}
+
+		// Appended after the kebab so the surface control holds the outer corner.
+		// They cannot live INSIDE the header — that is a <button>, and a button
+		// nested in a button is invalid and never receives its own clicks.
+		if (d.actions?.length) {
+			const actions = document.createElement('div');
+			actions.className = 'inspector-stack__actions';
+			actions.dataset.inspectorActions = d.id;
+			for (const el of d.actions) actions.appendChild(el);
+			head.append(actions);
 		}
 
 		const body = document.createElement('div');
