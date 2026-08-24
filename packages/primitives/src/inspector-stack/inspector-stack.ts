@@ -380,8 +380,24 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		chevron.className = 'notebook-insp-widget__chevron';
 		chevron.innerHTML = CHEVRON_SVG;
 
-		header.append(title, chevron);
+		// Chevron LEADS. Two reasons: it is the disclosure-triangle convention every
+		// collapsible card the reader already uses puts on the left, and it frees the
+		// spot immediately after the title — which is where Caitlin asked a card's own
+		// action to sit ("an expand icon right next to the 'provenance' header word").
+		header.append(chevron, title);
 		head.append(grip, header);
+
+		// Inline head actions, between the collapse button and the kebab. They cannot
+		// live INSIDE the header — that is a <button>, and a button inside a button is
+		// invalid and unclickable — so the header shrinks to its content and these sit
+		// alongside it.
+		if (d.actions?.length) {
+			const actions = document.createElement('div');
+			actions.className = 'inspector-stack__actions';
+			actions.dataset.inspectorActions = d.id;
+			for (const el of d.actions) actions.appendChild(el);
+			head.append(actions);
+		}
 
 		// The kebab is built eagerly (so it holds a stable place in the head row)
 		// but its popover is not — see openMenu. A card without a declared menu

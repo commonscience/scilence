@@ -54,6 +54,14 @@ export interface InspectorSectionDescriptor {
 	defaultVisible?: boolean;
 	/** Overflow menu for this card's header. Omit for no kebab. */
 	menu?: InspectorSectionMenu;
+	/**
+	 * Buttons placed in the head immediately after the title — a card's own
+	 * primary action (open this in a portal, add one of these). Distinct from
+	 * `menu`: these are the one or two things worth a permanent glyph, where the
+	 * kebab is for everything else. Keep it to one or two, or you have rebuilt
+	 * the toolbar the kebab exists to retire.
+	 */
+	actions?: HTMLElement[];
 }
 
 /** Constructor options for the inspector-stack primitive. */
