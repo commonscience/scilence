@@ -29,6 +29,23 @@ export interface InspectorSectionDescriptor {
 	defaultExpanded?: boolean;
 	/** Initial visibility (only used when there is no persisted entry). */
 	defaultVisible?: boolean;
+	/**
+	 * Give this section an OVERFLOW (kebab) button at the end of its header.
+	 *
+	 * The primitive owns the button — placement, hit area, aria, the fact that
+	 * clicking it does not toggle the card — and nothing else. What the menu
+	 * contains is surface knowledge, so `onOpen` is called with the button as
+	 * the anchor and the surface mounts whatever menu it likes.
+	 */
+	menu?: InspectorSectionMenu;
+}
+
+/** Overflow-button wiring for one section (see `InspectorSectionDescriptor.menu`). */
+export interface InspectorSectionMenu {
+	/** Accessible name. Defaults to `More ${title} options`. */
+	label?: string;
+	/** Invoked on click / Enter with the button, so the surface can anchor to it. */
+	onOpen: (anchor: HTMLButtonElement, event: Event) => void;
 }
 
 /** Constructor options for the inspector-stack primitive. */
@@ -52,8 +69,15 @@ export interface InspectorStackOptions {
 	storage?: InspectorStackStorage;
 	/** Called whenever the section order changes (drag or keyboard reorder). */
 	onReorder?: (order: string[]) => void;
-	/** Called whenever a section's expanded state changes. */
-	onToggle?: (id: string, expanded: boolean) => void;
+	/**
+	 * Called whenever a section's expanded state changes.
+	 *
+	 * `meta.source` separates a reader's own click on the header from a
+	 * programmatic `setExpanded`. A surface that wants to stop fighting the
+	 * reader — re-opening a card they just shut every time the selection
+	 * changes — needs to know which of the two it is looking at.
+	 */
+	onToggle?: (id: string, expanded: boolean, meta: { source: 'user' | 'api' }) => void;
 }
 
 /** Minimal storage shape — pluggable for tests / SSR. */
@@ -82,4 +106,18 @@ export interface InspectorStackHandle {
 	getCardElement(id: string): HTMLElement | null;
 	/** Return the section body host for a given id, or null. */
 	getBodyElement(id: string): HTMLElement | null;
+	/**
+	 * Set a section's PEEK line — one short fact the card keeps saying while it
+	 * is collapsed ("19 events · latest Apr 2016").
+	 *
+	 * Collapsing is only calm if it is cheap to undo, and it is only cheap to
+	 * undo if you can tell from the shut card whether you need it open. Every
+	 * section has the slot (it is also the spacer that pins the chevron to the
+	 * right edge); a section that never calls this simply shows nothing in it.
+	 * The text is retained but not painted while the card is expanded — the
+	 * body is already saying more than the peek could.
+	 */
+	setPeek(id: string, text: string): void;
+	/** Return the section's overflow button, or null when it declared no menu. */
+	getMenuButton(id: string): HTMLButtonElement | null;
 }

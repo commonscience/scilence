@@ -16,11 +16,22 @@
  *               aria-expanded="true"
  *               aria-controls="inspector-stack-body-<surface>-<id>">
  *         <span class="notebook-insp-widget__title">Title</span>
+ *         <span class="inspector-stack__peek" hidden>…peek…</span>   ← opt-in
  *         <span class="notebook-insp-widget__chevron">…chevron…</span>
  *       </button>
+ *       <button class="inspector-stack__kebab" aria-haspopup="menu" …/>  ← opt-in
  *     </div>
  *     <div class="notebook-insp-widget__body" id="…">…body…</div>
  *   </section>
+ *
+ * THREE THINGS IN THE HEADER, AND ONLY THREE (Caitlin 2026-08-23: "expandable
+ * and collapsible cards … a little calmer feeling … the expansion affordance
+ * out in the open — really reducing chrome surface area"). Reorder, expand,
+ * overflow. Expansion is the affordance in the open, and its target is the
+ * whole header button — not the chevron — so the gesture is "click the row",
+ * the way a Claude collapsible reads. Everything else a section wants to offer
+ * goes behind the kebab, which is a sibling of the header button so pressing it
+ * opens a menu instead of also toggling the card.
  *
  * Persistence shape (key `inspector-stack:<surface>:v1`):
  *
@@ -57,6 +68,16 @@ const GRIP_SVG =
 	'<circle cx="15" cy="18" r="1.4"/>' +
 	'</svg>';
 
+/** Vertical ellipsis — the overflow button's glyph. Drawn at the grip's 14x14
+ * on the same 24 viewBox with the same r1.4 dot, so the two ends of the header
+ * row read as one family rather than two icon sets sharing a bar. */
+const KEBAB_SVG =
+	'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' +
+	'<circle cx="12" cy="5" r="1.4"/>' +
+	'<circle cx="12" cy="12" r="1.4"/>' +
+	'<circle cx="12" cy="19" r="1.4"/>' +
+	'</svg>';
+
 interface PersistedState {
 	order?: string[];
 	collapsed?: Record<string, boolean>;
@@ -70,6 +91,8 @@ interface SectionRecord {
 	head: HTMLElement;
 	grip: HTMLButtonElement;
 	header: HTMLButtonElement;
+	peek: HTMLElement | null;
+	menuButton: HTMLButtonElement | null;
 	body: HTMLElement;
 	visible: boolean;
 }
@@ -226,12 +249,56 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		title.className = 'notebook-insp-widget__title';
 		title.textContent = d.title;
 
+		// The PEEK line: what the card keeps saying once it is shut. It lives
+		// inside the header button rather than beside it, because it is a label
+		// for the same target — clicking the fact you are reading should open
+		// the card that fact came from.
+		//
+		// ALWAYS IN FLOW, even for a section that never sets one. It is the
+		// row's spacer as well as its readout, and if it came and went with the
+		// text the chevron would jump left on every expand and right on every
+		// collapse — the one element in the row that must not move, moving,
+		// every time you use it.
+		const peek = document.createElement('span');
+		peek.className = 'inspector-stack__peek';
+		peek.dataset.inspectorPeek = d.id;
+
 		const chevron = document.createElement('span');
 		chevron.className = 'notebook-insp-widget__chevron';
 		chevron.innerHTML = CHEVRON_SVG;
 
-		header.append(title, chevron);
-		head.append(grip, header);
+		header.append(title, peek, chevron);
+
+		// The overflow column is likewise part of the card's GEOMETRY, not of
+		// its menu: a stack whose chevrons do not line up because one section
+		// happens to have a kebab and its neighbour does not reads as a bug.
+		// So the slot is always here and holds the button only when there is
+		// one to hold.
+		const actions = document.createElement('div');
+		actions.className = 'inspector-stack__actions';
+
+		// The button is a SIBLING of the header button, never a child: nesting
+		// it would make every kebab click also toggle the card.
+		let menuButton: HTMLButtonElement | null = null;
+		if (d.menu) {
+			const btn = document.createElement('button');
+			btn.type = 'button';
+			btn.className = 'inspector-stack__kebab';
+			btn.dataset.inspectorMenu = d.id;
+			btn.setAttribute('aria-label', d.menu.label ?? `More ${d.title} options`);
+			btn.setAttribute('aria-haspopup', 'menu');
+			btn.setAttribute('aria-expanded', 'false');
+			btn.title = d.menu.label ?? `More ${d.title} options`;
+			btn.innerHTML = KEBAB_SVG;
+			btn.addEventListener('click', (ev) => {
+				ev.stopPropagation();
+				d.menu?.onOpen(btn, ev);
+			});
+			menuButton = btn;
+			actions.appendChild(btn);
+		}
+
+		head.append(grip, header, actions);
 
 		const body = document.createElement('div');
 		body.className = 'notebook-insp-widget__body';
@@ -249,6 +316,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 			: d.defaultExpanded !== false;
 		card.dataset.collapsed = initialExpanded ? 'false' : 'true';
 		header.setAttribute('aria-expanded', initialExpanded ? 'true' : 'false');
+		syncPeekVisibility(peek, initialExpanded);
 
 		const persistedVisible = persisted.visible ?? {};
 		const visibleInitial = Object.prototype.hasOwnProperty.call(persistedVisible, d.id)
@@ -258,7 +326,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 		header.addEventListener('click', () => {
 			const next = card.dataset.collapsed !== 'false' ? true : false;
-			setExpanded(d.id, next);
+			setExpanded(d.id, next, 'user');
 		});
 
 		// Drag affordances wired further down (need closures over `order`).
@@ -269,9 +337,22 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 			head,
 			grip,
 			header,
+			peek,
+			menuButton,
 			body,
 			visible: visibleInitial,
 		};
+	}
+
+	/**
+	 * The peek is the collapsed card's whole readout, and dead weight the moment
+	 * the body is showing the same thing in full — so an expanded card paints
+	 * none of it. The element itself never leaves the row (it is the spacer that
+	 * pins the chevron to the right edge); only its text does.
+	 */
+	function syncPeekVisibility(peek: HTMLElement | null, expanded: boolean): void {
+		if (!peek) return;
+		peek.dataset.shown = expanded ? 'false' : 'true';
 	}
 
 	// ── ordering ──────────────────────────────────────────────────────
@@ -468,15 +549,34 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	// ── public API ────────────────────────────────────────────────────
-	function setExpanded(id: string, expanded: boolean): void {
+	function setExpanded(id: string, expanded: boolean, source: 'user' | 'api' = 'api'): void {
 		const rec = byId.get(id);
 		if (!rec) return;
 		const current = rec.card.dataset.collapsed !== 'true';
+		// Early return on a no-op change is load-bearing, not an optimisation:
+		// re-asserting the state a card is already in would churn the attribute
+		// a repaint-in-place caller is measured on.
 		if (current === expanded) return;
 		rec.card.dataset.collapsed = expanded ? 'false' : 'true';
 		rec.header.setAttribute('aria-expanded', expanded ? 'true' : 'false');
+		syncPeekVisibility(rec.peek, expanded);
 		persist();
-		onToggle?.(id, expanded);
+		onToggle?.(id, expanded, { source });
+	}
+
+	function setPeek(id: string, text: string): void {
+		const rec = byId.get(id);
+		if (!rec?.peek) return;
+		const next = String(text ?? '');
+		// Idempotent: a surface that recomputes the same line on every context
+		// event must not churn the node a repaint-in-place run is measured on.
+		if (rec.peek.textContent === next) return;
+		rec.peek.textContent = next;
+		rec.peek.title = next;
+	}
+
+	function getMenuButton(id: string): HTMLButtonElement | null {
+		return byId.get(id)?.menuButton ?? null;
 	}
 
 	function setVisible(id: string, visible: boolean): void {
@@ -530,5 +630,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		setOrder,
 		getCardElement,
 		getBodyElement,
+		setPeek,
+		getMenuButton,
 	};
 }
