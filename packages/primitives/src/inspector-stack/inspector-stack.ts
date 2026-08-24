@@ -37,6 +37,8 @@ import type {
 	InspectorStackOptions,
 	InspectorStackStorage,
 } from './types.js';
+import type { MenuEntry, MenuHandle, MenuItemDescriptor } from '../components/Menu/types.js';
+import { createMenu } from '../components/Menu/index.js';
 
 /** Chevron used by the collapse button — matches the notebook widget glyph. */
 const CHEVRON_SVG =
@@ -57,6 +59,15 @@ const GRIP_SVG =
 	'<circle cx="15" cy="18" r="1.4"/>' +
 	'</svg>';
 
+/** Vertical ellipsis — the overflow affordance, at the grip's optical weight
+ * (14x14, viewBox 24, r1.4) so head-row glyphs read as one family. */
+const KEBAB_SVG =
+	'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' +
+	'<circle cx="12" cy="5" r="1.4"/>' +
+	'<circle cx="12" cy="12" r="1.4"/>' +
+	'<circle cx="12" cy="19" r="1.4"/>' +
+	'</svg>';
+
 interface PersistedState {
 	order?: string[];
 	collapsed?: Record<string, boolean>;
@@ -72,6 +83,16 @@ interface SectionRecord {
 	header: HTMLButtonElement;
 	body: HTMLElement;
 	visible: boolean;
+	/** Kebab button, when the descriptor declared a menu. */
+	kebab: HTMLButtonElement | null;
+	/** Menu handle, built lazily on first open. */
+	menu: MenuHandle | null;
+	/** Popover host, built lazily alongside the menu. */
+	pop: HTMLElement | null;
+	/** Latest entries — held so a pre-open `setMenuEntries` still applies. */
+	entries: MenuEntry[];
+	onSelect: ((id: string, item: MenuItemDescriptor, event: Event) => void) | null;
+	menuLabel: string;
 }
 
 /** Default no-throw localStorage adapter. */
@@ -189,6 +210,106 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		});
 	}
 
+	// ── card overflow menus ───────────────────────────────────────────
+	// One open at a time, tracked here rather than per-card: opening a second
+	// kebab must close the first, and a stack of independently-open popovers is
+	// exactly the chrome this control exists to avoid.
+	let openMenuId: string | null = null;
+
+	/** Close whichever card menu is open. Safe to call when none is. */
+	function closeMenus(): void {
+		if (openMenuId == null) return;
+		const rec = byId.get(openMenuId);
+		openMenuId = null;
+		if (!rec) return;
+		if (rec.pop) rec.pop.hidden = true;
+		rec.kebab?.setAttribute('aria-expanded', 'false');
+	}
+
+	/**
+	 * Position the popover under its kebab, in viewport coordinates.
+	 *
+	 * `position: fixed` against the button's own rect, NOT an absolute child of
+	 * the card: the card sets `overflow: hidden` to keep its segment edges
+	 * square, and each module body is its own scroll region — an in-flow popover
+	 * gets clipped by one or the other. Flipped above the button when there is
+	 * more room there, so a card near the rail's foot still shows its menu.
+	 */
+	function placeMenu(rec: SectionRecord): void {
+		if (!rec.pop || !rec.kebab) return;
+		const r = rec.kebab.getBoundingClientRect();
+		rec.pop.style.visibility = 'hidden';
+		rec.pop.hidden = false;
+		const h = rec.pop.offsetHeight;
+		const w = rec.pop.offsetWidth;
+		const below = window.innerHeight - r.bottom;
+		const top = below < h + 8 && r.top > below ? Math.max(8, r.top - h - 4) : r.bottom + 4;
+		// Right-align to the button, then pull back inside the viewport.
+		const left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8));
+		rec.pop.style.top = `${Math.round(top)}px`;
+		rec.pop.style.left = `${Math.round(left)}px`;
+		rec.pop.style.visibility = '';
+	}
+
+	/** Build the popover + menu on first open, then show it. */
+	function openMenu(rec: SectionRecord): void {
+		if (!rec.kebab) return;
+		closeMenus();
+		if (!rec.menu) {
+			const pop = document.createElement('div');
+			pop.className = 'inspector-stack__menu-pop';
+			pop.dataset.inspectorMenuPop = rec.id;
+			pop.hidden = true;
+			const menu = createMenu({
+				entries: rec.entries,
+				ariaLabel: rec.menuLabel,
+				variants: { size: 'sm', chrome: 'surface' },
+				onSelect: (id, item, event) => {
+					// Close BEFORE the consumer's handler: it may move focus, open a
+					// dialog, or re-render this very card, and a popover still open
+					// across that is a popover that outlives its anchor.
+					closeMenus();
+					rec.kebab?.focus();
+					rec.onSelect?.(id, item, event);
+				},
+			});
+			pop.appendChild(menu.render());
+			document.body.appendChild(pop);
+			rec.pop = pop;
+			rec.menu = menu;
+		}
+		rec.menu.setEntries(rec.entries);
+		placeMenu(rec);
+		rec.kebab.setAttribute('aria-expanded', 'true');
+		openMenuId = rec.id;
+		rec.menu.focusFirst();
+	}
+
+	// Dismissal — outside pointer, Escape, scroll, resize. Registered once for
+	// the whole stack rather than per-card, and only consulted while something
+	// is open.
+	const onDocPointerDown = (e: Event): void => {
+		if (openMenuId == null) return;
+		const rec = byId.get(openMenuId);
+		const t = e.target as Node | null;
+		if (!rec || !t) return closeMenus();
+		if (rec.pop?.contains(t) || rec.kebab?.contains(t)) return;
+		closeMenus();
+	};
+	const onDocKeyDown = (e: KeyboardEvent): void => {
+		if (openMenuId == null || e.key !== 'Escape') return;
+		const rec = byId.get(openMenuId);
+		e.stopPropagation();
+		closeMenus();
+		rec?.kebab?.focus();
+	};
+	const onViewportShift = (): void => closeMenus();
+	document.addEventListener('pointerdown', onDocPointerDown, true);
+	document.addEventListener('keydown', onDocKeyDown, true);
+	window.addEventListener('resize', onViewportShift);
+	// Capture phase so a scroll in ANY ancestor scroller counts, not just window.
+	document.addEventListener('scroll', onViewportShift, true);
+
 	// ── build sections ────────────────────────────────────────────────
 	const byId = new Map<string, SectionRecord>();
 	for (const d of descriptors) {
@@ -233,6 +354,41 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		header.append(title, chevron);
 		head.append(grip, header);
 
+		// The kebab is built eagerly (so it holds a stable place in the head row)
+		// but its popover is not — see openMenu. A card without a declared menu
+		// gets no button at all rather than a disabled one.
+		let kebab: HTMLButtonElement | null = null;
+		if (d.menu) {
+			kebab = document.createElement('button');
+			kebab.type = 'button';
+			kebab.className = 'inspector-stack__kebab';
+			kebab.dataset.inspectorKebab = d.id;
+			kebab.setAttribute('aria-haspopup', 'menu');
+			kebab.setAttribute('aria-expanded', 'false');
+			kebab.setAttribute('aria-label', `${d.title} options`);
+			kebab.title = `${d.title} options`;
+			kebab.innerHTML = KEBAB_SVG;
+			kebab.addEventListener('click', (e) => {
+				e.preventDefault();
+				// NOT for the collapse header — that is a SIBLING in the head row, so
+				// this click never reaches it however far it bubbles. (An earlier
+				// comment here claimed otherwise; the test written to prove it could
+				// not be made to fail, which is how the claim was caught.) It is here
+				// so a surface that later puts a click handler on the card or the head
+				// — select-on-click, focus-on-click — does not fire it when the reader
+				// only reached for this card's options.
+				e.stopPropagation();
+				const rec = byId.get(d.id);
+				if (!rec) return;
+				if (openMenuId === d.id) {
+					closeMenus();
+					return;
+				}
+				openMenu(rec);
+			});
+			head.append(kebab);
+		}
+
 		const body = document.createElement('div');
 		body.className = 'notebook-insp-widget__body';
 		body.id = bodyId;
@@ -271,6 +427,12 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 			header,
 			body,
 			visible: visibleInitial,
+			kebab,
+			menu: null,
+			pop: null,
+			entries: d.menu?.entries ?? [],
+			onSelect: d.menu?.onSelect ?? null,
+			menuLabel: d.menu?.ariaLabel ?? `${d.title} options`,
 		};
 	}
 
@@ -282,6 +444,8 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	function renderOrder(): void {
+		// The popover is positioned against a rect that is about to move.
+		closeMenus();
 		for (const id of order) {
 			const rec = byId.get(id);
 			if (rec) root.appendChild(rec.card);
@@ -469,6 +633,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	// ── public API ────────────────────────────────────────────────────
 	function setExpanded(id: string, expanded: boolean): void {
+		if (!expanded && openMenuId === id) closeMenus();
 		const rec = byId.get(id);
 		if (!rec) return;
 		const current = rec.card.dataset.collapsed !== 'true';
@@ -530,5 +695,13 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		setOrder,
 		getCardElement,
 		getBodyElement,
+		setMenuEntries(id, entries) {
+			const rec = byId.get(id);
+			if (!rec || !rec.kebab) return;
+			rec.entries = entries;
+			// Only push into a live menu; a closed one re-reads on next open.
+			if (rec.menu && openMenuId === id) rec.menu.setEntries(entries);
+		},
+		closeMenus,
 	};
 }

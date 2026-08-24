@@ -9,8 +9,31 @@
  * (see brief library-inspector-section-stack.md).
  */
 
+import type { MenuEntry, MenuItemDescriptor } from '../components/Menu/types.js';
+
 /** Optional render hook used when `body` is not provided up front. */
 export type InspectorSectionRender = (host: HTMLElement) => void;
+
+/**
+ * A card's overflow menu — the kebab in its header.
+ *
+ * This exists so a section's OPTIONS stop competing with its CONTENT. A view
+ * switcher rendered inline is a permanent control the reader must read past on
+ * every glance, even though they set it once and never touch it again. Behind a
+ * kebab it costs one glyph that only resolves on approach.
+ *
+ * The primitive owns the button, the popover, dismissal and focus return; the
+ * consumer owns the entries and what selecting one does. Entries are re-settable
+ * via `setMenuEntries` so a consumer can move the `active` mark after a choice.
+ */
+export interface InspectorSectionMenu {
+	/** Rows for the menu, in order. Mark the current choice with `active: true`. */
+	entries: MenuEntry[];
+	/** Called on activation of an enabled item. The popover closes first. */
+	onSelect: (id: string, item: MenuItemDescriptor, event: Event) => void;
+	/** Accessible name for the menu. Defaults to `<title> options`. */
+	ariaLabel?: string;
+}
 
 /**
  * Section descriptor passed into the primitive. One of `body` / `render`
@@ -29,6 +52,8 @@ export interface InspectorSectionDescriptor {
 	defaultExpanded?: boolean;
 	/** Initial visibility (only used when there is no persisted entry). */
 	defaultVisible?: boolean;
+	/** Overflow menu for this card's header. Omit for no kebab. */
+	menu?: InspectorSectionMenu;
 }
 
 /** Constructor options for the inspector-stack primitive. */
@@ -82,4 +107,12 @@ export interface InspectorStackHandle {
 	getCardElement(id: string): HTMLElement | null;
 	/** Return the section body host for a given id, or null. */
 	getBodyElement(id: string): HTMLElement | null;
+	/**
+	 * Replace a card's overflow-menu entries. No-op for an unknown id or a card
+	 * declared without a `menu`. Use it to move the `active` mark after a choice
+	 * rather than rebuilding the stack.
+	 */
+	setMenuEntries(id: string, entries: MenuEntry[]): void;
+	/** Close any open card menu. Called on reorder, and safe to call anytime. */
+	closeMenus(): void;
 }
