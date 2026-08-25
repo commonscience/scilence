@@ -2,6 +2,21 @@
 
 Foundation design tokens for all STEAMCO products. These are the canonical source of truth — all product-specific token files (admin-tokens.css, site.css) should derive from or align with these values.
 
+## Not only tokens: one base reset
+
+`_reset.css` is the single file here that declares a RULE rather than custom
+properties, and the barrel imports it first. It contains
+`[hidden] { display: none !important }`, because the user-agent's own
+`[hidden] { display: none }` is an attribute selector that loses to any author
+class setting a display value — so `el.hidden = true` silently leaves flex and
+grid elements painted, and every consumer otherwise re-states the guarantee (or
+ships the defect; the GUIDE shell shipped it five times).
+
+The bar for anything else landing in that file is stated in the file itself and
+is deliberately narrow: a rule earns a place only where the platform's own
+behaviour is losing to author CSS by construction. This is not a normalize
+sheet and the design system does not want one.
+
 ## Token Categories
 
 | File | Contents |

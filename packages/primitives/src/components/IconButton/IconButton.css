@@ -94,7 +94,3 @@
 	text-align: center;
 	pointer-events: none;
 }
-
-.s-icon-button__badge[hidden] {
-	display: none;
-}
