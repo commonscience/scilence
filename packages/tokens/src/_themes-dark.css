@@ -59,7 +59,15 @@
 
 	/* Warm focal accent — studio "heat" / playback states (sweep-2 2026-05-12).
 	   Pairs with --accent-luminous-warm defined in _prominent-oncolor.css. */
-	--s-color-accent-warm: var(--accent-luminous-warm);
+	/* Stale/attention semantic, split by USAGE — Caitlin 2026-08-22.
+	   A wash is this colour at 4-15% over cream, so chroma survives dilution and
+	   still reads; a solid is it at 100%, where low chroma goes muddy rather than
+	   calm. One number cannot be right for both, so solid and wash are separate
+	   values rather than a compromise between them. Deliberately NOT derived from
+	   --accent-luminous-warm: that is the loud focal-point/ligand value and stays
+	   at 0.18. Ink on a wash uses the SOLID value so text keeps its contrast. */
+	--s-color-accent-warm: oklch(0.72 0.12 35);
+	--s-color-accent-warm-wash: oklch(0.72 0.09 35);
 	--s-color-accent-luminous-warm-subtle: color-mix(in oklch, var(--accent-luminous-warm) 18%, var(--s-color-bg-surface));
 	--s-color-accent-luminous-cool-subtle: color-mix(in oklch, var(--accent-luminous-cool) 18%, var(--s-color-bg-surface));
 
@@ -78,6 +86,25 @@
 	--s-color-focus-ring: transparent;
 	--s-color-focus-bg: oklch(0.34 calc(0.03 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-color-focus-border: oklch(0.62 calc(0.09 * var(--s-brand-chroma-scale)) var(--brand-hue));
+
+	/* ACCENT ANCHOR (dark) — one ladder step lighter than light so it clears
+	   the charcoal canvas. See the light theme for the contrast measurements. */
+	--s-color-accent: var(--s-brand-400);
+
+	/* ACCENT TEXT (dark). This override was MISSING, and the omission was
+	 * silent: --s-color-accent-default is var(--s-brand-700) in light, and
+	 * with no dark sibling it kept the light value on the charcoal canvas —
+	 * measured 1.77:1, against a 4.5 requirement for text. ~49 declarations
+	 * across notebook-shell, library, rail-chrome, mme, whiteboard,
+	 * similarity-plot, project-new and guide-ai-composer render TEXT in it,
+	 * so every one of them was unreadable in dark theme.
+	 *
+	 * brand-400 measures 4.79:1 on the dark canvas. Same value as the accent
+	 * anchor here, which is correct and not a redundancy: on the dark ground
+	 * the step that clears the non-text floor also clears the text floor, so
+	 * fill and text coincide. They stay separate tokens because in LIGHT they
+	 * do not (brand-500 fill at 3.78 vs brand-700 text at 7.49). */
+	--s-color-accent-default: var(--s-brand-400);
 	--s-color-focus-glow: transparent;
 
 	/* Active/Pressed states */

@@ -4,10 +4,10 @@
 /* ===== 8. STATUS COLORS ===== */
 :root {
 	/* Status color components (for manipulation) */
-	--s-status-success-O: 0.58;
+	--s-status-success-O: 0.54; /* 0.58 → 0.54 (2026-08-23): 3.96:1 as text on the light ground, under the 4.5 floor. Now 4.66. */
 	--s-status-success-C: 0.12;
 	--s-status-success-H: 156;
-	--s-status-warning-O: 0.73;
+	--s-status-warning-O: 0.56; /* 0.73 → 0.56 (2026-08-23): 2.39:1 as text on the light ground — the worst in the family. Now 4.64. Deeper amber; Caitlin approved on the swatches. */
 	--s-status-warning-C: 0.12; /* desaturated 0.17→0.12 (2026-05-31, Caitlin: calmer yellow everywhere) */
 	--s-status-warning-H: 74;
 	--s-status-danger-O: 0.56;
@@ -54,4 +54,131 @@
 	--s-color-info-bg: oklch(0.94 0.04 289);
 	--s-color-info-border: oklch(0.62 0.13 289);
 	--s-color-info-fg: oklch(0.32 0.16 289);
+
+	/* ===== status-prefixed aliases — THIS PACKAGE WAS REFERENCING THEM UNDECLARED
+	 *
+	 * The family diverged: the primary colour is --s-color-status-success, and
+	 * the variations are --s-color-success-bg / -fg / -border. Whoever wrote
+	 * _chip.css and _card.css reasonably assumed the variations followed the
+	 * primary, and referenced --s-color-status-success-bg. Nothing declared it.
+	 *
+	 * This was not cosmetic. Rendered in a browser with ONLY scilence loaded —
+	 * no GUIDE admin layer — a success chip came out:
+	 *
+	 *     border-radius: 0px          background: rgba(0, 0, 0, 0)
+	 *     color: rgb(0, 0, 0)         border-color: rgb(0, 0, 0)
+	 *
+	 * A square, transparent, black chip. Every naked var() to an undeclared
+	 * property makes the whole declaration invalid, so the browser drops it.
+	 * The primitives only looked right inside GUIDE, by accident, because
+	 * guide/shell/css/admin-tokens.css:205 happens to declare --s-radius-pill.
+	 *
+	 * An agent that tried createChip once, saw that, and went back to a <span>
+	 * was behaving correctly. This is the most concrete answer to "why does
+	 * nobody use the design system".
+	 *
+	 * Added as ALIASES rather than by rewriting the references, because the
+	 * status- names are referenced from guide/shell too and an alias fixes every
+	 * consumer at once with no chance of missing one. The divergence itself is
+	 * worth consolidating later — one family, one naming rule — but that is a
+	 * rename, not a repair. */
+	--s-color-status-success-bg: var(--s-color-success-bg);
+	--s-color-status-success-fg: var(--s-color-success-fg);
+	--s-color-status-success-border: var(--s-color-success-border);
+	--s-color-status-warning-bg: var(--s-color-warning-bg);
+	--s-color-status-warning-fg: var(--s-color-warning-fg);
+	--s-color-status-warning-border: var(--s-color-warning-border);
+	--s-color-status-danger-bg: var(--s-color-error-bg);
+	--s-color-status-danger-fg: var(--s-color-error-fg);
+	--s-color-status-danger-border: var(--s-color-error-border);
+	--s-color-status-info-bg: var(--s-color-info-bg);
+	--s-color-status-info-fg: var(--s-color-info-fg);
+	--s-color-status-info-border: var(--s-color-info-border);
+
+	/* --s-radius-pill was declared ONLY in guide/shell/css/admin-tokens.css, the
+	 * ADMIN-ONLY layer — while _chip.css and _icon-button.css, which are pan-app
+	 * primitives, reference it. A defensive-fallback sweep had also rewritten
+	 * `var(--s-radius-pill, 9999px)` to the naked form on the doctrine that
+	 * fallbacks are forbidden, removing the safety net for a token this package
+	 * never declared. Declared here, where its consumers live. */
+	--s-radius-pill: var(--s-radius-round);
+
+	/* Referenced by _lens-colors.css and four guide stylesheets; the declared
+	 * name is --s-color-fg-primary. */
+	--s-color-fg-default: var(--s-color-fg-primary);
+}
+
+/* ===== 8b. STATUS COLORS — DARK ANCHORS =====
+ *
+ * One lightness cannot serve both grounds. Measured 2026-08-23, five of the
+ * eight colour × theme combinations failed the 4.5:1 text floor, and they
+ * failed in BOTH directions — warning was fine in dark and 2.39:1 in light,
+ * while info was fine in light and 1.68:1 in dark:
+ *
+ *            light-now   dark-now        light-new   dark-new
+ *   info       7.94        1.68            7.94        4.57
+ *   success    3.96        3.37            4.66        4.64
+ *   warning    2.39        5.57            4.64        5.57
+ *   danger     5.05        2.64            5.05        4.51
+ *
+ * These are used as `color:` 28 times and as `background:` 32 times, so both
+ * roles matter. The fill role needs no companion change: --s-color-on-* is
+ * derived from the fill's own lightness (_prominent.css) via
+ * clamp(0.15, calc(2.9 - 5 * l), 0.97), which flips the text light or dark as
+ * the anchor moves.
+ *
+ * HUE AND CHROMA ARE UNTOUCHED. Only lightness moves, and only to the nearest
+ * 0.01 that clears 4.5:1 — so the family keeps its identity and the open
+ * question about re-homing the info hue off 289-purple (#386) stays open.
+ *
+ * Same shape as the accent anchors in _themes-{light,dark}.css, and for the
+ * same reason: no single ladder step clears both grounds.
+ *
+ * Gate: scripts/lib/token-contrast.test.mjs. */
+:root[data-theme='dark'] {
+	--s-status-info-O: 0.68;    /* 0.44 → 4.57:1 */
+	--s-status-success-O: 0.66; /* 0.54 → 4.64:1 */
+	--s-status-warning-O: 0.73; /* unchanged from the pre-2026-08-23 value, which was always the DARK-correct one */
+	--s-status-danger-O: 0.74;  /* 0.56 → 4.51:1 */
+
+	/* The bg/border/fg VARIATIONS, which had no dark values at all.
+	 *
+	 * Every one of them was light-only, so a success chip on the charcoal
+	 * canvas painted a near-white green surface — a light-mode component
+	 * floating on a dark page. It was invisible as a bug because until today
+	 * nothing outside GUIDE could render these at all (the status-prefixed
+	 * aliases above were undeclared), and GUIDE's own layers supplied
+	 * substitutes.
+	 *
+	 * Derived by search over oklch with scripts/lib/token-contrast.mjs, not by
+	 * eye: hue fixed, bg pinned to a tinted charcoal at L 0.26, fg taking the
+	 * highest chroma ≤ its light chroma that reaches 7:1 IN GAMUT, border the
+	 * lowest lightness that reaches the 3:1 non-text floor. danger and info
+	 * cannot hold their light chroma up here — above L 0.7 at C 0.23/0.16 they
+	 * leave sRGB — so their chroma relaxes to 0.13, which is the ordinary
+	 * dark-theme trade and keeps the hue exactly.
+	 *
+	 *            fg-on-bg      border-on-bg
+	 *   success    12.73           3.08
+	 *   warning     9.73           3.00
+	 *   danger      7.20           3.06
+	 *   info        7.07           3.08
+	 *
+	 * Gate: scripts/lib/token-contrast.test.mjs measures these; it does not
+	 * take the numbers in this comment on faith. */
+	--s-color-success-bg: oklch(0.26 0.02 156);
+	--s-color-success-border: oklch(0.53 0.1 156);
+	--s-color-success-fg: oklch(0.92 0.12 156);
+
+	--s-color-warning-bg: oklch(0.26 0.03 74);
+	--s-color-warning-border: oklch(0.54 0.11 74);
+	--s-color-warning-fg: oklch(0.85 0.12 74);
+
+	--s-color-error-bg: oklch(0.26 0.04 19);
+	--s-color-error-border: oklch(0.56 0.2 19);
+	--s-color-error-fg: oklch(0.77 0.13 19);
+
+	--s-color-info-bg: oklch(0.26 0.04 289);
+	--s-color-info-border: oklch(0.55 0.13 289);
+	--s-color-info-fg: oklch(0.76 0.13 289);
 }

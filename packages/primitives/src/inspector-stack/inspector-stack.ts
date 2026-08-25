@@ -37,10 +37,12 @@ import type {
 	InspectorStackOptions,
 	InspectorStackStorage,
 } from './types.js';
+import type { MenuEntry, MenuHandle, MenuItemDescriptor } from '../components/Menu/types.js';
+import { createMenu } from '../components/Menu/index.js';
 
 /** Chevron used by the collapse button — matches the notebook widget glyph. */
 const CHEVRON_SVG =
-	'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" ' +
+	'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" ' +
 	'stroke="currentColor" stroke-width="2.5" stroke-linecap="round" ' +
 	'stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
 
@@ -55,6 +57,15 @@ const GRIP_SVG =
 	'<circle cx="15" cy="6" r="1.4"/>' +
 	'<circle cx="15" cy="12" r="1.4"/>' +
 	'<circle cx="15" cy="18" r="1.4"/>' +
+	'</svg>';
+
+/** Vertical ellipsis — the overflow affordance, at the grip's optical weight
+ * (14x14, viewBox 24, r1.4) so head-row glyphs read as one family. */
+const KEBAB_SVG =
+	'<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">' +
+	'<circle cx="12" cy="5" r="1.4"/>' +
+	'<circle cx="12" cy="12" r="1.4"/>' +
+	'<circle cx="12" cy="19" r="1.4"/>' +
 	'</svg>';
 
 interface PersistedState {
@@ -72,6 +83,16 @@ interface SectionRecord {
 	header: HTMLButtonElement;
 	body: HTMLElement;
 	visible: boolean;
+	/** Kebab button, when the descriptor declared a menu. */
+	kebab: HTMLButtonElement | null;
+	/** Menu handle, built lazily on first open. */
+	menu: MenuHandle | null;
+	/** Popover host, built lazily alongside the menu. */
+	pop: HTMLElement | null;
+	/** Latest entries — held so a pre-open `setMenuEntries` still applies. */
+	entries: MenuEntry[];
+	onSelect: ((id: string, item: MenuItemDescriptor, event: Event) => void) | null;
+	menuLabel: string;
 }
 
 /** Default no-throw localStorage adapter. */
@@ -189,6 +210,135 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		});
 	}
 
+	/* ── Pointer vs keyboard modality ──────────────────────────────────
+	   Caitlin 2026-08-23: "no focus ring [on click]".
+
+	   `:focus-visible` is supposed to be exactly this rule, and in Chromium it
+	   is — a real mouse click on these buttons already draws nothing (measured).
+	   Safari is more liberal and rings a clicked button, so the stylesheet alone
+	   makes the promise true on one engine and not the other.
+
+	   So the modality is recorded rather than inferred: a pointerdown anywhere in
+	   the stack stamps the root, and any key press clears it. CSS suppresses the
+	   ring only while that stamp is present, which means the keyboard reader
+	   never loses it — including the reader who clicks once and then tabs. */
+	const markPointer = (): void => {
+		root.dataset.pointerFocus = 'true';
+	};
+	const clearPointer = (): void => {
+		delete root.dataset.pointerFocus;
+	};
+	root.addEventListener('pointerdown', markPointer, true);
+	root.addEventListener('keydown', clearPointer, true);
+
+	// ── card overflow menus ───────────────────────────────────────────
+	// One open at a time, tracked here rather than per-card: opening a second
+	// kebab must close the first, and a stack of independently-open popovers is
+	// exactly the chrome this control exists to avoid.
+	let openMenuId: string | null = null;
+
+	/** Close whichever card menu is open. Safe to call when none is. */
+	function closeMenus(): void {
+		if (openMenuId == null) return;
+		const rec = byId.get(openMenuId);
+		openMenuId = null;
+		if (!rec) return;
+		if (rec.pop) rec.pop.hidden = true;
+		rec.kebab?.setAttribute('aria-expanded', 'false');
+	}
+
+	/**
+	 * Position the popover under its kebab, in viewport coordinates.
+	 *
+	 * `position: fixed` against the button's own rect, NOT an absolute child of
+	 * the card: the card sets `overflow: hidden` to keep its segment edges
+	 * square, and each module body is its own scroll region — an in-flow popover
+	 * gets clipped by one or the other. Flipped above the button when there is
+	 * more room there, so a card near the rail's foot still shows its menu.
+	 */
+	function placeMenu(rec: SectionRecord): void {
+		if (!rec.pop || !rec.kebab) return;
+		const r = rec.kebab.getBoundingClientRect();
+		rec.pop.style.visibility = 'hidden';
+		rec.pop.hidden = false;
+		const h = rec.pop.offsetHeight;
+		const w = rec.pop.offsetWidth;
+		const below = window.innerHeight - r.bottom;
+		const top = below < h + 8 && r.top > below ? Math.max(8, r.top - h - 4) : r.bottom + 4;
+		// Right-align to the button, then pull back inside the viewport.
+		const left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8));
+		rec.pop.style.top = `${Math.round(top)}px`;
+		rec.pop.style.left = `${Math.round(left)}px`;
+		rec.pop.style.visibility = '';
+	}
+
+	/** Build the popover + menu on first open, then show it. */
+	function openMenu(rec: SectionRecord): void {
+		if (!rec.kebab) return;
+		closeMenus();
+		if (!rec.menu) {
+			const pop = document.createElement('div');
+			pop.className = 'inspector-stack__menu-pop';
+			pop.dataset.inspectorMenuPop = rec.id;
+			pop.hidden = true;
+			const menu = createMenu({
+				entries: rec.entries,
+				ariaLabel: rec.menuLabel,
+				variants: { size: 'sm', chrome: 'surface' },
+				onSelect: (id, item, event) => {
+					// Close BEFORE the consumer's handler: it may move focus, open a
+					// dialog, or re-render this very card, and a popover still open
+					// across that is a popover that outlives its anchor.
+					closeMenus();
+					// Focus has to go SOMEWHERE — it is currently inside a popover that
+					// is being hidden, and focus on a hidden element is focus lost. The
+					// kebab is the anchor, so it gets it back either way; the stamp is
+					// what decides whether that shows as a ring.
+					rec.kebab?.focus();
+					rec.onSelect?.(id, item, event);
+				},
+			});
+			pop.appendChild(menu.render());
+			document.body.appendChild(pop);
+			rec.pop = pop;
+			rec.menu = menu;
+		}
+		rec.menu.setEntries(rec.entries);
+		placeMenu(rec);
+		rec.kebab.setAttribute('aria-expanded', 'true');
+		openMenuId = rec.id;
+		// Menu-button practice: opening with the keyboard puts you on the first
+		// row (you have no other way in); opening with a pointer does not, because
+		// you are already pointing at the row you want and a forced roving focus
+		// just paints a ring you did not ask for. Arrow keys still enter the menu.
+		if (root.dataset.pointerFocus !== 'true') rec.menu.focusFirst();
+	}
+
+	// Dismissal — outside pointer, Escape, scroll, resize. Registered once for
+	// the whole stack rather than per-card, and only consulted while something
+	// is open.
+	const onDocPointerDown = (e: Event): void => {
+		if (openMenuId == null) return;
+		const rec = byId.get(openMenuId);
+		const t = e.target as Node | null;
+		if (!rec || !t) return closeMenus();
+		if (rec.pop?.contains(t) || rec.kebab?.contains(t)) return;
+		closeMenus();
+	};
+	const onDocKeyDown = (e: KeyboardEvent): void => {
+		if (openMenuId == null || e.key !== 'Escape') return;
+		const rec = byId.get(openMenuId);
+		e.stopPropagation();
+		closeMenus();
+		rec?.kebab?.focus();
+	};
+	const onViewportShift = (): void => closeMenus();
+	document.addEventListener('pointerdown', onDocPointerDown, true);
+	document.addEventListener('keydown', onDocKeyDown, true);
+	window.addEventListener('resize', onViewportShift);
+	// Capture phase so a scroll in ANY ancestor scroller counts, not just window.
+	document.addEventListener('scroll', onViewportShift, true);
+
 	// ── build sections ────────────────────────────────────────────────
 	const byId = new Map<string, SectionRecord>();
 	for (const d of descriptors) {
@@ -230,8 +380,91 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		chevron.className = 'notebook-insp-widget__chevron';
 		chevron.innerHTML = CHEVRON_SVG;
 
+		/* ── HEAD ANATOMY ─────────────────────────────────────────────────────
+		   Four zones. A reader does five things with a rail card, at very
+		   different rates — read it (nearly always), collapse it, expand it onto
+		   a bigger surface, configure it, reorder it (once, ever) — and the head
+		   is laid out so weight and position track that, rather than giving four
+		   controls the same glyph size and letting the reader sort it out.
+
+		     [grip]  [name + chevron]  ·spacer·  [kebab]  [actions]
+		      drag    identity + state            settings  surface
+
+		   - GRIP, far left. The rarest action, at an edge, because dragging
+		     starts from an edge. Faint at rest.
+		   - NAME + CHEVRON are ONE button, because the chevron describes the
+		     name's state rather than being a separate thing to hunt for. The
+		     chevron TRAILS the name (Caitlin 2026-08-23), which also keeps the
+		     name hard against the grip — the two leftmost things are then the
+		     card's identity and the handle for moving it, with every control
+		     that acts ON the card collected to the right. It is the only head
+		     control lit at full strength always: state is not something a reader
+		     should have to hover to learn.
+		   - KEBAB, inboard right. Settings that belong to this card.
+		   - ACTIONS, far right, LAST. These change which SURFACE the content
+		     lives on, and that corner is already surface-scoped everywhere else
+		     in the app — the portal puts its close button in exactly this spot.
+		     So expand-in-the-rail and close-in-the-portal are the same corner
+		     doing the same job, which is what makes the pair legible without a
+		     label. (Caitlin: the expansion affordance is "to be replaced on the
+		     open modal by the close affordance".)
+
+		   The spacer is an element rather than `margin-left:auto` on whichever
+		   control happens to come first, so the layout does not change shape when
+		   a card declares a kebab but no actions, or the reverse. */
 		header.append(title, chevron);
-		head.append(grip, header);
+
+		const spacer = document.createElement('span');
+		spacer.className = 'inspector-stack__spacer';
+		spacer.setAttribute('aria-hidden', 'true');
+
+		head.append(grip, header, spacer);
+
+		// The kebab is built eagerly (so it holds a stable place in the head row)
+		// but its popover is not — see openMenu. A card without a declared menu
+		// gets no button at all rather than a disabled one.
+		let kebab: HTMLButtonElement | null = null;
+		if (d.menu) {
+			kebab = document.createElement('button');
+			kebab.type = 'button';
+			kebab.className = 'inspector-stack__kebab';
+			kebab.dataset.inspectorKebab = d.id;
+			kebab.setAttribute('aria-haspopup', 'menu');
+			kebab.setAttribute('aria-expanded', 'false');
+			kebab.setAttribute('aria-label', `${d.title} options`);
+			kebab.title = `${d.title} options`;
+			kebab.innerHTML = KEBAB_SVG;
+			kebab.addEventListener('click', (e) => {
+				e.preventDefault();
+				// NOT for the collapse header — that is a SIBLING in the head row, so
+				// this click never reaches it however far it bubbles. (An earlier
+				// comment here claimed otherwise; the test written to prove it could
+				// not be made to fail, which is how the claim was caught.) It is here
+				// so a surface that later puts a click handler on the card or the head
+				// — select-on-click, focus-on-click — does not fire it when the reader
+				// only reached for this card's options.
+				e.stopPropagation();
+				const rec = byId.get(d.id);
+				if (!rec) return;
+				if (openMenuId === d.id) {
+					closeMenus();
+					return;
+				}
+				openMenu(rec);
+			});
+			head.append(kebab);
+		}
+
+		// Appended after the kebab so the surface control holds the outer corner.
+		// They cannot live INSIDE the header — that is a <button>, and a button
+		// nested in a button is invalid and never receives its own clicks.
+		if (d.actions?.length) {
+			const actions = document.createElement('div');
+			actions.className = 'inspector-stack__actions';
+			actions.dataset.inspectorActions = d.id;
+			for (const el of d.actions) actions.appendChild(el);
+			head.append(actions);
+		}
 
 		const body = document.createElement('div');
 		body.className = 'notebook-insp-widget__body';
@@ -271,6 +504,12 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 			header,
 			body,
 			visible: visibleInitial,
+			kebab,
+			menu: null,
+			pop: null,
+			entries: d.menu?.entries ?? [],
+			onSelect: d.menu?.onSelect ?? null,
+			menuLabel: d.menu?.ariaLabel ?? `${d.title} options`,
 		};
 	}
 
@@ -282,6 +521,8 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	function renderOrder(): void {
+		// The popover is positioned against a rect that is about to move.
+		closeMenus();
 		for (const id of order) {
 			const rec = byId.get(id);
 			if (rec) root.appendChild(rec.card);
@@ -469,6 +710,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	// ── public API ────────────────────────────────────────────────────
 	function setExpanded(id: string, expanded: boolean): void {
+		if (!expanded && openMenuId === id) closeMenus();
 		const rec = byId.get(id);
 		if (!rec) return;
 		const current = rec.card.dataset.collapsed !== 'true';
@@ -530,5 +772,13 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		setOrder,
 		getCardElement,
 		getBodyElement,
+		setMenuEntries(id, entries) {
+			const rec = byId.get(id);
+			if (!rec || !rec.kebab) return;
+			rec.entries = entries;
+			// Only push into a live menu; a closed one re-reads on next open.
+			if (rec.menu && openMenuId === id) rec.menu.setEntries(entries);
+		},
+		closeMenus,
 	};
 }

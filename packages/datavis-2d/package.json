@@ -1,12 +1,12 @@
 {
   "name": "@scilence/datavis-2d",
   "version": "0.0.1",
-  "description": "Two-dimensional data visualization — molecules, sunburst, scatterplot (population deferred to parent Phase 6).",
+  "description": "Two-dimensional data visualization — heatmap first; scatter/dendro/gantt later.",
   "type": "module",
   "license": "Apache-2.0",
-  "main": "src/index.ts",
+  "main": "src/index.js",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.js"
   },
   "files": [
     "src",

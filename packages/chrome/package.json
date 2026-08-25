@@ -1,15 +1,28 @@
 {
   "name": "@scilence/chrome",
   "version": "0.0.1",
-  "description": "Application chrome — navigation rails, headers, footers, and wayfinding.",
+  "description": "Application chrome — navigation rails, headers, footers, wayfinding, and the module-host contract.",
   "type": "module",
   "license": "Apache-2.0",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
   },
   "files": [
+    "dist",
     "src",
     "README.md"
-  ]
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist",
+    "test": "tsc -p tsconfig.json && node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
 }

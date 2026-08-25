@@ -47,7 +47,15 @@
 	--s-color-accent-secondary-soft: var(--s-brand-sec-500);
 
 	/* Warm focal accent — studio "heat" / playback states */
-	--s-color-accent-warm: var(--accent-luminous-warm);
+	/* Stale/attention semantic, split by USAGE — Caitlin 2026-08-22.
+	   A wash is this colour at 4-15% over cream, so chroma survives dilution and
+	   still reads; a solid is it at 100%, where low chroma goes muddy rather than
+	   calm. One number cannot be right for both, so solid and wash are separate
+	   values rather than a compromise between them. Deliberately NOT derived from
+	   --accent-luminous-warm: that is the loud focal-point/ligand value and stays
+	   at 0.18. Ink on a wash uses the SOLID value so text keeps its contrast. */
+	--s-color-accent-warm: oklch(0.72 0.12 35);
+	--s-color-accent-warm-wash: oklch(0.72 0.09 35);
 	--s-color-accent-luminous-warm-subtle: color-mix(in oklch, var(--accent-luminous-warm) 14%, var(--s-color-bg-surface));
 	--s-color-accent-luminous-cool-subtle: color-mix(in oklch, var(--accent-luminous-cool) 14%, var(--s-color-bg-surface));
 
@@ -116,6 +124,51 @@
 	--s-color-accent-default: var(--s-brand-700);
 	--s-color-accent-muted: oklch(0.78 calc(0.08 * var(--s-brand-chroma-scale)) var(--brand-hue));
 	--s-color-accent-subtle: color-mix(in oklch, var(--s-brand-700) 8%, var(--s-commons-bg));
+
+	/* ACCENT ANCHOR — the one line that re-points the whole accent family.
+	 * Light anchors one ladder step darker than dark on purpose: measured
+	 * against the shipped grounds, brand-500 is 3.78:1 on the light cream
+	 * (clears the 3.0 non-text floor) but 3.50:1 on the dark canvas, while
+	 * brand-400 is 4.78:1 dark and 2.76:1 light — under the floor. No single
+	 * step clears both grounds, so the two themes anchor one step apart. */
+	--s-color-accent: var(--s-brand-500);
+
+	/* Text/icon ON a solid --s-color-accent fill. --s-color-accent-foreground
+	 * is near-white here because light accent fills used to be the near-black
+	 * --accent-brand-dark; against a mid-tone brand-500 fill it measures
+	 * 3.78:1 and fails. brand-950 clears both grounds: 5.15:1 on the light
+	 * fill, 7.03:1 on the dark one. */
+	--s-color-accent-fg: var(--s-brand-950);
+
+	/* Selected/active wash — accent laid INTO whatever it sits on. Alpha
+	 * rather than an opaque color-mix into the app ground, so it composes
+	 * correctly over panels and cards that are not the ground. */
+	--s-color-accent-bg-subtle: oklch(from var(--s-color-accent) l c h / 0.12);
+
+	/* --- THE FOCUS RING RECIPE (pan-app; there is exactly one) ---
+	 * A 2px --s-color-focus-border outline. It draws OUTSET or INSET purely by
+	 * which offset token the consumer names — the ring itself never changes:
+	 *
+	 *   outline: var(--s-focus-ring);
+	 *   outline-offset: var(--s-focus-ring-offset);        (outset — default)
+	 *   outline-offset: var(--s-focus-ring-offset-inset);  (inset — clipped or
+	 *                                                       flush-edge controls)
+	 *
+	 * Use `outline`, never a hand-rolled `box-shadow: inset 0 0 0 Npx`. The
+	 * box-shadow form needs a companion `outline: none`, which erases the ring
+	 * in forced-colors mode; `outline` survives it. That is the entire reason
+	 * the inset recipe is a negative outline-offset and not a shadow.
+	 *
+	 * The 2px is a stroke WIDTH, not spacing, so the Fibonacci spacing scale
+	 * does not apply. It is spelled literally here (once) rather than via
+	 * --s-border-* because those are font-size-relative calcs, and a focus
+	 * ring that thickens with type size is wrong.
+	 *
+	 * outline-offset is not part of the `outline` shorthand, so no single
+	 * declaration carries both. Two token-only declarations is the floor. */
+	--s-focus-ring: 2px solid var(--s-color-focus-border);
+	--s-focus-ring-offset: 2px;
+	--s-focus-ring-offset-inset: -2px;
 
 	/* Link semantics — Commons charcoal (public + app relatedness) */
 	--s-color-link: var(--s-commons-link);
