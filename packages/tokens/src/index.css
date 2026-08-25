@@ -6,6 +6,9 @@
    scilence/packages/tokens/src/ at that URL). Relative @import paths below
    resolve against this file’s directory. */
 
+/* Base reset first — it must be in the cascade before anything an app can
+   write. See the file for the bar a rule has to clear to live there. */
+@import './_reset.css';
 @import './_fonts.css';
 @import './_palettes.css';
 /* Commons foundation before themes/typography so --s-* can alias into it. */

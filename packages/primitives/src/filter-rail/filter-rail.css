@@ -198,10 +198,6 @@
 	font-variant-numeric: tabular-nums;
 }
 
-.s-filter-rail__group-active-badge[hidden] {
-	display: none;
-}
-
 .s-filter-rail__group-body {
 	display: flex;
 	flex-direction: column;
@@ -209,22 +205,10 @@
 	padding-left: var(--s-space-2);
 }
 
-.s-filter-rail__group-body[hidden] {
-	display: none;
-}
-
 .s-filter-rail__group-chips {
 	display: flex;
 	flex-wrap: wrap;
 	gap: var(--s-space-hair);
-}
-
-/* Honor the `hidden` attribute — author `display:flex` above otherwise wins
-   over the UA `[hidden]{display:none}`, leaving an empty flex item (and its
-   parent `gap`) in the body when the group renders the `list` layout or a
-   range picker instead of chips. */
-.s-filter-rail__group-chips[hidden] {
-	display: none;
 }
 
 .s-filter-rail__group-more,
@@ -248,11 +232,6 @@
 	background: var(--s-color-hover-bg);
 }
 
-.s-filter-rail__group-more[hidden],
-.s-filter-rail__group-show-hidden[hidden] {
-	display: none;
-}
-
 /* ── List layout (config.layout === 'list') ──────────────────────────────────
    Scannable one-row-per-option register: a leading checkbox/radio, the label,
    and a right-aligned count. Opt-in alternative to the wrapping chip cloud for
@@ -261,13 +240,6 @@
 .s-filter-rail__group-list {
 	display: flex;
 	flex-direction: column;
-}
-
-/* Honor the `hidden` attribute (see note on `__group-chips[hidden]`): in the
-   default `chips` layout this container is empty + hidden, and without this it
-   would remain a 0-height flex item that adds a stray `gap` below the chips. */
-.s-filter-rail__group-list[hidden] {
-	display: none;
 }
 
 .s-filter-rail__option-row {
@@ -343,10 +315,6 @@
 .s-pill-filter__pill--active .s-filter-chip__count {
 	background: var(--s-color-prominent-fg);
 	color: var(--s-color-prominent-bg);
-}
-
-.s-filter-chip__count[hidden] {
-	display: none;
 }
 
 /* ── Range picker ──────────────────────────────────────────────────── */

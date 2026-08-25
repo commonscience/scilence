@@ -1,0 +1,43 @@
+/* scilence — STEAMCO Design System Foundation
+   Canonical pan-app tokens (@scilence/tokens).
+
+   ===== BASE RESET =====
+
+   The bar for anything landing in this file is narrow on purpose. This is not
+   a normalize sheet, and the design system does not want one. A rule earns a
+   place here only when the PLATFORM'S OWN behaviour is losing to author CSS by
+   construction — where every consumer must otherwise re-state the same
+   guarantee, and the ones who forget ship a visible defect.
+
+   ── `hidden` actually hides ──────────────────────────────────────────────
+
+   The user-agent rule is `[hidden] { display: none }`: an attribute selector,
+   specificity (0,1,0), at user-agent origin. An author class that sets a
+   display value — `.thing { display: flex }` — has the same specificity and
+   sits in a later cascade origin, so it WINS. The element keeps its box while
+   `el.hidden === true`, and the attribute lies.
+
+   It is not a rare collision. It is what happens by default to any flex or
+   grid element hidden by attribute, which is most of them. In the GUIDE shell
+   it shipped as a visible defect five separate times — a SMILES fallback
+   painting a 656px panel beside a working structure editor, a depiction layer,
+   an editor-pane status line, a hover bloom, a footer button that wrapped its
+   readout onto two lines — and was patched per-element each time, after being
+   seen on a screen. A sixth was being hand-written, correctly, while this file
+   was being added.
+
+   Tests do not catch it. An assertion that reads `!el.hasAttribute("hidden")`
+   passes while the element is on screen, because the attribute is set; it is
+   the pixels that disagree. Only a computed-style read or a screenshot sees it.
+   That is why this belongs in the foundation rather than in a lint rule.
+
+   `!important` is the whole mechanism. The failure mode IS a later author
+   `display` declaration outranking the attribute; without `!important` this
+   rule is the user-agent rule again, one origin up, losing the same way. With
+   it, `hidden` becomes a contract: to reveal an element you REMOVE the
+   attribute — you do not out-specify it. Anything that genuinely needs to
+   paint a `[hidden]` element opts out explicitly with its own `!important`. */
+
+[hidden] {
+	display: none !important;
+}

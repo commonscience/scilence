@@ -52,8 +52,7 @@
 	height: var(--s-chip-icon-size);
 }
 
-.s-chip__icon:empty,
-.s-chip__icon[hidden] {
+.s-chip__icon:empty {
 	display: none;
 }
 
@@ -77,10 +76,6 @@
 	line-height: var(--s-chip-line-height);
 }
 
-.s-chip__number[hidden] {
-	display: none;
-}
-
 /* label-value slot — microLabel + value composite (e.g., "TIER: A").
  * Uppercase micro-label in mono, smaller than chip text, followed by
  * the value (the chip's primary text). Separator rendered via ::after
@@ -94,10 +89,6 @@
 	text-transform: uppercase;
 	color: inherit;
 	opacity: 0.7;
-}
-
-.s-chip__micro-label[hidden] {
-	display: none;
 }
 
 .s-chip__micro-label::after {
