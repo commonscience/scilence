@@ -34,6 +34,8 @@ import type {
 	ToolbarSlot,
 } from './types.js';
 
+const PHONE_SIDEBAR_MEDIA_QUERY = '(max-width: 767px)';
+
 /** Monotonic id source for aria-labelledby/aria-describedby — each Modal
  * instance needs unique ids so multiple dialogs on one page (e.g. a
  * lightbox preview whose own examples include a Modal demo) never collide. */
@@ -67,6 +69,11 @@ export class Modal implements ModalHandle {
 	private bodyCleanup: Cleanup | null = null;
 	private returnFocusEl: HTMLElement | null = null;
 	private isClosing = false;
+	private sidebarRevealFrame: number | null = null;
+	private sidebarResizeListening = false;
+	private readonly handleSidebarViewportResize = (): void => {
+		this.scheduleActiveSidebarReveal();
+	};
 
 	constructor(opts: ModalConfig) {
 		this.variants = mergeModalVariants(opts.variants);
@@ -148,6 +155,7 @@ export class Modal implements ModalHandle {
 		this.renderAllSlots();
 		this.wireScrimClick();
 		this.wireCancelEvent();
+		this.element.addEventListener('close', () => this.stopSidebarRevealLifecycle());
 	}
 
 	private makeRegion(name: string): HTMLElement {
@@ -302,6 +310,7 @@ export class Modal implements ModalHandle {
 	}
 
 	private renderSidebar(slot: SidebarSlot | undefined): void {
+		this.cancelActiveSidebarReveal();
 		this.sidebarEl.hidden = !slot;
 		if (!slot) return;
 		this.sidebarEl.replaceChildren();
@@ -341,10 +350,53 @@ export class Modal implements ModalHandle {
 				}
 				btn.setAttribute('aria-pressed', 'true');
 				btn.classList.add('is-active');
+				this.scheduleActiveSidebarReveal();
 				slot.onChange?.(item.id);
 			});
 			this.sidebarEl.append(btn);
 		}
+		this.scheduleActiveSidebarReveal();
+	}
+
+	private isPhoneSidebarLayout(): boolean {
+		if (typeof window.matchMedia === 'function') {
+			return window.matchMedia(PHONE_SIDEBAR_MEDIA_QUERY).matches;
+		}
+		return window.innerWidth <= 767;
+	}
+
+	private cancelActiveSidebarReveal(): void {
+		if (this.sidebarRevealFrame === null) return;
+		window.cancelAnimationFrame(this.sidebarRevealFrame);
+		this.sidebarRevealFrame = null;
+	}
+
+	private scheduleActiveSidebarReveal(): void {
+		this.cancelActiveSidebarReveal();
+		if (!this.element.open || this.sidebarEl.hidden || !this.isPhoneSidebarLayout()) return;
+		this.sidebarRevealFrame = window.requestAnimationFrame(() => {
+			this.sidebarRevealFrame = null;
+			if (!this.element.open || this.sidebarEl.hidden || !this.isPhoneSidebarLayout()) return;
+			const activeItem = this.sidebarEl.querySelector<HTMLElement>(
+				'.s-modal__sidebar-item[aria-pressed="true"]',
+			);
+			activeItem?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		});
+	}
+
+	private startSidebarRevealLifecycle(): void {
+		if (!this.sidebarResizeListening) {
+			window.addEventListener('resize', this.handleSidebarViewportResize);
+			this.sidebarResizeListening = true;
+		}
+		this.scheduleActiveSidebarReveal();
+	}
+
+	private stopSidebarRevealLifecycle(): void {
+		this.cancelActiveSidebarReveal();
+		if (!this.sidebarResizeListening) return;
+		window.removeEventListener('resize', this.handleSidebarViewportResize);
+		this.sidebarResizeListening = false;
 	}
 
 	private renderToolbar(slot: ToolbarSlot | undefined): void {
@@ -476,6 +528,7 @@ export class Modal implements ModalHandle {
 			document.body.append(this.element);
 		}
 		this.element.showModal();
+		this.startSidebarRevealLifecycle();
 		this.lifecycle?.onOpen?.();
 	}
 
@@ -499,6 +552,7 @@ export class Modal implements ModalHandle {
 			}
 			this.bodyCleanup = null;
 		}
+		this.stopSidebarRevealLifecycle();
 		this.element.close();
 		this.isClosing = false;
 		const target = this.returnFocusEl;
@@ -514,6 +568,7 @@ export class Modal implements ModalHandle {
 
 	destroy(): void {
 		if (this.element.open) this.close('programmatic');
+		this.stopSidebarRevealLifecycle();
 		this.element.remove();
 	}
 

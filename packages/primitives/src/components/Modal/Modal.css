@@ -392,6 +392,38 @@
 	border-radius: var(--s-radius-pill);
 }
 
+/* At phone widths the same sidebar buttons become a single navigation strip.
+ * Keep the hidden guard in the selector: responsive layout must never reveal
+ * an absent optional slot. */
+@media (max-width: 767px) {
+	.s-modal__main {
+		flex-direction: column;
+	}
+
+	.s-modal__sidebar:not([hidden]) {
+		flex-direction: row;
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+		flex-shrink: 0;
+		overflow-x: auto;
+		overflow-y: hidden;
+		border-right: none;
+		border-bottom: 1px solid var(--s-color-border-subtle);
+	}
+
+	.s-modal__sidebar-item {
+		flex: 0 0 auto;
+		width: auto;
+		white-space: nowrap;
+	}
+
+	.s-modal__body {
+		width: 100%;
+		min-width: 0;
+	}
+}
+
 /* ── Body slot ───────────────────────────────────────────────────────── */
 
 .s-modal__body {

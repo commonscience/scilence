@@ -1,95 +1,85 @@
 # @scilence/primitives
 
-Canonical home for **pan-app vanilla TS/JS design system primitives** in the
-STEAMCO design system. Atoms and composite primitives that are framework-agnostic
-and consumable from any STEAMCO surface (admin shell, marketing site, public
-docs, future surfaces).
+The public package for pan-app, framework-agnostic DOM primitives in Scilence.
+It contains vanilla TypeScript/JavaScript atoms and small composite behaviors
+that can be consumed by different product surfaces without adopting a UI
+framework.
 
-> **Doctrine lock (2026-05-15):** the package is named `primitives` — not
-> `components` — per design-system tradition (Radix Primitives, etc.) and per
-> the locked 2026-05-15 doctrine in
-> [`research/memory-drops/feedback_scilence_components_dir_should_exist.md`](../../../research/memory-drops/feedback_scilence_components_dir_should_exist.md).
-> When a new pan-app DS part needs a home, it lands here. Defaulting new
-> components to `guide/shell/js/components/` is wrong-direction migration —
-> see the doctrine memory for why.
+This package complements [`@scilence/tokens`](../tokens/README.md), which owns
+the shared visual coordinate system.
 
-This package is the components-half companion to
-[`@scilence/tokens`](../tokens/README.md) (the tokens-half foundation —
-palettes, spacing, typography, motion, status colors).
+## Package boundary
 
-## What belongs here
+Good fits include:
 
-- **Vanilla TS/JS atoms** — primitives with no framework dependency (no Svelte,
-  no React, no Vue). Plain DOM + TypeScript.
-- **Composite primitives** — small compositions of atoms that any surface might
-  want (e.g. `FilterRail`, dropdown, segmented-control, popover anchoring).
-- **Tokens-only styling** — every CSS custom property referenced must resolve
-  to an `@scilence/tokens` value. No hardcoded hex / px / shadow values; no
-  defensive fallbacks like `var(--s-color-text, #333)` (per the 2026-05-07
-  defensive-fallback ban).
-- **Consumable from any STEAMCO surface** — admin shell, marketing site,
-  public docs, future surfaces (libraries, lab-tools, alumni community, etc.).
-  The "would a future surface plausibly want this?" test from the doctrine
-  memory is the gate.
+- reusable DOM atoms and small compositions;
+- interaction behavior with an explicit, typed lifecycle;
+- token-driven styling that is not tied to one application route; and
+- accessibility behavior shared by more than one surface.
 
-## What does NOT belong here
+Application-only chrome, page-specific composition, and framework adapters do
+not become primitives merely because they are reusable inside one application.
 
-- **Admin-only components** — anything admin-namespaced (`oar-*`,
-  `surface-tag-*`, admin-shell-only state references) stays in
-  `guide/shell/js/components/` with admin-tokens overrides.
-- **Svelte-specific adapters** — wrappers that exist only to make a primitive
-  feel native in Svelte stay in `@scilence/svelte` (sibling package). The
-  pan-app primitive itself ships from here; the Svelte adapter wraps it.
-- **Page-specific compositions** — the kanban page's particular column layout,
-  the project hub's specific event timeline strip, etc. stay in their consuming
-  surface (typically `guide/shell/js/pages/*`).
+## Public API in this checkout
+
+At the current `HEAD`, the root barrel exports:
+
+- Filter rail and chip: `createFilterRail`, `createFilterChip`
+- Card: `Card`, `createCard`, `ALWAYS_VISIBLE_CHROME_IDS`, variant/token helpers
+- Chip: `Chip`, `createChip`, variant/token helpers
+- Button: `Button`, `createButton`, variant/token helpers
+- Icon button: `IconButton`, `createIconButton`, variant/token helpers
+- Modal: `Modal`, `createModal`, variant/token helpers
+- Menu: `Menu`, `createMenu`, `isMenuItemDescriptor`, variant/token helpers
+- Inspector stack: `createInspectorStack`
+
+The current working tree additionally exports navigation-tree rows,
+context-menu buttons, hover disclosure, cell-picker geometry, placement
+handles, and inspector resizing. Those additions are available in this
+checkout but are not part of the current committed package barrel. See
+[`src/index.ts`](src/index.ts) for the exact current value and type exports, and
+the repository-level [package/API discovery map](../../COMPONENT_REGISTRY.md)
+for the committed/current-checkout distinction.
+
+The tooltip implementation under [`src/tooltip/`](src/tooltip/) is reference
+source rather than package API. It intentionally remains outside the root
+barrel because its dictionary and glossary adapters are supplied by the
+consumer.
 
 ## Consumer pattern
 
-Once a primitive lands in this package, surfaces import from the package root:
+Import public values from the package root:
 
 ```typescript
-import { FilterRail } from "@scilence/primitives";
+import { createFilterRail } from '@scilence/primitives';
+
+const rail = createFilterRail(host, config);
+// Later, follow the returned handle's lifecycle contract.
+rail.destroy();
 ```
 
-(`FilterRail` is the upcoming first occupant per
-[Brief 103](../../../research/flywheel/handoffs/briefs/guide-shell-v5-section-state-left-rail.md).
-At scaffold time the barrel is empty — `export {};`.)
-
-## Build + dev
+The package manifest exposes ESM runtime and type declarations from
+`dist/index.js` and `dist/index.d.ts`. Build the package before running a
+consumer that resolves the built package entry point:
 
 ```bash
-# from this directory
-pnpm run build       # tsc -p tsconfig.json → dist/index.{js,d.ts}
-pnpm run dev         # tsc --watch
-pnpm run clean       # rm -rf dist
-pnpm run test        # placeholder until first primitive ships real tests
+npm run build
 ```
 
-The package emits ES modules (`type: module`) targeting ES2022 with full
-`.d.ts` + source-map output. `noUncheckedIndexedAccess`, `strict`, and
-`verbatimModuleSyntax` are on — primitives must compile under those rules.
+Component CSS is maintained beside component source and may be staged by the
+consumer's build. Consult the component README for any required stylesheet;
+the JavaScript package-root export does not imply that CSS was loaded.
 
-## Versioning + publishing
+## Validation
 
-- `version: 0.1.0` — unpublished. Consumed via the scilence pnpm workspace
-  link until the first primitive lands and we decide the publish cadence.
-- License: **MIT** (matches `@scilence/tokens` and the workspace-wide
-  Apache-2.0/MIT-only policy locked 2026-05-10).
-- `publishConfig.access: public` — when we do publish, npm publish ships
-  the public scope.
+The source tree contains focused tests for individual primitives, and consumer
+repositories exercise package integrations. The package's current `npm test`
+script is still a scaffold message, so it must not be treated as a complete
+package gate. A package-level test aggregation command remains a maintenance
+decision.
 
-## References
+## Version and publication
 
-- Doctrine memory:
-  [`research/memory-drops/feedback_scilence_components_dir_should_exist.md`](../../../research/memory-drops/feedback_scilence_components_dir_should_exist.md)
-  (2026-05-15)
-- Foundation ADR:
-  [`research/handoffs/decisions/2026-05-08-scilence-foundation-admin-overrides.md`](../../../research/handoffs/decisions/2026-05-08-scilence-foundation-admin-overrides.md)
-  (the scilence/admin split that prevents the DS from forking)
-- Tokens precedent: [`@scilence/tokens`](../tokens/README.md)
-- Scaffold brief:
-  [`research/flywheel/handoffs/briefs/scilence-primitives-scaffold.md`](../../../research/flywheel/handoffs/briefs/scilence-primitives-scaffold.md)
-- First-occupant brief:
-  [`research/flywheel/handoffs/briefs/guide-shell-v5-section-state-left-rail.md`](../../../research/flywheel/handoffs/briefs/guide-shell-v5-section-state-left-rail.md)
-  (FilterRail TS variant)
+The manifest currently declares version `0.1.0`, ESM output, MIT licensing, and
+public publish configuration. This README makes no claim that the package has
+been published to npm or included in a product release.

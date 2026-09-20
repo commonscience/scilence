@@ -55,6 +55,15 @@
 	background: var(--s-color-bg-hover);
 }
 
+/* Keep compact desktop sizing, but honor the shared density-independent
+   touch target on coarse/non-hover input. */
+@media (hover: none), (pointer: coarse) {
+	.s-menu__item {
+		min-block-size: var(--s-size-touch-target-min);
+		min-inline-size: var(--s-size-touch-target-min);
+	}
+}
+
 .s-menu__item:focus-visible {
 	/* --s-color-focus-border is the visible focus color in this token
 	   system (focus-ring is intentionally transparent — calm palette). */

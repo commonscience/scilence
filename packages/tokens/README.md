@@ -46,6 +46,21 @@ Or import individual categories:
 @import '@scilence/tokens/src/_spacing.css';
 ```
 
+## Reduced-motion behavior
+
+The effective appearance preference sets `data-reduce-motion="true"` on the
+document root. `_reduced-motion.css` then removes transition duration and delay,
+including on pseudo-elements, without creating motion on otherwise static
+elements. Do not replace the zero transition duration with a small positive
+value: `transition-property` defaults to `all`, so doing so can animate inherited
+visibility and make a just-revealed input temporarily unfocusable.
+
+Intentional named CSS animations retain one near-instant iteration, without a
+start delay, so their `animationend` cleanup still occurs. Functional state and
+focus must not depend solely on `transitionend`: reduced motion legitimately
+removes the transition, and zero-duration transitions do not emit that event.
+Normal-motion timing remains owned by the authored component/tokens.
+
 ## Design Principles
 
 - **Commons foundation** — light-theme surfaces, neutrals, and default type alias `--s-commons-*` so GUIDE, Motif, Commons, and marketing feel related

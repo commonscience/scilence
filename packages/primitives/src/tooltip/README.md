@@ -7,10 +7,11 @@ on-surface affordance or indicator that is not plain readable prose exposes a
 hover tooltip, wherever the user has a fine cursor + hover._
 
 Authored as vanilla JS (production origin:
-`guide/shell/js/components/tooltip/`, PR #572) and mirrored here **byte-for-byte**
-as the canonical source. The GUIDE shell consumes a byte-identical copy
-guide-locally via the importmap + bootstrap; the two are kept in sync (the known
-scilence↔guide primitives duplication — a DS drift gate diffs them).
+`guide/shell/js/components/tooltip/`, PR #572) and maintained here as the
+canonical reference. GUIDE consumes its runnable local mirror via the importmap
+and bootstrap. The mirrors currently differ in two-tier/familiarity behavior;
+the lifecycle fixes below are applied narrowly to both, not a claim of complete
+source parity or reconciliation.
 
 ## API
 
@@ -27,6 +28,60 @@ import {
   loadTooltipRegistry, // fetch + install the registry JSON (once)
 } from "./index.js";
 ```
+
+### Handle lifecycle
+
+`attachTooltip()` and `createTooltip()` return `{ update, dismiss, destroy }`.
+`dismiss()` immediately cancels pending show/hide/depth/press work and removes
+the visible tooltip while retaining the trigger, description and event wiring.
+The next genuine hover or focus may reveal it again. A group of related controls
+can dismiss its other handles on pointer/focus entry and dismiss all handles on
+Escape, activation or a semantic state change, without recreating controls.
+`attachTooltip.update()` updates the description/copy in place; use `dismiss()`
+when an already-visible tooltip describes a state that no longer applies.
+Wrapper-mode `createTooltip.update()` first dismisses pending visual work and
+then rebuilds its wrapper content. Only `dismiss()` guarantees preservation of
+both modes' trigger/description nodes. `destroy()` permanently stops the
+instance, including late work, and removes its owned description.
+
+Repeated hover/focus events replace the prior show timer; a destroyed instance
+cannot paint. These additive lifecycle guarantees are maintained in both the
+GUIDE runtime and the older canonical reference, without reconciling their
+unrelated two-tier/familiarity differences.
+
+### Richer-preview trigger policy (`attachTooltip`)
+
+Set `data-tip-hover-preview="true"` on a trigger whose hover already opens a
+richer menu or preview. Only the exact, case-sensitive string `true` opts in;
+absence, `false`, an empty attribute or `1` preserve ordinary tooltip behavior.
+Declarative `attachTooltips(root)` uses this policy automatically.
+
+While opted in, mouse hover, pointer-induced focus, q-while-hovering and
+long-press do not show a competing tooltip. Keyboard-origin focus may show its
+hint only while the pointer is outside the trigger and `aria-expanded` is not
+`true`. Leaving the trigger does not reveal a hint automatically; a new
+keyboard-focus interaction is required. Programmatic/assistive focus is
+treated as keyboard-like unless the preceding input was a pointer. Opening the
+preview or pinning it must set `aria-expanded="true"`; attribute changes cancel
+visible and pending tooltips immediately at the mutation checkpoint. Delayed
+reveals also recheck current attributes before painting. Closing never creates
+a tooltip by itself; a subsequent permitted focus interaction can reveal it.
+
+The accessible description, action name and actual preview behavior are not
+removed or replaced. Policy changes are supported at runtime, and destroy
+removes policy listeners/observers. This policy is maintained in the small
+TypeScript `tooltip-trigger-policy.ts` helper in both source trees. It does not
+change legacy `createTooltip()` wrapper behavior.
+
+### Popover surface (`attachTooltip`)
+
+Set `data-tip-surface="popover"` for controls whose tooltip should visually
+match adjacent menus. The DS portal class pairs `--s-surface-elevation-2-bg`
+with `--s-color-fg-primary`, following the active light/dark theme. Other values
+retain the default inverse foreground/background treatment. This is independent
+of hover-preview ownership; neither option requires consumer CSS or a renderer
+fork. Changing the surface attribute dismisses old visual work so the next reveal
+uses the current surface.
 
 ### Touch gating
 

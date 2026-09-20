@@ -1,0 +1,144 @@
+.s-nav-tree-row {
+	box-sizing: border-box;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	min-inline-size: 0;
+	position: relative;
+	border-radius: var(--s-radius-sm);
+}
+
+.s-nav-tree-row__disclosure {
+	box-sizing: border-box;
+	display: flex;
+	align-items: center;
+	gap: var(--s-menu-size-sm-item-gap);
+	min-inline-size: 0;
+	min-block-size: calc(var(--s-menu-size-sm-font-size) + 2 * var(--s-menu-size-sm-item-padding-block));
+	padding: var(--s-menu-size-sm-item-padding-block) var(--s-menu-size-sm-item-padding-inline);
+	border: 0;
+	border-radius: var(--s-radius-sm);
+	background: transparent;
+	color: var(--s-color-fg-secondary);
+	font: inherit;
+	text-align: start;
+	cursor: pointer;
+}
+
+.s-nav-tree-row__disclosure:hover,
+.s-nav-tree-row__disclosure[aria-current='true'] {
+	background: var(--s-color-bg-hover);
+	color: var(--s-color-fg-primary);
+}
+
+.s-nav-tree-row__disclosure:focus-visible {
+	outline: 2px solid var(--s-color-focus-border);
+	outline-offset: -2px;
+}
+
+.s-nav-tree-row__disclosure:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.s-nav-tree-row__leading,
+.s-nav-tree-row__leading > span,
+.s-nav-tree-row__trailing {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 auto;
+}
+
+.s-nav-tree-row__leading svg,
+.s-nav-tree-row__trailing svg {
+	inline-size: var(--s-menu-size-sm-icon-size);
+	block-size: var(--s-menu-size-sm-icon-size);
+}
+
+.s-nav-tree-row__leading[hidden],
+.s-nav-tree-row__leading > span[hidden],
+.s-nav-tree-row__trailing[hidden] { display: none; }
+
+.s-nav-tree-row__label {
+	flex: 0 1 auto;
+	min-inline-size: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+	/* The explicit reorder contract owns the cursor even when a consuming
+	   navigation surface gives all of its buttons a higher-specificity pointer. */
+	.s-nav-tree-row__disclosure[data-navigation-reorderable] { cursor: grab !important; }
+	.s-nav-tree-row__disclosure[data-navigation-reorderable]:active { cursor: grabbing !important; }
+}
+
+.s-nav-tree-row__actions {
+	display: flex;
+	align-items: center;
+	min-inline-size: 0;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity var(--s-duration-fast) var(--s-ease-out);
+}
+
+.s-nav-tree-row:hover .s-nav-tree-row__actions,
+.s-nav-tree-row:focus-within .s-nav-tree-row__actions,
+.s-nav-tree-row__actions:has([aria-expanded='true']) {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.s-nav-tree-row__actions[aria-expanded='true'],
+.s-nav-tree-row:has(.s-nav-tree-row__action[aria-expanded='true']) .s-nav-tree-row__actions {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.s-nav-tree-row[data-variant='section'] .s-nav-tree-row__disclosure {
+	color: var(--s-color-fg-muted);
+	font-size: var(--s-menu-size-sm-font-size);
+	font-weight: var(--s-font-weight-semibold);
+}
+
+[data-navigation-reorder-item] { position: relative; }
+
+.s-nav-tree-row[data-navigation-drop='before']::before,
+.s-nav-tree-row[data-navigation-drop='after']::after,
+[data-navigation-reorder-item][data-navigation-drop='before']::before,
+[data-navigation-reorder-item][data-navigation-drop='after']::after {
+	content: '';
+	position: absolute;
+	inset-inline: var(--s-menu-size-sm-item-padding-inline);
+	block-size: var(--s-border-base);
+	border-radius: var(--s-radius-full);
+	background: var(--s-color-focus-border);
+	pointer-events: none;
+}
+
+.s-nav-tree-row[data-navigation-drop='before']::before,
+[data-navigation-reorder-item][data-navigation-drop='before']::before { inset-block-start: 0; }
+.s-nav-tree-row[data-navigation-drop='after']::after,
+[data-navigation-reorder-item][data-navigation-drop='after']::after { inset-block-end: 0; }
+
+@media (hover: none), (pointer: coarse) {
+	.s-nav-tree-row__disclosure {
+		min-block-size: var(--s-size-touch-target-min);
+	}
+
+	.s-nav-tree-row__actions {
+		opacity: 1;
+		pointer-events: auto;
+	}
+
+	.s-nav-tree-row__actions > :is(button, a) {
+		min-inline-size: var(--s-size-touch-target-min);
+		min-block-size: var(--s-size-touch-target-min);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.s-nav-tree-row__actions { transition: none; }
+}

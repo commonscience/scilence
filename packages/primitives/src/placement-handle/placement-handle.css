@@ -1,0 +1,75 @@
+/**
+ * PlacementHandle
+ *
+ * Pair one real `.s-placement-handle` button with one draggable or browsable
+ * sibling inside `.s-placement-item`. Fine pointers disclose the grip on row
+ * hover; keyboard focus and coarse pointers keep the alternative discoverable.
+ */
+.s-placement-item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	gap: var(--s-space-1);
+}
+
+.s-placement-handle {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-block-size: var(--s-button-size-sm-height);
+	padding: var(--s-button-size-sm-padding-block) var(--s-button-size-sm-padding-inline);
+	gap: var(--s-button-size-sm-gap);
+	border: 0;
+	border-radius: var(--s-radius-1);
+	background: transparent;
+	color: var(--s-color-fg-muted);
+	font: var(--s-font-weight-medium) var(--s-font-size-caption)/var(--s-font-line-height-normal) var(--s-font-sans);
+	cursor: pointer;
+	opacity: 0;
+	transition: var(--s-transition-opacity), var(--s-transition-colors);
+}
+
+.s-placement-handle svg {
+	inline-size: var(--s-icon-button-size-sm-icon);
+	block-size: var(--s-icon-button-size-sm-icon);
+	flex: none;
+	fill: currentColor;
+}
+
+.s-placement-item:is(:hover, :focus-within) > .s-placement-handle,
+.s-placement-handle:focus-visible {
+	opacity: 1;
+}
+
+.s-placement-handle:hover:not(:disabled) {
+	background: var(--s-color-bg-hover);
+	color: var(--s-color-fg-primary);
+}
+
+.s-placement-handle:focus-visible {
+	outline: var(--s-focus-ring);
+	outline-offset: var(--s-focus-ring-offset);
+	background: var(--s-color-focus-bg);
+}
+
+.s-placement-handle:disabled {
+	cursor: not-allowed;
+	opacity: 0;
+}
+
+.s-placement-item:focus-within > .s-placement-handle:disabled {
+	opacity: 0;
+}
+
+@media (hover: none), (pointer: coarse) {
+	.s-placement-handle {
+		min-inline-size: var(--s-size-touch-target-min);
+		min-block-size: var(--s-size-touch-target-min);
+		opacity: 1;
+	}
+
+	.s-placement-handle:disabled {
+		opacity: 0;
+	}
+}
