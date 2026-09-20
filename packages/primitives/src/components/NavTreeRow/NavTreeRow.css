@@ -56,10 +56,6 @@
 	block-size: var(--s-menu-size-sm-icon-size);
 }
 
-.s-nav-tree-row__leading[hidden],
-.s-nav-tree-row__leading > span[hidden],
-.s-nav-tree-row__trailing[hidden] { display: none; }
-
 .s-nav-tree-row__label {
 	flex: 0 1 auto;
 	min-inline-size: 0;
