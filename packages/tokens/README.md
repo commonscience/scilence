@@ -4,8 +4,8 @@ Foundation design tokens for all STEAMCO products. These are the canonical sourc
 
 ## Not only tokens: one base reset
 
-`_reset.css` is the single file here that declares a RULE rather than custom
-properties, and the barrel imports it first. It contains
+`_reset.css` owns platform invariants, and the barrel imports it first.
+Component rules such as links, buttons and forms live in their named members. It contains
 `[hidden] { display: none !important }`, because the user-agent's own
 `[hidden] { display: none }` is an attribute selector that loses to any author
 class setting a display value — so `el.hidden = true` silently leaves flex and
@@ -68,3 +68,38 @@ Normal-motion timing remains owned by the authored component/tokens.
 - **Fibonacci spacing** with density multiplier for instrument packing (public section rhythm may use `--s-commons-space-*`)
 - **Proportional radius/borders** derived from active font size; semantic control radii follow Commons
 - **Brand-hue parameterization** for interactive/status accents: override `--brand-hue` and `--brand-hue-secondary` to shift accent ramps
+
+## Readable links and quantitative plot ink
+
+`_link.css` is the canonical text-link member, loaded by the foundation barrel.
+Its zero-specificity anchor defaults cover otherwise unstyled links (including
+Notebook downloads); component navigation and buttons may override them. The
+explicit `s-link` class uses the same defaults. Underlines remain a non-color cue.
+
+Use `--s-color-link`, `--s-color-link-hover` and `--s-color-link-visited`.
+Light/dark values follow `--brand-hue-secondary`, independent of the structural
+chroma multiplier. This keeps a brand's calm canvas from desaturating its links
+into unreadable text.
+
+Quantitative plots use `--s-color-plot-surface`, `--s-color-plot-grid`,
+`--s-color-plot-axis`, `--s-color-plot-data` and
+`--s-color-plot-data-selected`. Their hue follows `--brand-hue`; their lightness
+is theme-specific. These do not replace categorical/sequential scientific color
+scales. Labels, range readouts and selection markers must still communicate state.
+
+GUIDE's `test/plot-link-contrast.test.mjs` evaluates actual declarations over six
+brand hues and three chroma multipliers: text ink at least4.5:1 against app/subtle
+surfaces, data/axis ink at least3:1 and reference grids at least2:1. This is a
+computed-token check, not a claim of complete visual/accessibility acceptance.
+
+
+### Droplist indicator spacing
+
+`_forms.css` owns the single-value select baseline. Native selects and GUIDE's
+custom Select share `--s-select-indicator-edge` (14px visible inset),
+`--s-select-indicator-size` (12px SVG box / 6px chevron) and
+`--s-select-text-clearance` (36px). Keep the indicator vertically centred and
+reserve the trailing text area even for compact controls. In RTL the indicator
+moves to the left. Multi-selects and expanded native listboxes are excluded;
+forced-colours mode restores the native arrow. Surfaces own the control's height,
+colour and border; they should not add a second chevron or edge-spacing override.

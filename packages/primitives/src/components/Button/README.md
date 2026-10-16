@@ -94,3 +94,14 @@ The loading spinner animation drops to a slower 2s rotation under `prefers-reduc
 - [`feedback_box_shadow_carveouts`](../../../../../research/memory-drops/feedback_box_shadow_carveouts.md) — buttons are in-plane; no shadow (this primitive has none)
 - [`feedback_always_vanilla_ts_globally`](../../../../../research/memory-drops/feedback_always_vanilla_ts_globally.md) — vanilla TS
 - [`project_plugin_ecosystem_strategy`](../../../../../research/memory-drops/project_plugin_ecosystem_strategy.md) — pan-app primitive home (scilence) for vendor consumption
+
+### Primary color pairing · October 14 review
+
+The shared primary variant uses brand-700 fill and brand-25 foreground, with
+brand-800 hover. Its border follows accent-default for theme-aware separation.
+This distinguishes primary actions from the mid-tone general accent and keeps
+hue/chroma connected to the active brand scale. Do not override the pair in a
+consumer to restore medium accent fill with dark text. Enabled primary contrast
+was browser-sampled at hue180, light/dark, chroma0/.14/.36/1 (6.63–7.12:1).
+This is bounded evidence, not all-hue/state certification; review hover/focus,
+disabled/read-only and other supported brand configurations on integration.

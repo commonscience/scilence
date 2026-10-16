@@ -2,6 +2,7 @@
    Variant axes resolve to these custom properties; Card.ts sets
    --s-card-* resolved values on the element (single lookup, no cascade wars). */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* elevation */
 	--s-card-elevation-none-shadow: none;

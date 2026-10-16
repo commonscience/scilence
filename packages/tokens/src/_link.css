@@ -1,0 +1,17 @@
+/* Canonical text-link defaults. Zero specificity lets navigation/buttons keep
+   their component treatment; unstyled notebook/download links receive readable
+   theme-aware ink instead of the browser's fixed blue. Underlines preserve a
+   non-color cue. s-link opts explicitly into the same component semantics. */
+:where(a[href], .s-link) {
+  color: var(--s-color-link);
+  text-decoration-line: underline;
+  text-decoration-thickness: max(1px, 0.065em);
+  text-underline-offset: 0.16em;
+}
+:where(a[href]:visited, .s-link:visited) { color: var(--s-color-link-visited); }
+:where(a[href]:hover, .s-link:hover) { color: var(--s-color-link-hover); }
+:where(a[href]:focus-visible, .s-link:focus-visible) {
+  color: var(--s-color-link-hover);
+  outline: var(--s-focus-ring);
+  outline-offset: var(--s-focus-ring-offset);
+}

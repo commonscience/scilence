@@ -55,6 +55,8 @@ export type Cleanup = () => void;
 export interface HeaderSlot {
 	title: string;
 	subtitle?: string;
+	/** Navigation belongs to the header; the consumer owns reachability and validation. */
+	stepper?: ModalStepperSlot;
 	actions?: HeaderAction[];
 	/**
 	 * Dismissal policy. Governs all THREE routes -- the X button, ESC, and
@@ -83,7 +85,7 @@ export interface HeaderAction {
 /** Footer slot — action row. */
 export interface FooterSlot {
 	actions: FooterAction[];
-	/** Which action id is the primary (accent + Enter-key default). */
+	/** Which action id is primary (accent). Never binds Enter to an action. */
 	primaryActionId?: string;
 }
 
@@ -94,8 +96,66 @@ export interface FooterAction {
 	onClick: () => void | Promise<void>;
 	disabled?: boolean;
 	loading?: boolean;
+	/** Start actions (Cancel/Save review) stay separate from forward actions. */
+	group?: 'start' | 'end';
+	/** Consumer data-* instrumentation; semantic/button attributes remain component-owned. */
+	attributes?: Readonly<Record<string, string>>;
 	/** When true + the click resolves, modal closes with reason `commit-success`. */
 	closeOnSuccess?: boolean;
+}
+
+/** Modal-owned navigation part, composed from Button atoms. Not a workflow engine. */
+export interface ModalStepperItem {
+	id: string;
+	label: string;
+	state?: 'pending' | 'complete' | 'error';
+	disabled?: boolean;
+	attributes?: Readonly<Record<string, string>>;
+}
+
+export interface ModalStepperSlot {
+	items: readonly ModalStepperItem[];
+	activeId: string;
+	label?: string;
+	onSelect(id: string): void;
+}
+
+/** Wrapping semantic feedback above the action-only footer. Text is never HTML. */
+export interface ModalFeedbackSlot {
+	tone: 'info' | 'success' | 'warning' | 'danger';
+	title?: string;
+	message: string;
+	/** Default polite, including errors; assertive is an explicit consumer decision. */
+	announcement?: 'off' | 'polite' | 'assertive';
+}
+
+export type ModalPresentation = 'content' | 'wizard';
+export interface ModalDismissal {
+	/** Ignore incidental backdrop clicks while retaining X and Escape policy. */
+	ignoreScrim?: boolean;
+}
+
+/** Partial updates omit unchanged parts; null explicitly clears an optional part. */
+export interface ModalChromeSlots {
+	header?: HeaderSlot | null;
+	feedback?: ModalFeedbackSlot | null;
+	footer?: FooterSlot | null;
+}
+
+export interface ModalChromeOptions extends ModalChromeSlots {
+	document?: Document;
+	onCloseRequest(reason: CloseReason): void;
+}
+
+/** Shared owned parts for native Modal and another existing dialog host. */
+export interface ModalChromeHandle {
+	readonly headerElement: HTMLElement;
+	readonly feedbackElement: HTMLElement;
+	readonly footerElement: HTMLElement;
+	readonly titleId: string;
+	readonly subtitleId: string;
+	update(slots: ModalChromeSlots): void;
+	destroy(): void;
 }
 
 /** Sidebar slot — navigation rail inside modal. */
@@ -159,6 +219,7 @@ export interface ModalSlots {
 	sidebar?: SidebarSlot;
 	toolbar?: ToolbarSlot;
 	statusBar?: StatusBarSlot;
+	feedback?: ModalFeedbackSlot | null;
 	breadcrumb?: BreadcrumbSlot;
 }
 
@@ -172,6 +233,8 @@ export interface ModalLifecycle {
 
 export interface ModalConfig {
 	variants?: Partial<ModalVariants>;
+	presentation?: ModalPresentation;
+	dismissal?: ModalDismissal;
 	modifiers?: ModalModifier[];
 	slots: ModalSlots;
 	lifecycle?: ModalLifecycle;

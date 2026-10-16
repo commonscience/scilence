@@ -146,3 +146,14 @@ exercise the data wiring. They run under `node --test`.
 - The dictionary registry + glossary data (consumer-owned; see above).
 - The `flywheel:check` tooltip-completeness gate (backstop scan; lives in the
   consuming surface's gate set).
+
+### Native overlay layers
+
+Portal tooltips use `--s-z-tooltip`, never a magic maximum. `tooltip-layer.ts`
+(and generated JS) is shared narrowly with GUIDE: a manual native popover
+owned by the source dialog when present, otherwise the body. This escapes
+clipping and native dialog top-layer ordering while keeping focus on the
+trigger. Closing the dialog or removing the trigger retires the tooltip.
+Unsupported popover hosts fall back inside the owning dialog. Existing
+`portal:false` specimen behavior stays local. The legacy JS renderers remain
+different; this adapter does not claim whole-renderer parity.

@@ -74,6 +74,9 @@ export interface InspectorStackOptions {
 	surface: string;
 	/** Ordered list of section descriptors. */
 	sections: InspectorSectionDescriptor[];
+	/** Full-rail tray or an embedded stack. Shared chrome is owned by this variant,
+	 * not by a consuming surface stylesheet. Defaults to embedded. */
+	presentation?: 'tray' | 'embedded';
 	/** Optional class added to the root container in addition to the primitive's own. */
 	rootClass?: string;
 	/** Optional class added to each card section in addition to the primitive's own. */
@@ -123,4 +126,7 @@ export interface InspectorStackHandle {
 	setMenuEntries(id: string, entries: MenuEntry[]): void;
 	/** Close any open card menu. Called on reorder, and safe to call anytime. */
 	closeMenus(): void;
+	/** Release global listeners and portaled menus and remove the root. Idempotent.
+	 * Consumers still own destruction of controls mounted in section bodies. */
+	destroy(): void;
 }

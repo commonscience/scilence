@@ -1,10 +1,11 @@
+import {mountTooltipLayer} from './tooltip-layer.js';
 /**
  * Tooltip — pan-app primitive (touch-gated, dictionary-driven).
  *
  * Canonical source: scilence/packages/primitives/src/tooltip/. The GUIDE shell
- * consumes a byte-identical mirror at guide/shell/js/components/tooltip/
- * (importmap + bootstrap target); the two copies are kept in sync — the known
- * scilence<->guide primitives duplication.
+ * consumes a legacy renderer at guide/shell/js/components/tooltip/
+ * (importmap + bootstrap target). Reveal depth differs; only the typed trigger
+ * policy and layer adapters have guarded parity.
  *
  * Per research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md (LOCKED 2026-06-29).
  *
@@ -85,6 +86,7 @@ export function attachTooltip(el, options = {}) {
   let timeout = null;
   let hideTimeout = null;
   let portalEl = null;
+  let releasePortalLayer = () => {};
   let disposed = false;
   const triggerPolicy = createTooltipTriggerPolicy(el, dismiss);
 
@@ -145,7 +147,9 @@ export function attachTooltip(el, options = {}) {
     renderPortalContent(node, resolved, text);
 
     Object.assign(node.style, portalBaseStyles());
-    document.body.appendChild(node);
+    const release = mountTooltipLayer(node, el);
+    if (!release) return;
+    releasePortalLayer = release;
     portalEl = node;
     // Keep the portal alive while the cursor is over it, so a glossary link
     // inside it is clickable; leaving the portal dismisses it.
@@ -184,7 +188,7 @@ export function attachTooltip(el, options = {}) {
 
   function removePortal() {
     if (portalEl) {
-      portalEl.remove();
+      releasePortalLayer();
       portalEl = null;
     }
   }
@@ -316,8 +320,12 @@ function renderPortalContent(node, resolved, fallback) {
 function portalBaseStyles() {
   return {
     position: "fixed",
-    zIndex: "9999",
-    maxWidth: "min(20rem, 80vw)",
+    zIndex: "var(--s-z-tooltip, 700)",
+    maxWidth: "min(20rem, calc(100vw - 1rem))",
+    boxSizing: "border-box",
+    width: "max-content",
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
     padding: "var(--s-space-2) var(--s-space-3)",
     background: "var(--s-tooltip-bg, var(--s-color-fg-primary))",
     color: "var(--s-tooltip-fg, var(--s-color-bg-surface))",
@@ -361,6 +369,7 @@ export function createTooltip(container, options = {}) {
 
   let timeout = null;
   let portalEl = null;
+  let releasePortalLayer = () => {};
   let wrapperEl = null;
   let descId = null;
   let disposed = false;
@@ -392,8 +401,10 @@ export function createTooltip(container, options = {}) {
     el.className = PORTAL_CLASS;
     el.setAttribute("role", "tooltip");
     el.textContent = text;
-    Object.assign(el.style, { ...portalBaseStyles(), whiteSpace: "nowrap", pointerEvents: "none" });
-    document.body.appendChild(el);
+    Object.assign(el.style, { ...portalBaseStyles(), pointerEvents: "none" });
+    const release = mountTooltipLayer(el, wrapperEl);
+    if (!release) return;
+    releasePortalLayer = release;
     portalEl = el;
 
     const tipRect = el.getBoundingClientRect();
@@ -428,7 +439,7 @@ export function createTooltip(container, options = {}) {
 
   function removePortal() {
     if (portalEl) {
-      portalEl.remove();
+      releasePortalLayer();
       portalEl = null;
     }
   }
@@ -492,6 +503,8 @@ export function createTooltip(container, options = {}) {
 
 function getStyles() {
   return `
+    .s-tooltip-portal[popover] { margin: 0; border: 0; inset: auto; }
+
     .s-tooltip-wrapper { position: relative; display: inline-flex; }
 
     .s-tooltip-portal--popover {
@@ -509,7 +522,7 @@ function getStyles() {
 
     .s-tooltip {
       position: absolute;
-      z-index: 9999;
+      z-index: var(--s-z-tooltip, 700);
       padding: var(--s-space-2) var(--s-space-3);
       background: var(--s-color-fg-primary);
       color: var(--s-color-bg-surface);
@@ -517,7 +530,11 @@ function getStyles() {
       font-size: var(--s-font-size--1);
       line-height: 1.2;
       border-radius: var(--s-radius-1);
-      white-space: nowrap;
+      max-inline-size: min(20rem, calc(100vw - 1rem));
+      box-sizing: border-box;
+      inline-size: max-content;
+      white-space: normal;
+      overflow-wrap: anywhere;
       pointer-events: none;
       animation: s-tooltip-in 80ms ease-out;
     }

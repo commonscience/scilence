@@ -83,7 +83,7 @@ export type {
 } from './components/IconButton/index.js';
 
 // ── Modal (native dialog substrate) ─────────────────────────────────────
-export { Modal, createModal } from './components/Modal/index.js';
+export { Modal, createModal, createModalChrome, getModalHandle } from './components/Modal/index.js';
 export { mergeModalVariants, resolveModalTokens } from './components/Modal/index.js';
 export type {
 	BodySlot,
@@ -95,6 +95,14 @@ export type {
 	HeaderAction,
 	HeaderSlot,
 	ModalConfig,
+	ModalChromeHandle,
+	ModalChromeOptions,
+	ModalChromeSlots,
+	ModalDismissal,
+	ModalFeedbackSlot,
+	ModalPresentation,
+	ModalStepperItem,
+	ModalStepperSlot,
 	ModalHandle,
 	ModalLifecycle,
 	ModalMode,

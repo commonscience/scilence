@@ -13,6 +13,7 @@
    — tracked in DS-convergence epic #386. Until then, this keeps native controls
    on-brand instead of browser-blue. */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Alias so call sites and future primitives share one source of truth. */
 	--s-form-accent: var(--s-color-accent-default);
@@ -23,4 +24,41 @@ input[type="radio"],
 input[type="range"],
 progress {
 	accent-color: var(--s-form-accent);
+}
+
+/* Single-value droplists share one indicator geometry, native or custom.
+   The glyph's visible edge is 14px from the control edge; reserve 36px so
+   long labels cannot run underneath it. Listboxes keep their native UI.
+   Indicator-only !important rules survive surface background/padding shorthands;
+   control colours, borders, heights and typography remain surface-owned. */
+:root,
+.s-theme-scope:is([data-theme="light"], [data-theme="dark"]) {
+ --s-select-indicator-edge: 14px;
+ --s-select-indicator-size: 12px;
+ --s-select-text-clearance: 36px;
+ --s-select-indicator-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%23666' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+:root[data-theme="dark"],
+.s-theme-scope[data-theme="dark"] {
+ --s-select-indicator-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%23aaa' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+select:not([multiple]):is(:not([size]),[size="0"],[size="1"]) {
+ appearance: none !important;
+ -webkit-appearance: none !important;
+ padding-inline-end: var(--s-select-text-clearance) !important;
+ background-image: var(--s-select-indicator-image) !important;
+ background-repeat: no-repeat !important;
+ background-size: var(--s-select-indicator-size) var(--s-select-indicator-size) !important;
+ /* 3px inside the SVG box + 11px outside = 14px visible inset. */
+ background-position: right calc(var(--s-select-indicator-edge) - 3px) center !important;
+}
+select:not([multiple]):is(:not([size]),[size="0"],[size="1"]):dir(rtl) {
+ background-position: left calc(var(--s-select-indicator-edge) - 3px) center !important;
+}
+@media (forced-colors: active) {
+ select:not([multiple]):is(:not([size]),[size="0"],[size="1"]) {
+  appearance: auto !important;
+  -webkit-appearance: auto !important;
+  background-image: none !important;
+ }
 }

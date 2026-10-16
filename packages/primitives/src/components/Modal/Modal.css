@@ -9,12 +9,15 @@
  *   - mode: docked (substrate; popout mechanics separate brief)
  *   - modifiers: animated
  *
- * Slot inventory locked at 7:
- *   - breadcrumb · header · toolbar · sidebar · body · status-bar · footer
+ * Owned parts: header/stepper, feedback, and action groups. Feedback extends
+ * the original seven slots; the header stepper does not own workflow state.
  *
  * Z-axis: modal is a raised surface per feedback_box_shadow_carveouts —
  * always carries shadow.
- */
+*/
+
+@import url('../Button/Button.css');
+@import url('../IconButton/IconButton.css');
 
 .s-modal-host {
 	display: contents;
@@ -41,6 +44,49 @@
 	}
 }
 
+/* Workspace composition: a single shared content grid and user-sized frame.
+ * The presentation owner supplies viewport-fitted geometry; document content
+ * does not determine the outer size. Other Modal variants retain their layout. */
+.s-modal-dialog.s-modal-dialog--workspace {
+	--s-modal-workspace-gutter: var(--s-space-4);
+	position: fixed;
+	inset: var(--s-modal-workspace-top) auto auto var(--s-modal-workspace-left);
+	margin: 0;
+}
+.s-modal-dialog.s-modal-dialog--workspace .s-modal-dialog__surface {
+	position: relative;
+	inline-size: var(--s-modal-workspace-width);
+	block-size: var(--s-modal-workspace-height);
+	min-inline-size: 0;
+	min-block-size: 0;
+	max-inline-size: none;
+	max-block-size: none;
+	max-height: none;
+}
+.s-modal-dialog--workspace .s-modal__header-row,
+.s-modal-dialog--workspace .s-modal__toolbar,
+.s-modal-dialog--workspace .s-modal__body--padded,
+.s-modal-dialog--workspace .s-modal__footer,
+.s-modal-dialog--workspace .s-modal__feedback {
+	padding-inline: var(--s-modal-workspace-gutter);
+}
+.s-modal-dialog--workspace .s-modal__header-row { padding-block: var(--s-space-3); }
+.s-modal-dialog--workspace .s-modal__body--padded { padding-block: var(--s-space-3); }
+.s-modal-dialog--workspace .s-modal__footer { padding-block: var(--s-space-2); }
+.s-modal-workspace__size-controls { display:flex; align-items:center; flex-wrap:wrap; gap:var(--s-space-2); margin-inline-end:auto; }
+.s-modal-workspace__size-controls .s-text-field { display:flex; flex-direction:row; align-items:center; gap:var(--s-space-2); }
+.s-modal-workspace__size-controls .s-text-field__label { margin:0; }
+.s-modal-workspace__size-controls .s-text-field__input { inline-size:6ch; min-inline-size:0; }
+.s-modal-workspace__size-status { font-size:var(--s-font-size-0); color:var(--s-color-fg-secondary); }
+.s-modal-workspace__size-error { font-size:var(--s-font-size-0); color:var(--s-color-status-danger-fg); }
+.s-modal-workspace__resize.s-icon-button { position:absolute; inset:auto 0 0 auto; inline-size:var(--s-space-4); block-size:var(--s-space-4); cursor:nwse-resize; touch-action:none; border:0; padding:0; }
+.s-modal-workspace__resize .s-icon-button__icon { inline-size:100%; block-size:100%; }
+@media (any-pointer: coarse) {
+	/* Reserve the corner hit area below actions, keeping Close unobstructed. */
+	.s-modal-dialog--workspace .s-modal__footer { padding-block-end:calc(var(--s-size-touch-target-min, 44px) + var(--s-space-2)); }
+	.s-modal-workspace__resize.s-icon-button { inline-size:var(--s-size-touch-target-min, 44px); block-size:var(--s-size-touch-target-min, 44px); }
+}
+
 .s-modal-dialog__surface {
 	display: flex;
 	flex-direction: column;
@@ -51,6 +97,39 @@
 	max-height: 85vh;
 	overflow: hidden;
 }
+
+/* A shared frame contract for native Modal and existing foreign dialog hosts.
+ * Width remains the host's chosen size; step contents never determine height. */
+.s-modal-frame--wizard {
+	display: flex;
+	flex-direction: column;
+	box-sizing: border-box;
+	block-size: min(85vh, 52rem);
+	min-block-size: 0;
+	max-block-size: calc(100vh - var(--s-space-6));
+	overflow: hidden;
+}
+
+@supports (height: 100dvh) {
+	.s-modal-frame--wizard {
+		block-size: min(85dvh, 52rem);
+		max-block-size: calc(100dvh - var(--s-space-6));
+	}
+}
+
+.s-modal-frame--wizard > .s-modal__body {
+	flex: 1;
+	min-block-size: 0;
+}
+
+/* Foreign hosts may give their old chrome explicit display:flex rules. */
+.s-modal-frame--wizard > [hidden] { display: none; }
+
+[data-modal-region][hidden],
+.s-modal__close[hidden],
+.s-modal__subtitle[hidden],
+.s-modal__btn [hidden],
+.s-modal__step-action [hidden] { display: none; }
 
 /* ── Size variants ───────────────────────────────────────────────────── */
 
@@ -171,13 +250,33 @@
 
 .s-modal__header {
 	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	border-bottom: 1px solid var(--s-color-border-subtle);
+	flex-shrink: 0;
+}
+
+.s-modal__header-row {
+	display: flex;
 	align-items: center;
 	justify-content: space-between;
 	padding: var(--s-space-4) var(--s-space-6);
-	border-bottom: 1px solid var(--s-color-border-subtle);
 	gap: var(--s-space-3);
-	flex-shrink: 0;
 }
+
+/* Flush navigation is a Modal-owned Button composition. */
+.s-modal__stepper { overflow-x: auto; }
+.s-modal__step-list {
+	display: flex;
+	list-style: none;
+	margin: 0;
+	padding: 0 var(--s-space-6);
+	gap: var(--s-space-2);
+}
+.s-modal__step { flex: 1 0 auto; border-block-end: 2px solid transparent; }
+.s-modal__step[data-current='true'] { border-block-end-color: var(--s-color-accent-active); }
+.s-modal__step[data-state='error'] { border-block-end-color: var(--s-color-status-danger); }
+.s-modal__step-action { inline-size: 100%; }
 
 .s-modal__header-inner {
 	display: flex;
@@ -210,7 +309,7 @@
 	flex-shrink: 0;
 }
 
-.s-modal__header-action {
+.s-modal__header-action:not(.s-button):not(.s-icon-button) {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -223,12 +322,12 @@
 	transition: background 100ms ease, color 100ms ease;
 }
 
-.s-modal__header-action:hover:not(:disabled) {
+.s-modal__header-action:not(.s-button):not(.s-icon-button):hover:not(:disabled) {
 	background: var(--s-color-hover-bg);
 	color: var(--s-color-fg-primary);
 }
 
-.s-modal__close {
+.s-modal__close:not(.s-icon-button) {
 	flex-shrink: 0;
 	display: inline-flex;
 	align-items: center;
@@ -243,7 +342,7 @@
 	box-sizing: border-box;
 }
 
-.s-modal__close:hover {
+.s-modal__close:not(.s-icon-button):hover {
 	background: var(--s-color-hover-bg);
 	color: var(--s-color-fg-primary);
 }
@@ -428,6 +527,7 @@
 
 .s-modal__body {
 	flex: 1;
+	min-block-size: 0;
 	overflow-y: auto;
 	font-size: var(--s-font-size-1);
 	color: var(--s-color-fg-primary);
@@ -490,6 +590,48 @@
 
 /* ── Footer slot ─────────────────────────────────────────────────────── */
 
+.s-modal__feedback {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--s-space-3);
+	padding: var(--s-space-3) var(--s-space-6);
+	border-top: 1px solid var(--s-color-border-subtle);
+	background: var(--s-color-bg-subtle);
+	color: var(--s-color-fg-primary);
+	font-size: var(--s-font-size-1);
+	flex-shrink: 0;
+	max-block-size: 35%;
+	overflow: auto;
+}
+.s-modal__feedback-icon { inline-size: var(--s-icon-sm); block-size: var(--s-icon-sm); flex-shrink: 0; }
+.s-modal__feedback[data-tone='info'] {
+	background: var(--s-color-status-info-bg);
+	color: var(--s-color-status-info-fg);
+	border-color: var(--s-color-status-info-border);
+}
+.s-modal__feedback[data-tone='success'] {
+	background: var(--s-color-status-success-bg);
+	color: var(--s-color-status-success-fg);
+	border-color: var(--s-color-status-success-border);
+}
+.s-modal__feedback[data-tone='warning'] {
+	background: var(--s-color-status-warning-bg);
+	color: var(--s-color-status-warning-fg);
+	border-color: var(--s-color-status-warning-border);
+}
+.s-modal__feedback[data-tone='danger'] {
+	background: var(--s-color-status-danger-bg);
+	color: var(--s-color-status-danger-fg);
+	border-color: var(--s-color-status-danger-border);
+}
+.s-modal__feedback[data-tone='info'] .s-modal__feedback-icon { color: var(--s-color-status-info); }
+.s-modal__feedback[data-tone='success'] .s-modal__feedback-icon { color: var(--s-color-status-success); }
+.s-modal__feedback[data-tone='warning'] .s-modal__feedback-icon { color: var(--s-color-status-warning); }
+.s-modal__feedback[data-tone='danger'] .s-modal__feedback-icon { color: var(--s-color-status-danger); }
+.s-modal__feedback-content { min-inline-size: 0; overflow-wrap: anywhere; }
+.s-modal__feedback-title { font-weight: var(--s-font-weight-semibold); }
+.s-modal__feedback-message { margin: var(--s-space-1) 0 0; line-height: 1.4; }
+
 .s-modal__footer {
 	display: flex;
 	align-items: center;
@@ -501,7 +643,11 @@
 	flex-shrink: 0;
 }
 
-.s-modal__btn {
+.s-modal__action-group { display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-space-2); }
+.s-modal__action-group--start { margin-inline-end: auto; }
+.s-modal__action-group--end { margin-inline-start: auto; justify-content: flex-end; }
+
+.s-modal__btn:not(.s-button) {
 	font-family: var(--s-font-sans);
 	font-size: var(--s-font-size-1);
 	padding: var(--s-space-2) var(--s-space-4);
@@ -512,20 +658,20 @@
 	color: var(--s-color-fg-primary);
 }
 
-.s-modal__btn--primary,
-.s-modal__btn--is-primary {
+.s-modal__btn--primary:not(.s-button),
+.s-modal__btn--is-primary:not(.s-button) {
 	background: var(--s-color-accent-active);
 	color: var(--s-color-on-accent);
 	border-color: var(--s-color-accent-active);
 }
 
-.s-modal__btn--cancel {
+.s-modal__btn--cancel:not(.s-button) {
 	background: transparent;
 	border-color: transparent;
 	color: var(--s-color-fg-muted);
 }
 
-.s-modal__btn--danger {
+.s-modal__btn--danger:not(.s-button) {
 	background: var(--s-color-status-danger);
 	color: var(--s-color-on-danger, var(--s-color-fg-oncolor));
 	border-color: var(--s-color-status-danger);

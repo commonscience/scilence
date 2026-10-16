@@ -6,9 +6,10 @@
  * (LOCKED 2026-06-29).
  *
  * Canonical source: scilence/packages/primitives/src/tooltip/.
- * The GUIDE shell consumes a byte-identical mirror at
+ * The GUIDE shell consumes a legacy renderer at
  * guide/shell/js/components/tooltip/ (importmap + bootstrap target); the two
- * copies are kept in sync — the known scilence<->guide primitives duplication.
+ * renderers differ in reveal depth. Only tooltip-trigger-policy and tooltip-layer
+ * adapters have guarded TS/JS parity; do not infer whole-renderer parity.
  */
 
 export {

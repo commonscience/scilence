@@ -2,6 +2,7 @@
    Variant axes resolve to these custom properties; IconButton.ts sets
    --s-icon-button-* resolved values on the element. */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* size — container + icon dimensions */
 

@@ -175,6 +175,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	const {
 		surface,
 		sections: descriptors,
+		presentation = 'embedded',
 		rootClass,
 		cardClass,
 		storage = defaultStorage(),
@@ -187,12 +188,12 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	// ── root ──────────────────────────────────────────────────────────
 	const root = document.createElement('div');
-	// Preserve the existing notebook class so notebook CSS keeps working
-	// when the notebook surface mounts via this primitive. Surfaces that
-	// don't want that class can override via opts.rootClass.
 	root.className = 'inspector-stack';
 	if (rootClass) root.classList.add(...rootClass.split(/\s+/).filter(Boolean));
+	root.classList.toggle('inspector-stack--tray', presentation === 'tray');
+	root.dataset.inspectorPresentation = presentation;
 	root.dataset.inspectorStack = surface;
+	let destroyed = false;
 
 	// ── aria-live announcer (drag/reorder narration) ──────────────────
 	const live = document.createElement('div');
@@ -206,7 +207,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 		live.textContent = '';
 		// next microtask so SR reliably picks it up.
 		queueMicrotask(() => {
-			live.textContent = msg;
+			if (!destroyed) live.textContent = msg;
 		});
 	}
 
@@ -274,7 +275,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	/** Build the popover + menu on first open, then show it. */
 	function openMenu(rec: SectionRecord): void {
-		if (!rec.kebab) return;
+		if (destroyed || !rec.kebab) return;
 		closeMenus();
 		if (!rec.menu) {
 			const pop = document.createElement('div');
@@ -540,6 +541,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	function moveTo(id: string, targetIndex: number): boolean {
+		if (destroyed) return false;
 		const from = order.indexOf(id);
 		if (from < 0) return false;
 		const clamped = Math.max(0, Math.min(order.length - 1, targetIndex));
@@ -620,6 +622,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	function attachPointerDrag(rec: SectionRecord): void {
 		rec.grip.addEventListener('pointerdown', (ev) => {
+			if (destroyed) return;
 			// keyboard mode is separate — ignore if a keyboard grab is in progress.
 			if (kbGrab && kbGrab.id !== rec.id) return;
 			if (ev.button !== 0) return;
@@ -643,6 +646,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	function attachKeyboardGrab(rec: SectionRecord): void {
 		rec.grip.addEventListener('keydown', (ev) => {
+			if (destroyed) return;
 			const key = ev.key;
 			if (!kbGrab) {
 				if (key === ' ' || key === 'Enter') {
@@ -710,6 +714,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	// ── public API ────────────────────────────────────────────────────
 	function setExpanded(id: string, expanded: boolean): void {
+		if (destroyed) return;
 		if (!expanded && openMenuId === id) closeMenus();
 		const rec = byId.get(id);
 		if (!rec) return;
@@ -722,6 +727,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	function setVisible(id: string, visible: boolean): void {
+		if (destroyed) return;
 		const rec = byId.get(id);
 		if (!rec) return;
 		if (rec.visible === visible) return;
@@ -745,6 +751,7 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 	}
 
 	function setOrder(next: string[]): void {
+		if (destroyed) return;
 		const known = next.filter((id) => byId.has(id));
 		const seen = new Set(known);
 		for (const id of order) if (!seen.has(id)) known.push(id);
@@ -760,6 +767,29 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 
 	function getBodyElement(id: string): HTMLElement | null {
 		return byId.get(id)?.body ?? null;
+	}
+
+	function destroy(): void {
+		if (destroyed) return;
+		destroyed = true;
+		closeMenus();
+		// Disposal cancels a pending drag; it must never persist a partial move.
+		pointerDrag = null;
+		kbGrab = null;
+		window.removeEventListener('pointermove', pointerMoveHandler);
+		window.removeEventListener('pointerup', pointerUpHandler);
+		window.removeEventListener('pointercancel', pointerUpHandler);
+		document.removeEventListener('pointerdown', onDocPointerDown, true);
+		document.removeEventListener('keydown', onDocKeyDown, true);
+		window.removeEventListener('resize', onViewportShift);
+		document.removeEventListener('scroll', onViewportShift, true);
+		root.removeEventListener('pointerdown', markPointer, true);
+		root.removeEventListener('keydown', clearPointer, true);
+		for (const rec of byId.values()) {
+			rec.menu?.destroy();
+			rec.pop?.remove();
+		}
+		root.remove();
 	}
 
 	return {
@@ -780,5 +810,6 @@ export function createInspectorStack(opts: InspectorStackOptions): InspectorStac
 			if (rec.menu && openMenuId === id) rec.menu.setEntries(entries);
 		},
 		closeMenus,
+		destroy,
 	};
 }

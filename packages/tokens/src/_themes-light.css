@@ -6,6 +6,7 @@
    so GUIDE / Motif / marketing / Commons feel related.
    Brand teal + status accents stay for interactive/semantic color.
    Density packing stays on `--s-space-*` / `data-density` — not a second palette. */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root,
 :root[data-theme='light'] {
 	/* Surfaces — Commons calm ground */
@@ -170,7 +171,16 @@
 	--s-focus-ring-offset: 2px;
 	--s-focus-ring-offset-inset: -2px;
 
-	/* Link semantics — Commons charcoal (public + app relatedness) */
-	--s-color-link: var(--s-commons-link);
-	--s-color-link-hover: var(--s-commons-link-hover);
+	/* Link ink follows the configurable secondary brand hue. Keep ink chroma
+	   independent from structural brandscale desaturation for legibility. */
+	--s-color-link: oklch(0.46 0.07 var(--brand-hue-secondary));
+	--s-color-link-hover: oklch(0.38 0.08 var(--brand-hue-secondary));
+	--s-color-link-visited: oklch(0.48 0.045 var(--brand-hue-secondary));
+
+	/* Quantitative plot ink: independent from selected-control fills. */
+	--s-color-plot-surface: var(--s-color-bg-subtle);
+	--s-color-plot-grid: oklch(0.68 0.015 var(--brand-hue));
+	--s-color-plot-axis: oklch(0.48 0.025 var(--brand-hue));
+	--s-color-plot-data: oklch(0.53 0.055 var(--brand-hue));
+	--s-color-plot-data-selected: oklch(0.40 0.075 var(--brand-hue));
 }

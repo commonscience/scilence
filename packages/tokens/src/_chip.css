@@ -2,6 +2,7 @@
    Variant axes resolve to these custom properties; Chip.ts sets
    --s-chip-* resolved values on the element (single lookup, no cascade wars). */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* size — font + padding + gap */
 

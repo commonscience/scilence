@@ -5,6 +5,7 @@
    Primary tone = accent (brand-700 greenscale) per
    feedback_primary_action_tone_is_accent (Caitlin direct 2026-06-07). */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* size — height + font + padding + gap */
 
@@ -28,10 +29,15 @@
 
 	/* variant — bg + fg + border + hover */
 
-	--s-button-variant-primary-bg: var(--s-color-accent-active);
-	--s-button-variant-primary-fg: var(--s-color-on-accent);
-	--s-button-variant-primary-border-color: var(--s-color-accent-active);
-	--s-button-variant-primary-hover-bg: color-mix(in oklch, var(--s-color-accent-active) 88%, oklch(0% 0 0));
+	/* Primary actions use the strong brand ladder, not the mid-tone general
+	   accent. Keep the light foreground paired with this fill in both themes;
+	   the theme-aware border distinguishes the fill on dark surfaces. Every
+	   color still follows the active brand hue/chroma scale. October14 review. */
+
+	--s-button-variant-primary-bg: var(--s-brand-700);
+	--s-button-variant-primary-fg: var(--s-brand-25);
+	--s-button-variant-primary-border-color: var(--s-color-accent-default);
+	--s-button-variant-primary-hover-bg: var(--s-brand-800);
 
 	--s-button-variant-secondary-bg: var(--s-color-bg-surface);
 	--s-button-variant-secondary-fg: var(--s-color-fg-primary);

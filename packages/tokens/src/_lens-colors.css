@@ -9,6 +9,7 @@
        product feel like the same elevation tier (one tinted, one not).
 */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Admin — surface elevation + very subtle teal cue */
 	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 4%, var(--s-color-bg-surface));
@@ -21,6 +22,7 @@
 	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
 
+.s-theme-scope[data-theme='dark'],
 :root[data-theme='dark'] {
 	--s-lens-admin-bg: color-mix(in oklch, var(--s-teal-500) 6%, var(--s-color-bg-surface));
 	--s-lens-admin-fg: var(--s-teal-200);
