@@ -117,7 +117,7 @@ export function attachHoverDisclosure(options: HoverDisclosureOptions): HoverDis
     return !trigger.isConnected || !popover.isConnected
       || trigger.hasAttribute('disabled') || trigger.getAttribute('aria-disabled') === 'true'
       || !!doc.querySelector('dialog[open]')
-      || [...doc.querySelectorAll<HTMLElement>('[popover]')].some(other => other !== popover && other.matches(':popover-open'))
+      || [...doc.querySelectorAll<HTMLElement>('[popover]')].some(other => other !== popover && other.getAttribute('role') !== 'tooltip' && other.matches(':popover-open'))
       || options.canOpen?.() === false;
   }
   function show(next: 'preview' | 'open', focus: boolean) {
@@ -239,7 +239,7 @@ export function attachHoverDisclosure(options: HoverDisclosureOptions): HoverDis
     if (event.target === popover) {
       if (next === 'closed') closed();
       else if (next === 'open' && state === 'closed') sync('open');
-    } else if (next === 'open') close();
+    } else if (next === 'open' && !(event.target instanceof win.Element && event.target.getAttribute('role') === 'tooltip')) close();
   }, true);
   listen(popover, 'toggle', () => {
     // Native light-dismiss and external hidePopover calls own their focus.
