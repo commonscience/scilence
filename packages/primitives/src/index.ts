@@ -45,6 +45,15 @@ export type {
 	Tone,
 } from './components/Card/index.js';
 
+// ── SegmentedControl (radiogroup; GUIDE DS consolidation U8) ────────────
+export { createSegmentedControl } from './components/SegmentedControl/index.js';
+export type {
+	SegmentedControlHandle,
+	SegmentedControlOptions,
+	SegmentedOption,
+	Size as SegmentedControlSize,
+} from './components/SegmentedControl/index.js';
+
 // ── Chip (unified chip vocabulary) ──────────────────────────────────────
 export { Chip, createChip } from './components/Chip/index.js';
 export { mergeChipVariants, resolveChipTokens } from './components/Chip/index.js';
