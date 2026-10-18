@@ -1,10 +1,16 @@
 /**
  * @scilence/primitives — Button CSS
  *
- * Variant treatment driven by resolved `--s-button-*` custom properties
- * set on the root by Button.ts (variant token lookup). Surfaces must
- * NOT re-layer rules on `.btn-*` or `.s-button--whatever` selectors —
- * use variant props on createButton instead.
+ * Variant treatment driven by resolved `--s-button-*` custom properties.
+ * Two equivalent entry points:
+ *   - createButton() sets them inline on the root (Button.ts);
+ *   - class-only markup gets them from the `[data-variant]` / `[data-size]`
+ *     rules below: `<button class="s-button" data-variant="secondary"
+ *     data-size="sm">` is complete without JS. Bare `.s-button` with no
+ *     data attributes renders `secondary` `md` — the quiet default the
+ *     Library page uses for its actions — never a second primary.
+ * Surfaces must NOT re-layer rules on `.btn-*` or `.s-button--whatever`
+ * selectors — use variant props or data attributes instead.
  *
  * Primary tone = accent (brand-700 greenscale) per
  * feedback_primary_action_tone_is_accent.
@@ -33,6 +39,77 @@
 		background var(--s-duration-fast) var(--s-ease-out),
 		color var(--s-duration-fast) var(--s-ease-out),
 		border-color var(--s-duration-fast) var(--s-ease-out);
+}
+
+/* ── Class-only contract ───────────────────────────────────────────────
+ * `:where()` keeps these at the specificity of `.s-button` alone, so the
+ * factory's inline props and any surface's scoped override still win.
+ * One rule per Variant and Size in types.ts; button-class-contract.test.ts
+ * fails if a member is added without its rule. */
+
+.s-button {
+	--s-button-font-size: var(--s-button-size-md-font-size);
+	--s-button-padding-block: var(--s-button-size-md-padding-block);
+	--s-button-padding-inline: var(--s-button-size-md-padding-inline);
+	--s-button-gap: var(--s-button-size-md-gap);
+	--s-button-height: var(--s-button-size-md-height);
+	--s-button-bg: var(--s-button-variant-secondary-bg);
+	--s-button-fg: var(--s-button-variant-secondary-fg);
+	--s-button-border-color: var(--s-button-variant-secondary-border-color);
+}
+
+.s-button:where([data-variant='primary']) {
+	--s-button-bg: var(--s-button-variant-primary-bg);
+	--s-button-fg: var(--s-button-variant-primary-fg);
+	--s-button-border-color: var(--s-button-variant-primary-border-color);
+}
+
+.s-button:where([data-variant='secondary']) {
+	--s-button-bg: var(--s-button-variant-secondary-bg);
+	--s-button-fg: var(--s-button-variant-secondary-fg);
+	--s-button-border-color: var(--s-button-variant-secondary-border-color);
+}
+
+.s-button:where([data-variant='ghost']) {
+	--s-button-bg: var(--s-button-variant-ghost-bg);
+	--s-button-fg: var(--s-button-variant-ghost-fg);
+	--s-button-border-color: var(--s-button-variant-ghost-border-color);
+}
+
+.s-button:where([data-variant='danger']) {
+	--s-button-bg: var(--s-button-variant-danger-bg);
+	--s-button-fg: var(--s-button-variant-danger-fg);
+	--s-button-border-color: var(--s-button-variant-danger-border-color);
+}
+
+.s-button:where([data-variant='add']) {
+	--s-button-bg: var(--s-button-variant-add-bg);
+	--s-button-fg: var(--s-button-variant-add-fg);
+	--s-button-border-color: var(--s-button-variant-add-border-color);
+}
+
+.s-button:where([data-size='sm']) {
+	--s-button-font-size: var(--s-button-size-sm-font-size);
+	--s-button-padding-block: var(--s-button-size-sm-padding-block);
+	--s-button-padding-inline: var(--s-button-size-sm-padding-inline);
+	--s-button-gap: var(--s-button-size-sm-gap);
+	--s-button-height: var(--s-button-size-sm-height);
+}
+
+.s-button:where([data-size='md']) {
+	--s-button-font-size: var(--s-button-size-md-font-size);
+	--s-button-padding-block: var(--s-button-size-md-padding-block);
+	--s-button-padding-inline: var(--s-button-size-md-padding-inline);
+	--s-button-gap: var(--s-button-size-md-gap);
+	--s-button-height: var(--s-button-size-md-height);
+}
+
+.s-button:where([data-size='lg']) {
+	--s-button-font-size: var(--s-button-size-lg-font-size);
+	--s-button-padding-block: var(--s-button-size-lg-padding-block);
+	--s-button-padding-inline: var(--s-button-size-lg-padding-inline);
+	--s-button-gap: var(--s-button-size-lg-gap);
+	--s-button-height: var(--s-button-size-lg-height);
 }
 
 .s-button:is(button) {
