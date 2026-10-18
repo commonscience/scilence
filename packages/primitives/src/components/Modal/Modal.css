@@ -50,13 +50,14 @@
 .s-modal-dialog.s-modal-dialog--workspace {
 	--s-modal-workspace-gutter: var(--s-space-4);
 	position: fixed;
-	inset: var(--s-modal-workspace-top) auto auto var(--s-modal-workspace-left);
+	/* Fallbacks keep the frame usable where no presentation owner supplies geometry. */
+	inset: var(--s-modal-workspace-top, var(--s-modal-workspace-gutter)) auto auto var(--s-modal-workspace-left, var(--s-modal-workspace-gutter));
 	margin: 0;
 }
 .s-modal-dialog.s-modal-dialog--workspace .s-modal-dialog__surface {
 	position: relative;
-	inline-size: var(--s-modal-workspace-width);
-	block-size: var(--s-modal-workspace-height);
+	inline-size: var(--s-modal-workspace-width, calc(100vw - 2 * var(--s-modal-workspace-gutter, 16px)));
+	block-size: var(--s-modal-workspace-height, calc(100vh - 2 * var(--s-modal-workspace-gutter, 16px)));
 	min-inline-size: 0;
 	min-block-size: 0;
 	max-inline-size: none;
