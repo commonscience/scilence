@@ -50,6 +50,11 @@ test('bare .s-button defaults to secondary md, never primary', () => {
 	assert.match(body, /--s-button-height: var\(--s-button-size-md-height\)/);
 });
 
+test('bare .s-button gets the secondary hover, not only the secondary resting state', () => {
+	const css = read('./Button/Button.css');
+	assert.match(css, /\.s-button:is\(\[data-variant='secondary'\], :not\(\[data-variant\]\)\):hover/);
+});
+
 test('IconButton.css resolves every Tone, Size and Shape from data attributes', () => {
 	const types = read('./IconButton/types.ts');
 	const css = read('./IconButton/IconButton.css');

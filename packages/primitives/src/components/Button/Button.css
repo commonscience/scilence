@@ -152,7 +152,7 @@
 	background: var(--s-button-variant-primary-hover-bg);
 }
 
-.s-button[data-variant='secondary']:hover:not(:disabled):not([aria-disabled='true']) {
+.s-button:is([data-variant='secondary'], :not([data-variant])):hover:not(:disabled):not([aria-disabled='true']) {
 	background: var(--s-color-hover-bg);
 	border-color: var(--s-color-border-default);
 }
