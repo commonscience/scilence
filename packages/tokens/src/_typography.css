@@ -72,6 +72,10 @@
 	   that survives the sweep — DS consolidation U0 (2026-10-18). New roles are
 	   sentence case and need no tracking. */
 	--s-tracking-caps: 0.06em;
+	--s-tracking-normal: normal;
+
+	/* Comfortable reading measure for lead and prose lines (type roles). */
+	--s-measure-prose: 68ch;
 }
 
 /* ===== 3b. DENSITY MODES ===== */

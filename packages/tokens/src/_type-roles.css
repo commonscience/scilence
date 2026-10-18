@@ -2,107 +2,128 @@
    Type roles: one rule per role, so a surface names its intent instead of
    restating a size/weight/case recipe. Derived from the GUIDE Library page
    (research/specs/guide/2026-10-18-ds-consolidation-plan.md §A0.2, A1.2);
-   defaults applied, founder may revise
+   founder confirmed 2026-10-18
    (research/handoffs/decisions/2026-10-18-ds-canonical-set.md).
+
+   CASCADE CONTRACT (founder, 2026-10-18: "make sure we use CSS rules here so
+   that if we ever experiment with other typefaces or spatial conditions,
+   things still cascade properly"):
+   - Every role property reads a custom property; no family name, px or other
+     literal appears in a role rule.
+   - Form: `font-size: var(--s-role-<role>-size, var(--s-font-size-3))`. The
+     --s-role-* token is an optional override hook; its FALLBACK is the alias
+     to the base token. The alias is deliberately not declared at :root — a
+     var() inside a custom property resolves where it is declared, so a :root
+     alias would freeze the value and a subtree that swaps --s-font-sans or a
+     size step would not re-flow. As a fallback it resolves on the element,
+     from the nearest ancestor's tokens.
+   - So: change a base token at :root or on any subtree and every role
+     re-flows; set a --s-role-* token on a subtree to re-tune one role there.
+   Pinned by guide/shell/test/type-roles-cascade.test.mjs (real browser) and
+   type-roles-contract.test.mjs (no literals).
 
    Hierarchy comes from size, weight and proximity, not tracked capitals
    (library.css:171-183). The eyebrow is the only uppercase role. Mono is for
    identifiers only. Notebook prose headings keep their own locked ladder
-   (--nb-h1..h5-*) and are out of scope.
-
-   Single-class selectors on purpose: a role is a default a surface may
-   refine locally, not a lock. */
+   (--nb-h1..h5-*) and are out of scope. Single-class selectors on purpose: a
+   role is a default a surface may refine locally, not a lock. */
 
 /* Page title — one per surface (h1). */
 .s-title {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-3);
-	font-weight: var(--s-font-weight-semibold);
-	line-height: var(--s-font-line-height-tight);
-	color: var(--s-color-fg-heading);
+	font-family: var(--s-role-title-family, var(--s-font-sans));
+	font-size: var(--s-role-title-size, var(--s-font-size-3));
+	font-weight: var(--s-role-title-weight, var(--s-font-weight-semibold));
+	line-height: var(--s-role-title-leading, var(--s-font-line-height-tight));
+	letter-spacing: var(--s-role-title-tracking, var(--s-tracking-normal));
+	color: var(--s-role-title-color, var(--s-color-fg-heading));
 }
 
 /* Eyebrow — the area kicker above a page title; the one uppercase role. */
 .s-eyebrow {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-caption);
-	font-weight: var(--s-font-weight-medium);
-	line-height: var(--s-font-line-height-tight);
-	letter-spacing: var(--s-tracking-caps);
+	font-family: var(--s-role-eyebrow-family, var(--s-font-sans));
+	font-size: var(--s-role-eyebrow-size, var(--s-font-size-caption));
+	font-weight: var(--s-role-eyebrow-weight, var(--s-font-weight-medium));
+	line-height: var(--s-role-eyebrow-leading, var(--s-font-line-height-tight));
+	letter-spacing: var(--s-role-eyebrow-tracking, var(--s-tracking-caps));
+	color: var(--s-role-eyebrow-color, var(--s-color-fg-muted));
 	text-transform: uppercase;
-	color: var(--s-color-fg-muted);
 }
 
 /* Lead — the sentence under a page title. */
 .s-lead {
 	margin: 0;
-	max-width: 68ch;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-1);
-	font-weight: var(--s-font-weight-regular);
-	line-height: var(--s-font-line-height-relaxed);
-	color: var(--s-color-fg-muted);
+	font-family: var(--s-role-lead-family, var(--s-font-sans));
+	font-size: var(--s-role-lead-size, var(--s-font-size-1));
+	font-weight: var(--s-role-lead-weight, var(--s-font-weight-regular));
+	line-height: var(--s-role-lead-leading, var(--s-font-line-height-relaxed));
+	letter-spacing: var(--s-role-lead-tracking, var(--s-tracking-normal));
+	color: var(--s-role-lead-color, var(--s-color-fg-muted));
+	max-width: var(--s-role-lead-measure, var(--s-measure-prose));
 }
 
 /* Section label — heads a group or facet (an h2 when it heads a section).
    Sentence case; keep the domain label's own casing (cLogP, TPSA). */
 .s-section-label {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-0);
-	font-weight: var(--s-font-weight-medium);
-	line-height: var(--s-font-line-height-tight);
-	letter-spacing: normal;
+	font-family: var(--s-role-section-label-family, var(--s-font-sans));
+	font-size: var(--s-role-section-label-size, var(--s-font-size-0));
+	font-weight: var(--s-role-section-label-weight, var(--s-font-weight-medium));
+	line-height: var(--s-role-section-label-leading, var(--s-font-line-height-tight));
+	letter-spacing: var(--s-role-section-label-tracking, var(--s-tracking-normal));
+	color: var(--s-role-section-label-color, var(--s-color-fg-muted));
 	text-transform: none;
-	color: var(--s-color-fg-muted);
 }
 
 /* Subtitle — heads a panel, inspector or modal section (Library inspector title). */
 .s-subtitle {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-2);
-	font-weight: var(--s-font-weight-medium);
-	line-height: var(--s-font-line-height-tight);
-	color: var(--s-color-fg-primary);
+	font-family: var(--s-role-subtitle-family, var(--s-font-sans));
+	font-size: var(--s-role-subtitle-size, var(--s-font-size-2));
+	font-weight: var(--s-role-subtitle-weight, var(--s-font-weight-medium));
+	line-height: var(--s-role-subtitle-leading, var(--s-font-line-height-tight));
+	letter-spacing: var(--s-role-subtitle-tracking, var(--s-tracking-normal));
+	color: var(--s-role-subtitle-color, var(--s-color-fg-primary));
 }
 
 /* Card title — names one item in a collection (Library browser card). */
 .s-card-title {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-1);
-	font-weight: var(--s-font-weight-semibold);
-	line-height: var(--s-font-line-height-tight);
-	color: var(--s-color-fg-primary);
+	font-family: var(--s-role-card-title-family, var(--s-font-sans));
+	font-size: var(--s-role-card-title-size, var(--s-font-size-1));
+	font-weight: var(--s-role-card-title-weight, var(--s-font-weight-semibold));
+	line-height: var(--s-role-card-title-leading, var(--s-font-line-height-tight));
+	letter-spacing: var(--s-role-card-title-tracking, var(--s-tracking-normal));
+	color: var(--s-role-card-title-color, var(--s-color-fg-primary));
 }
 
 /* Caption — source lines, counts, help text. fg-muted, not fg-soft: soft
    measures 4.34:1 on the app ground in light, below the text floor. */
 .s-caption {
 	margin: 0;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-0);
-	font-weight: var(--s-font-weight-regular);
-	line-height: var(--s-font-line-height-normal);
-	color: var(--s-color-fg-muted);
+	font-family: var(--s-role-caption-family, var(--s-font-sans));
+	font-size: var(--s-role-caption-size, var(--s-font-size-0));
+	font-weight: var(--s-role-caption-weight, var(--s-font-weight-regular));
+	line-height: var(--s-role-caption-leading, var(--s-font-line-height-normal));
+	letter-spacing: var(--s-role-caption-tracking, var(--s-tracking-normal));
+	color: var(--s-role-caption-color, var(--s-color-fg-muted));
 }
 
 /* Meta — card metadata and keys beside values. */
 .s-meta {
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-0);
-	font-weight: var(--s-font-weight-regular);
-	line-height: var(--s-font-line-height-normal);
-	color: var(--s-color-fg-muted);
+	font-family: var(--s-role-meta-family, var(--s-font-sans));
+	font-size: var(--s-role-meta-size, var(--s-font-size-0));
+	font-weight: var(--s-role-meta-weight, var(--s-font-weight-regular));
+	line-height: var(--s-role-meta-leading, var(--s-font-line-height-normal));
+	letter-spacing: var(--s-role-meta-tracking, var(--s-tracking-normal));
+	color: var(--s-role-meta-color, var(--s-color-fg-muted));
 }
 
 /* Mono — identifiers only (ids, SHAs, accessions, SMILES). */
 .s-mono {
-	font-family: var(--s-font-mono);
-	font-size: var(--s-font-size-0);
+	font-family: var(--s-role-mono-family, var(--s-font-mono));
+	font-size: var(--s-role-mono-size, var(--s-font-size-0));
 }
 
 /* Table — one density-aware register (Library molecule table,
@@ -111,35 +132,36 @@
 .s-table {
 	width: 100%;
 	border-collapse: collapse;
-	font-family: var(--s-font-sans);
-	font-size: var(--s-font-size-1);
-	color: var(--s-color-fg-primary);
+	font-family: var(--s-role-table-family, var(--s-font-sans));
+	font-size: var(--s-role-table-size, var(--s-font-size-1));
+	line-height: var(--s-role-table-leading, var(--s-font-line-height-normal));
+	color: var(--s-role-table-color, var(--s-color-fg-primary));
 	font-variant-numeric: tabular-nums;
 }
 
 .s-table th {
 	padding: var(--s-space-2) var(--s-space-4);
 	text-align: start;
-	font-weight: var(--s-font-weight-semibold);
-	color: var(--s-color-fg-muted);
-	background: var(--s-color-bg-subtle);
-	border-bottom: 1px solid var(--s-color-border-subtle);
+	font-weight: var(--s-role-table-head-weight, var(--s-font-weight-semibold));
+	letter-spacing: var(--s-role-table-head-tracking, var(--s-tracking-normal));
+	color: var(--s-role-table-head-color, var(--s-color-fg-muted));
+	background: var(--s-role-table-head-bg, var(--s-color-bg-subtle));
+	border-bottom: var(--s-border-thin) solid var(--s-color-border-subtle);
 	text-transform: none;
-	letter-spacing: normal;
 }
 
 .s-table td {
 	padding: var(--s-space-2) var(--s-space-4);
-	border-bottom: 1px solid var(--s-color-border-subtle);
+	border-bottom: var(--s-border-thin) solid var(--s-color-border-subtle);
 	vertical-align: middle;
 }
 
 .s-table[data-density='compact'] {
-	font-size: var(--s-font-size-0);
+	font-size: var(--s-role-table-compact-size, var(--s-font-size-0));
 }
 
 .s-table[data-density='compact'] th {
-	font-weight: var(--s-font-weight-medium);
+	font-weight: var(--s-role-table-compact-head-weight, var(--s-font-weight-medium));
 }
 
 .s-table[data-density='compact'] :is(th, td) {

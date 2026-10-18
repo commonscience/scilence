@@ -22,7 +22,7 @@
 
 	/* Role aliases — GUIDE DS consolidation U0 (2026-10-18), derived from the
 	   Library page (research/specs/guide/2026-10-18-ds-consolidation-plan.md
-	   §A0.4, A1.4). Default applied; founder may revise
+	   §A0.4, A1.4). Founder confirmed 2026-10-18
 	   (research/handoffs/decisions/2026-10-18-ds-canonical-set.md).
 	   control: bordered text buttons + segmented controls (Library: all five
 	   such controls are md). container: cards, tiles, panels, fieldsets
@@ -33,9 +33,45 @@
 	--s-radius-container: var(--s-radius-sm);
 	--s-radius-icon-control: var(--s-radius-2);
 	--s-radius-floating: var(--s-radius-md);
+	/* Zero as a length, so max() can clamp a nested radius (see below). */
+	--s-radius-none: 0px;
 
 	/* Border widths */
 	--s-border-thin: calc(var(--s-font-size-active) * 0.071);
 	--s-border-base: calc(var(--s-font-size-active) * 0.143);
 	--s-border-thick: calc(var(--s-font-size-active) * 0.214);
+}
+
+/* ===== 4b. NESTED RADIUS =====
+   Founder confirmed 2026-10-18, after
+   https://www.30secondsofcode.org/css/s/nested-border-radius/ :
+   inner radius = outer radius − the inset between them, clamped at 0.
+
+   A rounded container PUBLISHES its corner (--s-radius-outer) and its inset
+   (--s-inset); a surface inside it takes `.s-radius-inner`, whose radius is
+   computed ON THAT ELEMENT from the inherited values. The formula lives only
+   in the `.s-radius-inner` rule: a :root token holding it would resolve at
+   :root, before any container has published anything.
+
+   `.s-radius-nest` publishes and applies both (override with
+   --s-radius-nest-outer / --s-radius-nest-inset). A container whose corner
+   and padding are owned elsewhere (a Modal surface, say) publishes the two
+   properties itself. Depth: one level per container. A custom property cannot
+   read its own inherited value, so a surface that is both inner and a
+   container sets its --s-radius-outer explicitly.
+
+   Clamp consequence: wherever the inset is at least the outer radius, the
+   inner corner is square. That is the rule, not a bug. */
+.s-radius-nest {
+	--s-radius-outer: var(--s-radius-nest-outer, var(--s-radius-container));
+	--s-inset: var(--s-radius-nest-inset, var(--s-space-3));
+	border-radius: var(--s-radius-outer);
+	padding: var(--s-inset);
+}
+
+.s-radius-inner {
+	border-radius: max(
+		var(--s-radius-none),
+		calc(var(--s-radius-outer, var(--s-radius-none)) - var(--s-inset, var(--s-radius-none)))
+	);
 }
