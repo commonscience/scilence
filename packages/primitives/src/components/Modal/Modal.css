@@ -122,15 +122,6 @@
 	min-block-size: 0;
 }
 
-/* Foreign hosts may give their old chrome explicit display:flex rules. */
-.s-modal-frame--wizard > [hidden] { display: none; }
-
-[data-modal-region][hidden],
-.s-modal__close[hidden],
-.s-modal__subtitle[hidden],
-.s-modal__btn [hidden],
-.s-modal__step-action [hidden] { display: none; }
-
 /* ── Size variants ───────────────────────────────────────────────────── */
 
 .s-modal-dialog--sm .s-modal-dialog__surface { width: min(92vw, 480px); }
