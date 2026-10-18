@@ -40,3 +40,6 @@
 @import './_forms.css';
 @import './_chrome-calm.css';
 @import './_scrollbar.css';
+/* Type roles last: rules, not tokens; they consume everything above.
+   GUIDE DS consolidation U2 (2026-10-18). */
+@import './_type-roles.css';
