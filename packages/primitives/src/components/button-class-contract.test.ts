@@ -29,56 +29,69 @@ test('Button.css resolves every Variant and Size from data attributes', () => {
 	const types = read('./Button/types.ts');
 	const css = read('./Button/Button.css');
 	for (const v of unionMembers(types, 'Variant')) {
-		const body = ruleBody(css, `.s-button:where([data-variant='${v}'])`);
+		const body = ruleBody(css, `.s-button[data-variant='${v}']`);
 		for (const prop of ['bg', 'fg', 'border-color']) {
 			assert.match(body, new RegExp(`--s-button-${prop}: var\\(--s-button-variant-${v}-${prop}\\)`));
 		}
 	}
 	for (const s of unionMembers(types, 'Size')) {
-		const body = ruleBody(css, `.s-button:where([data-size='${s}'])`);
+		const body = ruleBody(css, `.s-button[data-size='${s}']`);
 		for (const prop of ['font-size', 'padding-block', 'padding-inline', 'gap', 'height']) {
 			assert.match(body, new RegExp(`--s-button-${prop}: var\\(--s-button-size-${s}-${prop}\\)`));
 		}
 	}
 });
 
-test('bare .s-button defaults to secondary md, never primary', () => {
-	const css = read('./Button/Button.css');
-	const base = css.slice(css.indexOf('.s-button {\n\t--s-button-font-size'));
-	const body = base.slice(0, base.indexOf('}'));
-	assert.match(body, /--s-button-bg: var\(--s-button-variant-secondary-bg\)/);
-	assert.match(body, /--s-button-height: var\(--s-button-size-md-height\)/);
-});
-
-test('bare .s-button gets the secondary hover, not only the secondary resting state', () => {
-	const css = read('./Button/Button.css');
-	assert.match(css, /\.s-button:is\(\[data-variant='secondary'\], :not\(\[data-variant\]\)\):hover/);
-});
-
 test('IconButton.css resolves every Tone, Size and Shape from data attributes', () => {
 	const types = read('./IconButton/types.ts');
 	const css = read('./IconButton/IconButton.css');
 	for (const t of unionMembers(types, 'Tone')) {
-		const body = ruleBody(css, `.s-icon-button:where([data-tone='${t}'])`);
+		const body = ruleBody(css, `.s-icon-button[data-tone='${t}']`);
 		for (const prop of ['bg', 'fg', 'border-color', 'hover-bg']) {
 			assert.match(body, new RegExp(`--s-icon-button-${prop}: var\\(--s-icon-button-tone-${t}-${prop}\\)`));
 		}
 	}
 	for (const s of unionMembers(types, 'Size')) {
-		const body = ruleBody(css, `.s-icon-button:where([data-size='${s}'])`);
+		const body = ruleBody(css, `.s-icon-button[data-size='${s}']`);
 		assert.match(body, new RegExp(`--s-icon-button-size: var\\(--s-icon-button-size-${s}-container\\)`));
 		assert.match(body, new RegExp(`--s-icon-button-icon-size: var\\(--s-icon-button-size-${s}-icon\\)`));
 	}
 	for (const sh of unionMembers(types, 'Shape')) {
-		const body = ruleBody(css, `.s-icon-button:where([data-shape='${sh}'])`);
+		const body = ruleBody(css, `.s-icon-button[data-shape='${sh}']`);
 		assert.match(body, new RegExp(`--s-icon-button-radius: var\\(--s-icon-button-shape-${sh}-radius\\)`));
 	}
 });
 
-test('IconButton pressed uses the system selected wash, not a second recipe', () => {
+test('a bare class resolves no variant: data attributes are required', () => {
+	// frame-navigation-tree.ts puts the bare `s-button` class on nav heads that
+	// reset their own chrome; resolving min-height or colour there would repaint them.
+	const cases: Array<[string, string, string]> = [
+		['./Button/Button.css', '.s-button', '--s-button-'],
+		['./IconButton/IconButton.css', '.s-icon-button', '--s-icon-button-'],
+	];
+	for (const [rel, root, prefix] of cases) {
+		const css = read(rel);
+		const body = ruleBody(css, root);
+		assert.doesNotMatch(body, new RegExp(`${prefix}[a-z-]+:`), `${rel}: bare ${root} sets a resolved prop`);
+		assert.doesNotMatch(css, /:where\(/, `${rel}: variant rules must not use :where() (one-class rules could repaint them)`);
+	}
+});
+
+test('secondary hover lifts ink to the hover-fg token', () => {
+	const css = read('./Button/Button.css');
+	const body = ruleBody(css, ".s-button[data-variant='secondary']:hover:not(:disabled):not([aria-disabled='true'])");
+	assert.match(body, /color: var\(--s-button-variant-secondary-hover-fg\)/);
+});
+
+test('Button corners use the control radius role', () => {
+	assert.match(ruleBody(read('./Button/Button.css'), '.s-button'), /border-radius: var\(--s-radius-control\)/);
+});
+
+test('IconButton pressed uses the paired selected tokens, not a second recipe', () => {
 	const css = read('./IconButton/IconButton.css');
 	const body = ruleBody(css, ".s-icon-button[aria-pressed='true']");
 	assert.match(body, /background: var\(--s-color-selected-bg\)/);
+	assert.match(body, /color: var\(--s-color-selected-fg\)/);
 	assert.doesNotMatch(css, /--s-brand-alpha-/);
 });
 

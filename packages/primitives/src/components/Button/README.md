@@ -44,6 +44,15 @@ container.appendChild(btn.element);
 
 Link `Button.css` once per surface (GUIDE mirror: `/admin/css/button.css`).
 
+## Class-only markup (no JS)
+
+```html
+<button type="button" class="s-button" data-variant="secondary" data-size="sm">Compare</button>
+```
+
+`data-variant` and `data-size` are both required; a bare `.s-button` resolves nothing (some surfaces use the bare class on controls that reset their own chrome). The rules live in `Button.css`, one per `types.ts` member; `button-class-contract.test.ts` fails if a member is added without its rule. Corners use `--s-radius-control`.
+
+
 ## Options beyond variants
 
 - `icon` + `iconPosition` (`'left' | 'right'`) — optional leading or trailing icon

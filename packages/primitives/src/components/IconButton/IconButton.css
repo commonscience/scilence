@@ -5,9 +5,9 @@
  * properties: set inline by IconButton.ts, or by the `[data-tone]` /
  * `[data-size]` / `[data-shape]` rules below for class-only markup
  * (`<button class="s-icon-button" data-tone="ghost" data-size="sm"
- * aria-label="…">`). Bare `.s-icon-button` = the factory default
- * (default tone, md, square). Surfaces must NOT re-layer rules on
- * `.icon-btn` or `.s-icon-button--whatever` selectors.
+ * data-shape="square" aria-label="…">`). All three attributes are required;
+ * a bare `.s-icon-button` resolves nothing. Surfaces must NOT re-layer
+ * rules on `.icon-btn` or `.s-icon-button--whatever` selectors.
  */
 
 .s-icon-button {
@@ -31,59 +31,50 @@
 		border-color var(--s-duration-fast) var(--s-ease-out);
 }
 
-/* ── Class-only contract (see Button.css; same :where() specificity rule) ── */
+/* ── Class-only contract (see Button.css: attribute selectors, one rule per
+ * types.ts member, no bare-class defaults). */
 
-.s-icon-button {
-	--s-icon-button-size: var(--s-icon-button-size-md-container);
-	--s-icon-button-icon-size: var(--s-icon-button-size-md-icon);
-	--s-icon-button-radius: var(--s-icon-button-shape-square-radius);
+.s-icon-button[data-tone='default'] {
 	--s-icon-button-bg: var(--s-icon-button-tone-default-bg);
 	--s-icon-button-fg: var(--s-icon-button-tone-default-fg);
 	--s-icon-button-border-color: var(--s-icon-button-tone-default-border-color);
 	--s-icon-button-hover-bg: var(--s-icon-button-tone-default-hover-bg);
 }
 
-.s-icon-button:where([data-tone='default']) {
-	--s-icon-button-bg: var(--s-icon-button-tone-default-bg);
-	--s-icon-button-fg: var(--s-icon-button-tone-default-fg);
-	--s-icon-button-border-color: var(--s-icon-button-tone-default-border-color);
-	--s-icon-button-hover-bg: var(--s-icon-button-tone-default-hover-bg);
-}
-
-.s-icon-button:where([data-tone='ghost']) {
+.s-icon-button[data-tone='ghost'] {
 	--s-icon-button-bg: var(--s-icon-button-tone-ghost-bg);
 	--s-icon-button-fg: var(--s-icon-button-tone-ghost-fg);
 	--s-icon-button-border-color: var(--s-icon-button-tone-ghost-border-color);
 	--s-icon-button-hover-bg: var(--s-icon-button-tone-ghost-hover-bg);
 }
 
-.s-icon-button:where([data-tone='outlined']) {
+.s-icon-button[data-tone='outlined'] {
 	--s-icon-button-bg: var(--s-icon-button-tone-outlined-bg);
 	--s-icon-button-fg: var(--s-icon-button-tone-outlined-fg);
 	--s-icon-button-border-color: var(--s-icon-button-tone-outlined-border-color);
 	--s-icon-button-hover-bg: var(--s-icon-button-tone-outlined-hover-bg);
 }
 
-.s-icon-button:where([data-size='sm']) {
+.s-icon-button[data-size='sm'] {
 	--s-icon-button-size: var(--s-icon-button-size-sm-container);
 	--s-icon-button-icon-size: var(--s-icon-button-size-sm-icon);
 }
 
-.s-icon-button:where([data-size='md']) {
+.s-icon-button[data-size='md'] {
 	--s-icon-button-size: var(--s-icon-button-size-md-container);
 	--s-icon-button-icon-size: var(--s-icon-button-size-md-icon);
 }
 
-.s-icon-button:where([data-size='lg']) {
+.s-icon-button[data-size='lg'] {
 	--s-icon-button-size: var(--s-icon-button-size-lg-container);
 	--s-icon-button-icon-size: var(--s-icon-button-size-lg-icon);
 }
 
-.s-icon-button:where([data-shape='square']) {
+.s-icon-button[data-shape='square'] {
 	--s-icon-button-radius: var(--s-icon-button-shape-square-radius);
 }
 
-.s-icon-button:where([data-shape='round']) {
+.s-icon-button[data-shape='round'] {
 	--s-icon-button-radius: var(--s-icon-button-shape-round-radius);
 }
 
@@ -108,15 +99,22 @@
 	cursor: not-allowed;
 }
 
+/* Outlined tone: the border steps up on hover, as the Library view cog does
+ * (library.css .library-view-cog:hover → border-strong). */
+.s-icon-button[data-tone='outlined']:hover:not(:disabled):not([aria-disabled='true']) {
+	border-color: var(--s-color-border-strong);
+}
+
 /* Toggle-style (aria-pressed) — the
- * system selected wash, the same one the Library page paints on its
+ * system selected pair (selected-bg + selected-fg, defined together per
+ * theme), the same wash the Library page paints on its
  * pressed view cog and checked rail segment (library.css .library-view-cog
  * [aria-expanded], .library-rail__segment[aria-checked]). Was brand-alpha
  * 5/10, a second "selected" recipe. Hover keeps the wash: a pressed control
  * must not look un-pressed under the pointer. */
 .s-icon-button[aria-pressed='true'] {
 	background: var(--s-color-selected-bg);
-	color: var(--s-color-fg-primary);
+	color: var(--s-color-selected-fg);
 }
 
 .s-icon-button[aria-pressed='true']:hover:not(:disabled):not([aria-disabled='true']) {

@@ -60,7 +60,9 @@ const toggle = createIconButton({
 });
 ```
 
-`aria-pressed='true'` gets the brand-alpha-5 overlay treatment (same as nav active state).
+`aria-pressed='true'` gets the system selected pair, `--s-color-selected-bg` with `--s-color-selected-fg` (the Library page's pressed/checked wash; GUIDE DS consolidation 2026-10-18).
+
+Class-only markup works too: `<button class="s-icon-button" data-tone="ghost" data-size="sm" data-shape="square" aria-label="…">`. All three data attributes are required; a bare `.s-icon-button` resolves nothing.
 
 ## Badge
 
