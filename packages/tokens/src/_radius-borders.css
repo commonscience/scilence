@@ -20,6 +20,20 @@
 	--s-radius-xl: var(--s-radius-window);
 	--s-radius-full: var(--s-radius-round);
 
+	/* Role aliases — GUIDE DS consolidation U0 (2026-10-18), derived from the
+	   Library page (research/specs/guide/2026-10-18-ds-consolidation-plan.md
+	   §A0.4, A1.4). Default applied; founder may revise
+	   (research/handoffs/decisions/2026-10-18-ds-canonical-set.md).
+	   control: bordered text buttons + segmented controls (Library: all five
+	   such controls are md). container: cards, tiles, panels, fieldsets
+	   (Library compound card + settings fieldset are sm). icon-control:
+	   square icon buttons (Library view cog / view switcher). floating:
+	   menus, popovers, modal windows. */
+	--s-radius-control: var(--s-radius-md);
+	--s-radius-container: var(--s-radius-sm);
+	--s-radius-icon-control: var(--s-radius-2);
+	--s-radius-floating: var(--s-radius-md);
+
 	/* Border widths */
 	--s-border-thin: calc(var(--s-font-size-active) * 0.071);
 	--s-border-base: calc(var(--s-font-size-active) * 0.143);

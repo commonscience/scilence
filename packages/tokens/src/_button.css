@@ -40,7 +40,11 @@
 	--s-button-variant-primary-hover-bg: var(--s-brand-800);
 
 	--s-button-variant-secondary-bg: var(--s-color-bg-surface);
-	--s-button-variant-secondary-fg: var(--s-color-fg-primary);
+	/* Secondary ink is the Library page's quiet action ink (library.css
+	   .library-entity-card__action, fg-secondary = fg-muted); hover lifts to
+	   fg-primary (Button.css). DS consolidation U0, 2026-10-18. */
+	--s-button-variant-secondary-fg: var(--s-color-fg-muted);
+	--s-button-variant-secondary-hover-fg: var(--s-color-fg-primary);
 	--s-button-variant-secondary-border-color: var(--s-color-border-subtle);
 
 	--s-button-variant-ghost-bg: transparent;

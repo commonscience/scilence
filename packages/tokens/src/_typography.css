@@ -67,6 +67,11 @@
 	--s-font-line-height-tight: 1.25;
 	--s-font-line-height-normal: 1.4;
 	--s-font-line-height-relaxed: 1.6;
+
+	/* Tracking for the one uppercase role (.s-eyebrow) and any uppercase rule
+	   that survives the sweep — DS consolidation U0 (2026-10-18). New roles are
+	   sentence case and need no tracking. */
+	--s-tracking-caps: 0.06em;
 }
 
 /* ===== 3b. DENSITY MODES ===== */

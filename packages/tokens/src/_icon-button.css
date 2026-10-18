@@ -17,7 +17,7 @@
 
 	/* shape — corner radius */
 
-	--s-icon-button-shape-square-radius: var(--s-radius-1);
+	--s-icon-button-shape-square-radius: var(--s-radius-icon-control);
 	--s-icon-button-shape-round-radius: var(--s-radius-pill);
 
 	/* tone — bg + fg + border + hover */
@@ -33,7 +33,8 @@
 	--s-icon-button-tone-ghost-hover-bg: var(--s-color-hover-bg);
 
 	--s-icon-button-tone-outlined-bg: var(--s-color-bg-surface);
-	--s-icon-button-tone-outlined-fg: var(--s-color-fg-primary);
+	/* Library view cog: muted ink at rest (DS consolidation U0, 2026-10-18). */
+	--s-icon-button-tone-outlined-fg: var(--s-color-fg-muted);
 	--s-icon-button-tone-outlined-border-color: var(--s-color-border-subtle);
 	--s-icon-button-tone-outlined-hover-bg: var(--s-color-hover-bg);
 }
