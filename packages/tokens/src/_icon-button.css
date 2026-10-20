@@ -6,14 +6,19 @@
 :root {
 	/* size — container + icon dimensions */
 
+	/* Petite icons everywhere (founder 2026-10-20: "icons all get pretty
+	   petite"): the Styleground Petite preset, icon 16 at the largest, with
+	   each smaller step one notch down. Containers keep a fine-pointer hit
+	   area of at least 22px (WCAG 2.2 AA 2.5.8 floor is 24px for the target
+	   plus spacing; coarse pointers restore 44px in the shell). */
 	--s-icon-button-size-sm-container: 22px;
-	--s-icon-button-size-sm-icon: 14px;
+	--s-icon-button-size-sm-icon: 12px;
 
 	--s-icon-button-size-md-container: 28px;
-	--s-icon-button-size-md-icon: 16px;
+	--s-icon-button-size-md-icon: 14px;
 
-	--s-icon-button-size-lg-container: 36px;
-	--s-icon-button-size-lg-icon: 20px;
+	--s-icon-button-size-lg-container: 32px;
+	--s-icon-button-size-lg-icon: 16px;
 
 	/* shape — corner radius */
 

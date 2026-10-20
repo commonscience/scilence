@@ -3,20 +3,21 @@
 
 /* ===== 4. RADIUS & BORDERS ===== */
 :root {
-	/* Proportional radius system */
-	--s-radius-base: calc(var(--s-font-size-active) * 0.267);
-	--s-radius-0: calc(var(--s-radius-base) * 0.5);
-	--s-radius-1: calc(var(--s-radius-base) * 1);
-	--s-radius-2: calc(var(--s-radius-base) * 1.5);
-	--s-radius-3: calc(var(--s-radius-base) * 2.5);
-	--s-radius-4: calc(var(--s-radius-base) * 3.5);
+	/* Proportional radius system, Fibonacci (2, 3, 5, 8, 13 at the 14px
+	   base; founder 2026-10-20: Fibonacci from Styleground). */
+	--s-radius-base: calc(var(--s-font-size-active) / 14);
+	--s-radius-0: calc(var(--s-radius-base) * 2);
+	--s-radius-1: calc(var(--s-radius-base) * 3);
+	--s-radius-2: calc(var(--s-radius-base) * 5);
+	--s-radius-3: calc(var(--s-radius-base) * 8);
+	--s-radius-4: calc(var(--s-radius-base) * 13);
 	--s-radius-round: 9999px;
 	--s-radius-window: var(--s-commons-radius);
 
 	/* Semantic radius aliases — Commons foundation for control chrome;
 	   proportional ladder remains for density-derived atoms. */
-	--s-radius-sm: var(--s-commons-radius-sm);
-	--s-radius-md: var(--s-commons-radius);
+	--s-radius-sm: 5px;
+	--s-radius-md: 8px;
 	--s-radius-xl: var(--s-radius-window);
 	--s-radius-full: var(--s-radius-round);
 

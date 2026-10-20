@@ -11,7 +11,11 @@
 
 	/* Base font size — user-tunable */
 	--s-font-size-base: 14px;
+	/* Density tier step (Condensed / Expanded). Not the modular scale. */
 	--s-font-size-ratio: 1.15;
+	/* Modular scale step: square root of phi, so two steps make one golden
+	   ratio (founder 2026-10-20: Fibonacci from Styleground). */
+	--s-font-size-step: 1.27202;
 
 	/* Density variants */
 	--s-font-size-condensed: calc(var(--s-font-size-base) / var(--s-font-size-ratio));
@@ -19,14 +23,13 @@
 	--s-font-size-expanded: calc(var(--s-font-size-base) * var(--s-font-size-ratio));
 
 	/* Modular scale for headings */
-	--s-font-size-0: calc(var(--s-font-size-base) / var(--s-font-size-ratio));
+	--s-font-size-0: calc(var(--s-font-size-base) / var(--s-font-size-step));
 	--s-font-size-1: var(--s-font-size-base);
-	--s-font-size-2: calc(var(--s-font-size-base) * var(--s-font-size-ratio));
-	--s-font-size-3: calc(var(--s-font-size-2) * var(--s-font-size-ratio));
-	--s-font-size-4: calc(var(--s-font-size-3) * var(--s-font-size-ratio));
+	--s-font-size-2: calc(var(--s-font-size-base) * var(--s-font-size-step));
+	--s-font-size-3: calc(var(--s-font-size-2) * var(--s-font-size-step));
+	--s-font-size-4: calc(var(--s-font-size-3) * var(--s-font-size-step));
 
-	/* Active font size */
-	--s-font-size-active: var(--s-font-size-standard);
+	/* Active font size: set by the density dial in section 3b. */
 	--s-font-size-min: 10px;
 
 	/* Line heights — small scale for paragraph/body text.
@@ -78,22 +81,26 @@
 	--s-measure-prose: 68ch;
 }
 
-/* ===== 3b. DENSITY MODES ===== */
-/* Density modes scale spacing and font size proportionally.
-   --s-space-density multiplies all Fibonacci spacing tokens.
-   --s-font-size-active selects the density-appropriate font size.
-   Radius and border tokens derive from --s-font-size-active, so they
-   cascade automatically when density changes. */
+/* ===== 3b. DENSITY ===== */
+/* Density is one continuous dial, --s-density-scale (1 = Standard), that
+   multiplies spacing (--s-space-density) and the active type size
+   (--s-font-size-active) together. Radius and border tokens derive from
+   --s-font-size-active, so they follow. The Appearance store writes the dial
+   as an inline value (75% to 150%, 1% steps; check-in 1, 2026-10-20: density
+   is finely tunable). The three named tiers are presets of the same dial and
+   stay for anything that only sets [data-density] (Styleground, iframes). */
+:root {
+	--s-density-scale: 1;
+	--s-space-density: var(--s-density-scale);
+	--s-font-size-active: calc(var(--s-font-size-base) * var(--s-density-scale));
+}
 :root[data-density='condensed'] {
-	--s-space-density: calc(1 / var(--s-font-size-ratio));
-	--s-font-size-active: var(--s-font-size-condensed);
+	--s-density-scale: calc(1 / var(--s-font-size-ratio));
 }
 :root[data-density='standard'],
 :root:not([data-density]) {
-	--s-space-density: 1;
-	--s-font-size-active: var(--s-font-size-standard);
+	--s-density-scale: 1;
 }
 :root[data-density='expanded'] {
-	--s-space-density: var(--s-font-size-ratio);
-	--s-font-size-active: var(--s-font-size-expanded);
+	--s-density-scale: var(--s-font-size-ratio);
 }

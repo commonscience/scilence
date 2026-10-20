@@ -14,6 +14,14 @@
 .s-segmented[role='radiogroup'] {
 	box-sizing: border-box;
 	display: inline-flex;
+	/* Never stretch: the group is as wide as its segments, whatever the
+	   parent (a grid cell or a column flex container would otherwise fill
+	   the row; founder 2026-10-20). It may shrink, never grow. */
+	inline-size: fit-content;
+	max-inline-size: 100%;
+	justify-self: start;
+	align-self: flex-start;
+	flex: 0 1 auto;
 	flex-wrap: nowrap;
 	align-items: stretch;
 	gap: 0;
