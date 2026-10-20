@@ -19,7 +19,7 @@
 	border: 0;
 	border-radius: var(--s-radius-sm);
 	background: transparent;
-	color: var(--s-color-fg-secondary);
+	color: var(--s-color-fg-muted);
 	font: inherit;
 	text-align: start;
 	cursor: pointer;
@@ -27,7 +27,7 @@
 
 .s-nav-tree-row__disclosure:hover,
 .s-nav-tree-row__disclosure[aria-current='true'] {
-	background: var(--s-color-bg-hover);
+	background: var(--s-color-hover-bg);
 	color: var(--s-color-fg-primary);
 }
 

@@ -43,7 +43,7 @@
 }
 
 .s-placement-handle:hover:not(:disabled) {
-	background: var(--s-color-bg-hover);
+	background: var(--s-color-hover-bg);
 	color: var(--s-color-fg-primary);
 }
 

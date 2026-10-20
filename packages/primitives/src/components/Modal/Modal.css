@@ -78,7 +78,7 @@
 .s-modal-workspace__size-controls .s-text-field { display:flex; flex-direction:row; align-items:center; gap:var(--s-space-2); }
 .s-modal-workspace__size-controls .s-text-field__label { margin:0; }
 .s-modal-workspace__size-controls .s-text-field__input { inline-size:6ch; min-inline-size:0; }
-.s-modal-workspace__size-status { font-size:var(--s-font-size-0); color:var(--s-color-fg-secondary); }
+.s-modal-workspace__size-status { font-size:var(--s-font-size-0); color:var(--s-color-fg-muted); }
 .s-modal-workspace__size-error { font-size:var(--s-font-size-0); color:var(--s-color-status-danger-fg); }
 .s-modal-workspace__resize.s-icon-button { position:absolute; inset:auto 0 0 auto; inline-size:var(--s-space-4); block-size:var(--s-space-4); cursor:nwse-resize; touch-action:none; border:0; padding:0; }
 .s-modal-workspace__resize .s-icon-button__icon { inline-size:100%; block-size:100%; }

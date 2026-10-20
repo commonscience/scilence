@@ -18,7 +18,7 @@
 
 	/* Product — surface elevation, no tint */
 	--s-lens-product-bg: var(--s-color-bg-surface);
-	--s-lens-product-fg: var(--s-color-fg-default);
+	--s-lens-product-fg: var(--s-color-fg-primary);
 	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }
 
@@ -29,6 +29,6 @@
 	--s-lens-admin-bg-hover: color-mix(in oklch, var(--s-teal-500) 12%, var(--s-color-bg-surface));
 
 	--s-lens-product-bg: var(--s-color-bg-surface);
-	--s-lens-product-fg: var(--s-color-fg-default);
+	--s-lens-product-fg: var(--s-color-fg-primary);
 	--s-lens-product-bg-hover: var(--s-color-bg-subtle);
 }

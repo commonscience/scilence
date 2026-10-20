@@ -52,7 +52,7 @@
 }
 
 .s-menu__item:hover:not(:disabled) {
-	background: var(--s-color-bg-hover);
+	background: var(--s-color-hover-bg);
 }
 
 /* Keep compact desktop sizing, but honor the shared density-independent

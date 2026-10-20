@@ -116,7 +116,7 @@
 	/* Disabled is a neutral, readable state, not transparent unreadable ink. */
 	opacity: 1;
 	background: var(--s-color-bg-subtle);
-	color: var(--s-color-fg-secondary, var(--s-color-fg-primary));
+	color: var(--s-color-fg-muted, var(--s-color-fg-primary));
 	border-color: var(--s-color-border-strong);
 	cursor: not-allowed;
 }
