@@ -1,0 +1,95 @@
+/* DS-COL-1 — neutral paper, meaningful colour, no component behaviour.
+   Percentages are shares of the existing status/accent role in an sRGB mix
+   with --s-color-bg-card. Consumers supply --c for tint mixes; never mix into a grey literal.
+   Override --s-ink-alive on each series mark, where its series colour resolves.
+   A root alias to a child-only --c would be invalid at computed-value time.
+   Rest/alive transitions and the Appearance controls belong to later units.
+   Explicit theme scopes rebind derived properties for nested theme previews. */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
+:root {
+	--s-tint-avatar-bg: var(--s-tint-avatar-bg-rest);
+	--s-tint-avatar-border: var(--s-tint-avatar-border-rest);
+	--s-tint-avatar-bg-rest: 3%;
+	--s-tint-avatar-border-rest: 9%;
+	--s-tint-avatar-bg-alive: 11%;
+	--s-tint-avatar-border-alive: 20%;
+	--s-tint-alert-bg: var(--s-tint-alert-bg-rest);
+	--s-tint-alert-border: var(--s-tint-alert-border-rest);
+	--s-tint-alert-bg-rest: 1.5%;
+	--s-tint-alert-border-rest: 9%;
+	--s-tint-alert-bg-alive: 4.7%;
+	--s-tint-alert-border-alive: 22%;
+	/* Decided Level 2: urgent meaning is visible without hover. */
+	--s-tint-alert-urgent-bg-rest: 4.7%;
+	--s-tint-alert-urgent-border-rest: 22%;
+	--s-tint-alert-urgent-bg-alive: var(--s-tint-alert-bg-alive);
+	--s-tint-alert-urgent-border-alive: var(--s-tint-alert-border-alive);
+
+	/* Boost values are proposals, not founder-approved visual tuning. */
+	--s-ink-tint-boost: 1;
+	--s-ink-rest: oklch(from var(--s-brand-600) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-ink-rule: oklch(from var(--s-brand-200) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-ink-alive: var(--s-series-1);
+	/* Percentage, not a unitless number: usable directly in color-mix.
+	   Appearance presets: quiet 30%, balanced 55%, clear 80%. */
+	--s-meaning-level: 55%;
+
+	/* Glyphs preserve status hue/chroma; lightness comes from brand steps.
+	   Labels and different glyph shapes must continue to carry meaning. */
+	--s-status-glyph-info: oklch(from var(--s-brand-700) l var(--s-status-info-C) var(--s-status-info-H));
+	--s-status-glyph-success: oklch(from var(--s-brand-500) l var(--s-status-success-C) var(--s-status-success-H));
+	--s-status-glyph-warning: oklch(from var(--s-brand-500) l var(--s-status-warning-C) var(--s-status-warning-H));
+	--s-status-glyph-danger: oklch(from var(--s-brand-700) l var(--s-status-danger-C) var(--s-status-danger-H));
+
+	/* Stable series order: info, warning, success, danger, warm accent.
+	   Reuse contrast-safe roles and a brandscale mix of the warm role.
+	   Categorical series still require labels/shapes; warm mix is a measured proposal. */
+	--s-series-1: var(--s-status-glyph-info);
+	--s-series-2: var(--s-status-glyph-warning);
+	--s-series-3: var(--s-status-glyph-success);
+	--s-series-4: var(--s-status-glyph-danger);
+	--s-series-5: color-mix(in srgb, var(--s-color-accent-warm) 30%, var(--s-brand-700));
+
+	/* Familiar is the decided default. Letters on element discs are mandatory.
+	   Only O/Cl under deutan has a decided exception (2026-11-06). */
+	--s-el-n: var(--s-color-status-info);
+	--s-el-o: var(--s-color-status-danger);
+	--s-el-cl: var(--s-color-status-success);
+	--s-el-c: oklch(from var(--s-brand-800) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-el-letter-default: var(--s-color-bg-card);
+	--s-el-letter: var(--s-el-letter-default);
+	/* Carbon stays dark on light paper in both schemes; use this on C discs. */
+	--s-el-c-letter: var(--s-color-bg-card);
+}
+.s-theme-scope[data-theme='dark'],
+:root[data-theme='dark'] {
+	--s-ink-tint-boost: 2.6;
+	--s-series-5: color-mix(in srgb, var(--s-color-accent-warm) 40%, var(--s-brand-500));
+	--s-el-letter-default: var(--s-brand-900);
+	--s-ink-rest: oklch(from var(--s-brand-300) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-ink-rule: oklch(from var(--s-brand-700) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-el-c: oklch(from var(--s-brand-300) l calc(c * var(--s-ink-tint-boost)) h);
+	--s-status-glyph-info: oklch(from var(--s-brand-200) l var(--s-status-info-C) var(--s-status-info-H));
+	--s-status-glyph-warning: oklch(from var(--s-brand-75) l var(--s-status-warning-C) var(--s-status-warning-H));
+	--s-status-glyph-success: oklch(from var(--s-brand-300) l var(--s-status-success-C) var(--s-status-success-H));
+	--s-status-glyph-danger: oklch(from var(--s-brand-400) l var(--s-status-danger-C) var(--s-status-danger-H));
+}
+/* Safe scheme: sky-blue N, orange O, yellow Cl. Relative colours reuse the
+   brand ladder's lightness and existing role chroma/hues, rather than hex.
+   Scheme choice is independent of theme, on the root or a theme boundary.
+   Both spellings retain the experiment's data-scheme=std/cvd compatibility. */
+:root:is([data-scheme='colour-blind-safe'], [data-scheme='cvd']),
+:root:is([data-scheme='colour-blind-safe'], [data-scheme='cvd']) .s-theme-scope:not([data-scheme]),
+.s-theme-scope:is([data-scheme='colour-blind-safe'], [data-scheme='cvd']) {
+	--s-el-n: oklch(from var(--s-brand-400) l var(--s-status-info-C) calc(var(--brand-hue-secondary) - 9));
+	--s-el-o: oklch(from var(--s-brand-300) l var(--s-status-warning-C) var(--s-status-warning-H));
+	--s-el-cl: oklch(from var(--s-brand-100) l var(--s-status-success-C) calc(var(--s-status-warning-H) + 26));
+	--s-el-letter: var(--s-brand-975);
+}
+:root:is([data-scheme='familiar'], [data-scheme='std']),
+.s-theme-scope:is([data-scheme='familiar'], [data-scheme='std']) {
+	--s-el-n: var(--s-color-status-info);
+	--s-el-o: var(--s-color-status-danger);
+	--s-el-cl: var(--s-color-status-success);
+	--s-el-letter: var(--s-el-letter-default);
+}

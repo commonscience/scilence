@@ -60,7 +60,8 @@
 	--s-font-size-density-2: 10px;
 	--s-font-size-density-3: 9px;
 
-	/* Font weights — Commons hierarchy (medium/strong use 550/650) */
+	/* UI weights: regular 400, medium 500. Semibold/bold are retired
+	   compatibility aliases so existing consumers do not acquire invalid values. */
 	--s-font-weight-regular: var(--s-commons-weight-regular);
 	--s-font-weight-medium: var(--s-commons-weight-medium);
 	--s-font-weight-semibold: var(--s-commons-weight-semibold);
