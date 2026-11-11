@@ -18,6 +18,7 @@
  * GUIDE_PLUGIN_CONTRACT.md). v1 design locked 2026-06-07.
  */
 
+import { createModalChrome } from './chrome.js';
 import { mergeModalVariants } from './resolve-modal-tokens.js';
 import type {
 	BreadcrumbSlot,
@@ -26,6 +27,7 @@ import type {
 	FooterSlot,
 	HeaderSlot,
 	ModalConfig,
+	ModalChromeHandle,
 	ModalHandle,
 	ModalSlots,
 	ModalVariants,
@@ -34,13 +36,13 @@ import type {
 	ToolbarSlot,
 } from './types.js';
 
-/** Monotonic id source for aria-labelledby/aria-describedby — each Modal
- * instance needs unique ids so multiple dialogs on one page (e.g. a
- * lightbox preview whose own examples include a Modal demo) never collide. */
-let modalInstanceCounter = 0;
-function nextModalInstanceId(): number {
-	modalInstanceCounter += 1;
-	return modalInstanceCounter;
+const PHONE_SIDEBAR_MEDIA_QUERY = '(max-width: 767px)';
+
+const modalHandles = new WeakMap<HTMLElement, ModalHandle>();
+
+/** Return only a native Modal owned by this module; foreign hosts use createModalChrome. */
+export function getModalHandle(element: HTMLElement): ModalHandle | null {
+	return modalHandles.get(element) ?? null;
 }
 
 export class Modal implements ModalHandle {
@@ -53,10 +55,9 @@ export class Modal implements ModalHandle {
 	private readonly surfaceEl: HTMLElement;
 	private readonly breadcrumbEl: HTMLElement;
 	private readonly headerEl: HTMLElement;
-	private readonly headerTitleEl: HTMLElement;
-	private readonly headerSubtitleEl: HTMLElement;
-	private readonly headerActionsEl: HTMLElement;
-	private readonly headerCloseBtn: HTMLButtonElement;
+	private readonly chrome: ModalChromeHandle;
+	private readonly ignoreScrim: boolean;
+	private readonly feedbackEl: HTMLElement;
 	private readonly toolbarEl: HTMLElement;
 	private readonly mainEl: HTMLElement;
 	private readonly sidebarEl: HTMLElement;
@@ -67,12 +68,18 @@ export class Modal implements ModalHandle {
 	private bodyCleanup: Cleanup | null = null;
 	private returnFocusEl: HTMLElement | null = null;
 	private isClosing = false;
+	private sidebarRevealFrame: number | null = null;
+	private sidebarResizeListening = false;
+	private readonly handleSidebarViewportResize = (): void => {
+		this.scheduleActiveSidebarReveal();
+	};
 
 	constructor(opts: ModalConfig) {
 		this.variants = mergeModalVariants(opts.variants);
 		this.modifiers = new Set(opts.modifiers ?? []);
 		this.slots = opts.slots;
 		this.lifecycle = opts.lifecycle;
+		this.ignoreScrim = opts.dismissal?.ignoreScrim === true;
 
 		if (this.variants.mode === 'popout') {
 			throw new Error(
@@ -96,34 +103,15 @@ export class Modal implements ModalHandle {
 
 		this.surfaceEl = document.createElement('div');
 		this.surfaceEl.className = 's-modal-dialog__surface';
+		if (opts.presentation === 'wizard') this.surfaceEl.classList.add('s-modal-frame--wizard');
+		this.element.dataset.presentation = opts.presentation ?? 'content';
 
-		const instanceId = nextModalInstanceId();
-		this.element.setAttribute('aria-labelledby', `s-modal-title-${instanceId}`);
-		this.element.setAttribute('aria-describedby', `s-modal-subtitle-${instanceId}`);
-
+		this.chrome = createModalChrome({ onCloseRequest: (reason) => this.close(reason) });
+		this.element.setAttribute('aria-labelledby', this.chrome.titleId);
+		this.element.setAttribute('aria-describedby', this.chrome.subtitleId);
 		this.breadcrumbEl = this.makeRegion('breadcrumb');
-		this.headerEl = this.makeRegion('header');
-		this.headerTitleEl = document.createElement('h2');
-		this.headerTitleEl.id = `s-modal-title-${instanceId}`;
-		this.headerTitleEl.className = 's-modal__title';
-		this.headerSubtitleEl = document.createElement('p');
-		this.headerSubtitleEl.id = `s-modal-subtitle-${instanceId}`;
-		this.headerSubtitleEl.className = 's-modal__subtitle';
-		this.headerSubtitleEl.hidden = true;
-		this.headerActionsEl = document.createElement('div');
-		this.headerActionsEl.className = 's-modal__header-actions';
-		this.headerCloseBtn = document.createElement('button');
-		this.headerCloseBtn.type = 'button';
-		this.headerCloseBtn.className = 's-modal__close';
-		this.headerCloseBtn.setAttribute('aria-label', 'Close');
-		this.headerCloseBtn.innerHTML =
-			'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>';
-		this.headerCloseBtn.addEventListener('click', () => this.close('close-button'));
-
-		const headerInner = document.createElement('div');
-		headerInner.className = 's-modal__header-inner';
-		headerInner.append(this.headerTitleEl, this.headerSubtitleEl);
-		this.headerEl.append(headerInner, this.headerActionsEl, this.headerCloseBtn);
+		this.headerEl = this.chrome.headerElement;
+		this.feedbackEl = this.chrome.feedbackElement;
 
 		this.toolbarEl = this.makeRegion('toolbar');
 		this.mainEl = document.createElement('div');
@@ -133,7 +121,7 @@ export class Modal implements ModalHandle {
 		this.bodyHostEl.className = 's-modal__body';
 		this.mainEl.append(this.sidebarEl, this.bodyHostEl);
 		this.statusBarEl = this.makeRegion('status-bar');
-		this.footerEl = this.makeRegion('footer');
+		this.footerEl = this.chrome.footerElement;
 
 		this.surfaceEl.append(
 			this.breadcrumbEl,
@@ -141,6 +129,7 @@ export class Modal implements ModalHandle {
 			this.toolbarEl,
 			this.mainEl,
 			this.statusBarEl,
+			this.feedbackEl,
 			this.footerEl,
 		);
 		this.element.append(this.surfaceEl);
@@ -148,6 +137,8 @@ export class Modal implements ModalHandle {
 		this.renderAllSlots();
 		this.wireScrimClick();
 		this.wireCancelEvent();
+		this.element.addEventListener('close', () => this.stopSidebarRevealLifecycle());
+		modalHandles.set(this.element, this);
 	}
 
 	private makeRegion(name: string): HTMLElement {
@@ -188,7 +179,7 @@ export class Modal implements ModalHandle {
 		const value = this.slots.header?.close ?? true;
 		if (value === false) return { x: false, esc: false, scrim: false };
 		if (value === 'esc-only') return { x: false, esc: true, scrim: false };
-		return { x: true, esc: true, scrim: true };
+		return { x: true, esc: true, scrim: !this.ignoreScrim };
 	}
 
 	private wireScrimClick(): void {
@@ -214,6 +205,7 @@ export class Modal implements ModalHandle {
 		this.renderHeader(this.slots.header);
 		this.renderBody();
 		this.renderFooter(this.slots.footer);
+		this.chrome.update({ feedback: this.slots.feedback });
 		this.renderSidebar(this.slots.sidebar);
 		this.renderToolbar(this.slots.toolbar);
 		this.renderStatusBar(this.slots.statusBar);
@@ -221,36 +213,7 @@ export class Modal implements ModalHandle {
 	}
 
 	private renderHeader(slot: HeaderSlot | undefined): void {
-		this.headerEl.hidden = !slot;
-		if (!slot) return;
-		this.headerTitleEl.textContent = slot.title;
-		if (slot.subtitle) {
-			this.headerSubtitleEl.textContent = slot.subtitle;
-			this.headerSubtitleEl.hidden = false;
-		} else {
-			this.headerSubtitleEl.hidden = true;
-		}
-
-		this.headerActionsEl.replaceChildren();
-		if (slot.actions) {
-			for (const action of slot.actions) {
-				const btn = document.createElement('button');
-				btn.type = 'button';
-				btn.className = 's-modal__header-action';
-				btn.dataset.actionId = action.id;
-				btn.setAttribute('aria-label', action.label);
-				if (action.icon) btn.append(action.icon);
-				else btn.textContent = action.label;
-				btn.disabled = !!action.disabled;
-				btn.addEventListener('click', action.onClick);
-				this.headerActionsEl.append(btn);
-			}
-		}
-
-		// Single source of truth for all three dismissal affordances — see
-		// dismissPolicy(). The X button used to be decided here independently,
-		// which is how it stayed correct while ESC and scrim-click did not.
-		this.headerCloseBtn.hidden = !this.dismissPolicy().x;
+		this.chrome.update({ header: slot });
 	}
 
 	private renderBody(): void {
@@ -269,39 +232,11 @@ export class Modal implements ModalHandle {
 	}
 
 	private renderFooter(slot: FooterSlot | undefined): void {
-		this.footerEl.hidden = !slot;
-		if (!slot) return;
-		this.footerEl.replaceChildren();
-		for (const action of slot.actions) {
-			const btn = document.createElement('button');
-			btn.type = 'button';
-			btn.className = `s-modal__btn s-modal__btn--${action.variant}`;
-			btn.dataset.actionId = action.id;
-			btn.textContent = action.label;
-			btn.disabled = !!action.disabled || !!action.loading;
-			if (slot.primaryActionId === action.id) {
-				btn.classList.add('s-modal__btn--is-primary');
-			}
-			btn.addEventListener('click', async () => {
-				const result = action.onClick();
-				if (result instanceof Promise) {
-					try {
-						await result;
-						if (action.closeOnSuccess) {
-							this.close('commit-success');
-						}
-					} catch (err) {
-						console.warn(`[scilence:Modal] footer action '${action.id}' rejected`, err);
-					}
-				} else if (action.closeOnSuccess) {
-					this.close('commit-success');
-				}
-			});
-			this.footerEl.append(btn);
-		}
+		this.chrome.update({ footer: slot });
 	}
 
 	private renderSidebar(slot: SidebarSlot | undefined): void {
+		this.cancelActiveSidebarReveal();
 		this.sidebarEl.hidden = !slot;
 		if (!slot) return;
 		this.sidebarEl.replaceChildren();
@@ -341,10 +276,53 @@ export class Modal implements ModalHandle {
 				}
 				btn.setAttribute('aria-pressed', 'true');
 				btn.classList.add('is-active');
+				this.scheduleActiveSidebarReveal();
 				slot.onChange?.(item.id);
 			});
 			this.sidebarEl.append(btn);
 		}
+		this.scheduleActiveSidebarReveal();
+	}
+
+	private isPhoneSidebarLayout(): boolean {
+		if (typeof window.matchMedia === 'function') {
+			return window.matchMedia(PHONE_SIDEBAR_MEDIA_QUERY).matches;
+		}
+		return window.innerWidth <= 767;
+	}
+
+	private cancelActiveSidebarReveal(): void {
+		if (this.sidebarRevealFrame === null) return;
+		window.cancelAnimationFrame(this.sidebarRevealFrame);
+		this.sidebarRevealFrame = null;
+	}
+
+	private scheduleActiveSidebarReveal(): void {
+		this.cancelActiveSidebarReveal();
+		if (!this.element.open || this.sidebarEl.hidden || !this.isPhoneSidebarLayout()) return;
+		this.sidebarRevealFrame = window.requestAnimationFrame(() => {
+			this.sidebarRevealFrame = null;
+			if (!this.element.open || this.sidebarEl.hidden || !this.isPhoneSidebarLayout()) return;
+			const activeItem = this.sidebarEl.querySelector<HTMLElement>(
+				'.s-modal__sidebar-item[aria-pressed="true"]',
+			);
+			activeItem?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+		});
+	}
+
+	private startSidebarRevealLifecycle(): void {
+		if (!this.sidebarResizeListening) {
+			window.addEventListener('resize', this.handleSidebarViewportResize);
+			this.sidebarResizeListening = true;
+		}
+		this.scheduleActiveSidebarReveal();
+	}
+
+	private stopSidebarRevealLifecycle(): void {
+		this.cancelActiveSidebarReveal();
+		if (!this.sidebarResizeListening) return;
+		window.removeEventListener('resize', this.handleSidebarViewportResize);
+		this.sidebarResizeListening = false;
 	}
 
 	private renderToolbar(slot: ToolbarSlot | undefined): void {
@@ -476,6 +454,7 @@ export class Modal implements ModalHandle {
 			document.body.append(this.element);
 		}
 		this.element.showModal();
+		this.startSidebarRevealLifecycle();
 		this.lifecycle?.onOpen?.();
 	}
 
@@ -499,6 +478,7 @@ export class Modal implements ModalHandle {
 			}
 			this.bodyCleanup = null;
 		}
+		this.stopSidebarRevealLifecycle();
 		this.element.close();
 		this.isClosing = false;
 		const target = this.returnFocusEl;
@@ -514,6 +494,9 @@ export class Modal implements ModalHandle {
 
 	destroy(): void {
 		if (this.element.open) this.close('programmatic');
+		this.stopSidebarRevealLifecycle();
+		this.chrome.destroy();
+		modalHandles.delete(this.element);
 		this.element.remove();
 	}
 
@@ -525,6 +508,7 @@ export class Modal implements ModalHandle {
 		this.slots = { ...this.slots, ...partial };
 		if (partial.header !== undefined) this.renderHeader(this.slots.header);
 		if (partial.footer !== undefined) this.renderFooter(this.slots.footer);
+		if ('feedback' in partial) this.chrome.update({ feedback: partial.feedback });
 		if (partial.sidebar !== undefined) this.renderSidebar(this.slots.sidebar);
 		if (partial.toolbar !== undefined) this.renderToolbar(this.slots.toolbar);
 		if (partial.statusBar !== undefined) this.renderStatusBar(this.slots.statusBar);

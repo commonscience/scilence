@@ -2,21 +2,27 @@
    Variant axes resolve to these custom properties; IconButton.ts sets
    --s-icon-button-* resolved values on the element. */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* size — container + icon dimensions */
 
+	/* Petite icons everywhere (founder 2026-10-20: "icons all get pretty
+	   petite"): the Styleground Petite preset, icon 16 at the largest, with
+	   each smaller step one notch down. Containers keep a fine-pointer hit
+	   area of at least 22px (WCAG 2.2 AA 2.5.8 floor is 24px for the target
+	   plus spacing; coarse pointers restore 44px in the shell). */
 	--s-icon-button-size-sm-container: 22px;
-	--s-icon-button-size-sm-icon: 14px;
+	--s-icon-button-size-sm-icon: 12px;
 
 	--s-icon-button-size-md-container: 28px;
-	--s-icon-button-size-md-icon: 16px;
+	--s-icon-button-size-md-icon: 14px;
 
-	--s-icon-button-size-lg-container: 36px;
-	--s-icon-button-size-lg-icon: 20px;
+	--s-icon-button-size-lg-container: 32px;
+	--s-icon-button-size-lg-icon: 16px;
 
 	/* shape — corner radius */
 
-	--s-icon-button-shape-square-radius: var(--s-radius-1);
+	--s-icon-button-shape-square-radius: var(--s-radius-icon-control);
 	--s-icon-button-shape-round-radius: var(--s-radius-pill);
 
 	/* tone — bg + fg + border + hover */
@@ -32,7 +38,8 @@
 	--s-icon-button-tone-ghost-hover-bg: var(--s-color-hover-bg);
 
 	--s-icon-button-tone-outlined-bg: var(--s-color-bg-surface);
-	--s-icon-button-tone-outlined-fg: var(--s-color-fg-primary);
+	/* Library view cog: muted ink at rest (DS consolidation U0, 2026-10-18). */
+	--s-icon-button-tone-outlined-fg: var(--s-color-fg-muted);
 	--s-icon-button-tone-outlined-border-color: var(--s-color-border-subtle);
 	--s-icon-button-tone-outlined-hover-bg: var(--s-color-hover-bg);
 }

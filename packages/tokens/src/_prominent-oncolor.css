@@ -2,6 +2,7 @@
    Canonical pan-app tokens (@scilence/tokens). */
 
 /* ===== 9. PROMINENT & ON-COLOR TOKENS ===== */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Prominent action color — vibrant brand for hero CTA buttons */
 	--s-color-prominent-bg: oklch(0.42 0.12 var(--brand-hue));

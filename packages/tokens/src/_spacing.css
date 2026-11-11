@@ -3,8 +3,8 @@
 
 /* ===== 2. SPACING (Fibonacci) ===== */
 :root {
-	/* Density scale — allows responsive compression */
-	--s-space-density: 1;
+	/* Density scale — --s-space-density is set from the density dial
+	   (--s-density-scale) in _typography.css section 3b. */
 	/* User tuning (AppearanceStore) — multiplies Fibonacci spacing after density */
 	--s-padding-scale: 1;
 

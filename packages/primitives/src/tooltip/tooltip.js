@@ -1,10 +1,11 @@
+import {mountTooltipLayer} from './tooltip-layer.js';
 /**
  * Tooltip — pan-app primitive (touch-gated, dictionary-driven).
  *
  * Canonical source: scilence/packages/primitives/src/tooltip/. The GUIDE shell
- * consumes a byte-identical mirror at guide/shell/js/components/tooltip/
- * (importmap + bootstrap target); the two copies are kept in sync — the known
- * scilence<->guide primitives duplication.
+ * consumes a legacy renderer at guide/shell/js/components/tooltip/
+ * (importmap + bootstrap target). Reveal depth differs; only the typed trigger
+ * policy and layer adapters have guarded parity.
  *
  * Per research/specs/TOOLTIP_AND_GLOSSARY_STANDARD.md (LOCKED 2026-06-29).
  *
@@ -23,6 +24,7 @@
  */
 
 import { resolveTooltip, resolveTooltipText } from "./dictionary.js";
+import { createTooltipTriggerPolicy } from "./tooltip-trigger-policy.js";
 
 const STYLE_ID = "s-tooltip-styles";
 const PORTAL_CLASS = "s-tooltip-portal";
@@ -74,7 +76,7 @@ function ensureStyles() {
  * @param {string} [options.text]      explicit content (overrides dictionary)
  * @param {'top'|'bottom'|'left'|'right'} [options.position='top']
  * @param {number} [options.delay=200]
- * @returns {{ destroy: Function, update: Function }}
+ * @returns {{ destroy: Function, update: Function, dismiss: Function }}
  */
 export function attachTooltip(el, options = {}) {
   ensureStyles();
@@ -84,6 +86,9 @@ export function attachTooltip(el, options = {}) {
   let timeout = null;
   let hideTimeout = null;
   let portalEl = null;
+  let releasePortalLayer = () => {};
+  let disposed = false;
+  const triggerPolicy = createTooltipTriggerPolicy(el, dismiss);
 
   // Resolve content: explicit text wins; else dictionary key; else data-tip.
   const key = options.key || (el.dataset ? el.dataset.tip : "");
@@ -109,9 +114,11 @@ export function attachTooltip(el, options = {}) {
     el.setAttribute("aria-describedby", descId);
   }
 
-  function show() {
-    if (!supportsHoverPointer()) return; // touch-only: never paint
+  function show(event) {
+    if (!triggerPolicy.allows(event)) { dismiss(); return; }
+    if (disposed || !supportsHoverPointer()) return; // touch-only: never paint
     if (!text) return;
+    clearTimeout(timeout);
     clearTimeout(hideTimeout);
     timeout = setTimeout(positionPortal, delay);
   }
@@ -130,15 +137,19 @@ export function attachTooltip(el, options = {}) {
   }
 
   function positionPortal() {
+    if (disposed || !triggerPolicy.canReveal()) return;
     removePortal();
     const rect = el.getBoundingClientRect();
     const node = document.createElement("span");
     node.className = PORTAL_CLASS;
+    if (el.getAttribute("data-tip-surface") === "popover") node.classList.add("s-tooltip-portal--popover");
     node.setAttribute("role", "tooltip");
     renderPortalContent(node, resolved, text);
 
     Object.assign(node.style, portalBaseStyles());
-    document.body.appendChild(node);
+    const release = mountTooltipLayer(node, el);
+    if (!release) return;
+    releasePortalLayer = release;
     portalEl = node;
     // Keep the portal alive while the cursor is over it, so a glossary link
     // inside it is clickable; leaving the portal dismisses it.
@@ -177,7 +188,7 @@ export function attachTooltip(el, options = {}) {
 
   function removePortal() {
     if (portalEl) {
-      portalEl.remove();
+      releasePortalLayer();
       portalEl = null;
     }
   }
@@ -188,6 +199,7 @@ export function attachTooltip(el, options = {}) {
   el.addEventListener("focusout", hide);
 
   function update(newOptions = {}) {
+    if (disposed) return;
     if (newOptions.position !== undefined) position = newOptions.position;
     if (newOptions.delay !== undefined) delay = newOptions.delay;
     const nextKey = newOptions.key !== undefined ? newOptions.key : key;
@@ -201,10 +213,18 @@ export function attachTooltip(el, options = {}) {
     if (descEl) descEl.textContent = ariaText(resolved, text);
   }
 
-  function destroy() {
+  /** Cancel visual work without replacing the trigger or its description. */
+  function dismiss() {
     clearTimeout(timeout);
     clearTimeout(hideTimeout);
     removePortal();
+  }
+
+  function destroy() {
+    if (disposed) return;
+    disposed = true;
+    dismiss();
+    triggerPolicy.destroy();
     el.removeEventListener("mouseenter", show);
     el.removeEventListener("mouseleave", hide);
     el.removeEventListener("focusin", show);
@@ -212,7 +232,7 @@ export function attachTooltip(el, options = {}) {
     if (descEl && descEl.parentNode === el) descEl.remove();
   }
 
-  return { destroy, update };
+  return { destroy, update, dismiss };
 }
 
 /**
@@ -300,11 +320,15 @@ function renderPortalContent(node, resolved, fallback) {
 function portalBaseStyles() {
   return {
     position: "fixed",
-    zIndex: "9999",
-    maxWidth: "min(20rem, 80vw)",
+    zIndex: "var(--s-z-tooltip, 700)",
+    maxWidth: "min(20rem, calc(100vw - 1rem))",
+    boxSizing: "border-box",
+    width: "max-content",
+    whiteSpace: "normal",
+    overflowWrap: "anywhere",
     padding: "var(--s-space-2) var(--s-space-3)",
-    background: "var(--s-color-fg-primary)",
-    color: "var(--s-color-bg-surface)",
+    background: "var(--s-tooltip-bg, var(--s-color-fg-primary))",
+    color: "var(--s-tooltip-fg, var(--s-color-bg-surface))",
     fontFamily: "var(--s-font-sans)",
     fontSize: "var(--s-font-size--1)",
     lineHeight: "1.35",
@@ -327,7 +351,7 @@ function portalBaseStyles() {
  * @param {number} [options.delay=200]
  * @param {boolean} [options.portal=false]
  * @param {Function} [options.renderContent]
- * @returns {{ destroy: Function, update: Function }}
+ * @returns {{ destroy: Function, update: Function, dismiss: Function }}
  */
 export function createTooltip(container, options = {}) {
   let {
@@ -345,12 +369,16 @@ export function createTooltip(container, options = {}) {
 
   let timeout = null;
   let portalEl = null;
+  let releasePortalLayer = () => {};
   let wrapperEl = null;
   let descId = null;
+  let disposed = false;
 
   function show() {
-    if (!supportsHoverPointer()) return;
+    if (disposed || !supportsHoverPointer()) return;
+    clearTimeout(timeout);
     timeout = setTimeout(() => {
+      if (disposed) return;
       if (portal) positionPortal();
       else renderInline();
     }, delay);
@@ -366,15 +394,17 @@ export function createTooltip(container, options = {}) {
   }
 
   function positionPortal() {
-    if (!wrapperEl || !text) return;
+    if (disposed || !wrapperEl || !text) return;
     removePortal();
     const rect = wrapperEl.getBoundingClientRect();
     const el = document.createElement("span");
     el.className = PORTAL_CLASS;
     el.setAttribute("role", "tooltip");
     el.textContent = text;
-    Object.assign(el.style, { ...portalBaseStyles(), whiteSpace: "nowrap", pointerEvents: "none" });
-    document.body.appendChild(el);
+    Object.assign(el.style, { ...portalBaseStyles(), pointerEvents: "none" });
+    const release = mountTooltipLayer(el, wrapperEl);
+    if (!release) return;
+    releasePortalLayer = release;
     portalEl = el;
 
     const tipRect = el.getBoundingClientRect();
@@ -409,13 +439,13 @@ export function createTooltip(container, options = {}) {
 
   function removePortal() {
     if (portalEl) {
-      portalEl.remove();
+      releasePortalLayer();
       portalEl = null;
     }
   }
 
   function renderInline() {
-    if (!wrapperEl || !text) return;
+    if (disposed || !wrapperEl || !text) return;
     if (wrapperEl.querySelector(".s-tooltip")) return;
     const tip = document.createElement("span");
     tip.className = `s-tooltip s-tooltip--${position}`;
@@ -449,6 +479,8 @@ export function createTooltip(container, options = {}) {
   }
 
   function update(newOptions) {
+    if (disposed) return;
+    hide();
     if (newOptions.text !== undefined) text = newOptions.text;
     if (newOptions.key !== undefined) text = resolveTooltipText(newOptions.key);
     if (newOptions.position !== undefined) position = newOptions.position;
@@ -459,18 +491,26 @@ export function createTooltip(container, options = {}) {
   }
 
   function destroy() {
-    clearTimeout(timeout);
-    removePortal();
+    if (disposed) return;
+    disposed = true;
+    hide();
     container.innerHTML = "";
   }
 
   render();
-  return { destroy, update };
+  return { destroy, update, dismiss: hide };
 }
 
 function getStyles() {
   return `
+    .s-tooltip-portal[popover] { margin: 0; border: 0; inset: auto; }
+
     .s-tooltip-wrapper { position: relative; display: inline-flex; }
+
+    .s-tooltip-portal--popover {
+      --s-tooltip-bg: var(--s-surface-elevation-2-bg);
+      --s-tooltip-fg: var(--s-color-fg-primary);
+    }
 
     .s-tooltip-sr-only {
       position: absolute;
@@ -482,7 +522,7 @@ function getStyles() {
 
     .s-tooltip {
       position: absolute;
-      z-index: 9999;
+      z-index: var(--s-z-tooltip, 700);
       padding: var(--s-space-2) var(--s-space-3);
       background: var(--s-color-fg-primary);
       color: var(--s-color-bg-surface);
@@ -490,7 +530,11 @@ function getStyles() {
       font-size: var(--s-font-size--1);
       line-height: 1.2;
       border-radius: var(--s-radius-1);
-      white-space: nowrap;
+      max-inline-size: min(20rem, calc(100vw - 1rem));
+      box-sizing: border-box;
+      inline-size: max-content;
+      white-space: normal;
+      overflow-wrap: anywhere;
       pointer-events: none;
       animation: s-tooltip-in 80ms ease-out;
     }

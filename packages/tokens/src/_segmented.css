@@ -1,0 +1,25 @@
+/* scilence — SegmentedControl tokens (GUIDE DS consolidation U8, 2026-10-18).
+   Recipe from the GUIDE Library rail segment group; selected state is the
+   system selected pair (decision 2026-10-18-ds-canonical-set). Size steps
+   reuse the IconButton containers so a segmented choice sits on the same
+   toolbar line as icon controls. */
+:root {
+	--s-segmented-radius: var(--s-radius-control);
+	--s-segmented-border: var(--s-color-border-strong);
+	--s-segmented-divider: var(--s-color-border-subtle);
+	--s-segmented-bg: var(--s-color-bg-surface);
+	--s-segmented-fg: var(--s-color-fg-muted);
+	--s-segmented-hover-bg: var(--s-color-hover-bg);
+	--s-segmented-selected-bg: var(--s-color-selected-bg);
+	--s-segmented-selected-fg: var(--s-color-selected-fg);
+
+	--s-segmented-size-sm-height: var(--s-icon-button-size-sm-container);
+	--s-segmented-size-sm-padding-inline: var(--s-space-2);
+	--s-segmented-size-sm-font-size: var(--s-font-size-0);
+	--s-segmented-size-sm-icon: var(--s-icon-button-size-sm-icon);
+
+	--s-segmented-size-md-height: var(--s-icon-button-size-md-container);
+	--s-segmented-size-md-padding-inline: var(--s-space-3);
+	--s-segmented-size-md-font-size: var(--s-font-size-0);
+	--s-segmented-size-md-icon: var(--s-icon-button-size-md-icon);
+}

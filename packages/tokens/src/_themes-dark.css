@@ -2,6 +2,7 @@
    Canonical pan-app tokens (@scilence/tokens). */
 
 /* ===== 13. DARK THEME ===== */
+.s-theme-scope[data-theme='dark'],
 :root[data-theme='dark'] {
 	/* Whisper charcoal — dark-only desaturation below light's 0.36 so the
 	   canvas reads brandscale-charcoal, not green void. */
@@ -19,6 +20,16 @@
 	--s-color-bg-surface-hover: var(--s-color-hover-bg);
 	--s-color-bg-titlebar: var(--s-brand-alpha-30);
 	--s-color-bg-footer: var(--s-color-bg-app);
+
+	/* Brighter link/plot ink on charcoal; both brand hues remain configurable. */
+	--s-color-link: oklch(0.78 0.07 var(--brand-hue-secondary));
+	--s-color-link-hover: oklch(0.85 0.065 var(--brand-hue-secondary));
+	--s-color-link-visited: oklch(0.75 0.045 var(--brand-hue-secondary));
+	--s-color-plot-surface: var(--s-color-bg-subtle);
+	--s-color-plot-grid: oklch(0.55 0.015 var(--brand-hue));
+	--s-color-plot-axis: oklch(0.74 0.025 var(--brand-hue));
+	--s-color-plot-data: oklch(0.70 0.055 var(--brand-hue));
+	--s-color-plot-data-selected: oklch(0.84 0.055 var(--brand-hue));
 
 	/* Borders — clear enough to parse chrome on charcoal without loud dividers */
 	--s-color-border-subtle: var(--s-brand-700);

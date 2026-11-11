@@ -6,6 +6,7 @@
    Surfaces that intentionally hide the bar keep `scrollbar-width: none` (and
    matching WebKit display:none); those rules win on specificity over `*`. */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root,
 :root[data-theme='light'] {
 	--s-scrollbar-size: 6px;
@@ -16,6 +17,7 @@
 	--s-scrollbar-thumb-hover: color-mix(in oklch, var(--s-color-fg-muted) 58%, transparent);
 }
 
+.s-theme-scope[data-theme='dark'],
 :root[data-theme='dark'] {
 	/* Soft paper ink on charcoal — slightly stronger so the thumb reads on
 	   flat elevation without looking OS-chrome grey. */

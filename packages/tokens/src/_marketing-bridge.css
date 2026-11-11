@@ -2,6 +2,7 @@
    Canonical pan-app tokens (@scilence/tokens). */
 
 /* ===== 14. SITE.CSS BRIDGE (Marketing tokens → Design system) ===== */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Marketing spacing aliases */
 	--sp-3: var(--s-space-1);

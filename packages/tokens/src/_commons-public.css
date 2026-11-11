@@ -49,9 +49,10 @@
 	--s-commons-radius-sm: 6px;
 	--s-commons-wide: 1200px;
 
-	/* Weights — hierarchy by weight, not decoration */
+	/* UI weights: 400/500 only. Retired names remain compatibility aliases;
+	   hierarchy uses size and layout rather than additional weights. */
 	--s-commons-weight-regular: 400;
-	--s-commons-weight-medium: 550;
-	--s-commons-weight-semibold: 600;
-	--s-commons-weight-strong: 650;
+	--s-commons-weight-medium: 500;
+	--s-commons-weight-semibold: var(--s-commons-weight-medium);
+	--s-commons-weight-strong: var(--s-commons-weight-medium);
 }

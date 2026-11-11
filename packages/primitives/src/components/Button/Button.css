@@ -1,10 +1,16 @@
 /**
  * @scilence/primitives — Button CSS
  *
- * Variant treatment driven by resolved `--s-button-*` custom properties
- * set on the root by Button.ts (variant token lookup). Surfaces must
- * NOT re-layer rules on `.btn-*` or `.s-button--whatever` selectors —
- * use variant props on createButton instead.
+ * Variant treatment driven by resolved `--s-button-*` custom properties.
+ * Two equivalent entry points:
+ *   - createButton() sets them inline on the root (Button.ts);
+ *   - class-only markup gets them from the `[data-variant]` / `[data-size]`
+ *     rules below: `<button class="s-button" data-variant="secondary"
+ *     data-size="sm">` is complete without JS. Both attributes are required:
+ *     a bare `.s-button` resolves nothing (frame-navigation-tree.ts uses the
+ *     bare class on nav heads that reset their own chrome).
+ * Surfaces must NOT re-layer rules on `.btn-*` or `.s-button--whatever`
+ * selectors — use variant props or data attributes instead.
  *
  * Primary tone = accent (brand-700 greenscale) per
  * feedback_primary_action_tone_is_accent.
@@ -21,7 +27,7 @@
 	background: var(--s-button-bg);
 	color: var(--s-button-fg);
 	border: 1px solid var(--s-button-border-color);
-	border-radius: var(--s-radius-2);
+	border-radius: var(--s-radius-control);
 	font-family: var(--s-font-sans);
 	font-size: var(--s-button-font-size);
 	font-weight: var(--s-font-weight-medium);
@@ -33,6 +39,66 @@
 		background var(--s-duration-fast) var(--s-ease-out),
 		color var(--s-duration-fast) var(--s-ease-out),
 		border-color var(--s-duration-fast) var(--s-ease-out);
+}
+
+/* ── Class-only contract ───────────────────────────────────────────────
+ * One rule per Variant and Size in types.ts (button-class-contract.test.ts
+ * fails if a member lacks its rule). Attribute selectors (0,2,0) so a later
+ * one-class `.s-button` rule cannot repaint a variant; the factory's inline
+ * props still win over both. */
+
+.s-button[data-variant='primary'] {
+	--s-button-bg: var(--s-button-variant-primary-bg);
+	--s-button-fg: var(--s-button-variant-primary-fg);
+	--s-button-border-color: var(--s-button-variant-primary-border-color);
+}
+
+.s-button[data-variant='secondary'] {
+	--s-button-bg: var(--s-button-variant-secondary-bg);
+	--s-button-fg: var(--s-button-variant-secondary-fg);
+	--s-button-border-color: var(--s-button-variant-secondary-border-color);
+}
+
+.s-button[data-variant='ghost'] {
+	--s-button-bg: var(--s-button-variant-ghost-bg);
+	--s-button-fg: var(--s-button-variant-ghost-fg);
+	--s-button-border-color: var(--s-button-variant-ghost-border-color);
+}
+
+.s-button[data-variant='danger'] {
+	--s-button-bg: var(--s-button-variant-danger-bg);
+	--s-button-fg: var(--s-button-variant-danger-fg);
+	--s-button-border-color: var(--s-button-variant-danger-border-color);
+}
+
+.s-button[data-variant='add'] {
+	--s-button-bg: var(--s-button-variant-add-bg);
+	--s-button-fg: var(--s-button-variant-add-fg);
+	--s-button-border-color: var(--s-button-variant-add-border-color);
+}
+
+.s-button[data-size='sm'] {
+	--s-button-font-size: var(--s-button-size-sm-font-size);
+	--s-button-padding-block: var(--s-button-size-sm-padding-block);
+	--s-button-padding-inline: var(--s-button-size-sm-padding-inline);
+	--s-button-gap: var(--s-button-size-sm-gap);
+	--s-button-height: var(--s-button-size-sm-height);
+}
+
+.s-button[data-size='md'] {
+	--s-button-font-size: var(--s-button-size-md-font-size);
+	--s-button-padding-block: var(--s-button-size-md-padding-block);
+	--s-button-padding-inline: var(--s-button-size-md-padding-inline);
+	--s-button-gap: var(--s-button-size-md-gap);
+	--s-button-height: var(--s-button-size-md-height);
+}
+
+.s-button[data-size='lg'] {
+	--s-button-font-size: var(--s-button-size-lg-font-size);
+	--s-button-padding-block: var(--s-button-size-lg-padding-block);
+	--s-button-padding-inline: var(--s-button-size-lg-padding-inline);
+	--s-button-gap: var(--s-button-size-lg-gap);
+	--s-button-height: var(--s-button-size-lg-height);
 }
 
 .s-button:is(button) {
@@ -47,7 +113,11 @@
 
 .s-button:disabled,
 .s-button[aria-disabled='true'] {
-	opacity: 0.5;
+	/* Disabled is a neutral, readable state, not transparent unreadable ink. */
+	opacity: 1;
+	background: var(--s-color-bg-subtle);
+	color: var(--s-color-fg-muted, var(--s-color-fg-primary));
+	border-color: var(--s-color-border-strong);
 	cursor: not-allowed;
 }
 
@@ -74,6 +144,7 @@
 .s-button[data-variant='secondary']:hover:not(:disabled):not([aria-disabled='true']) {
 	background: var(--s-color-hover-bg);
 	border-color: var(--s-color-border-default);
+	color: var(--s-button-variant-secondary-hover-fg);
 }
 
 .s-button[data-variant='ghost']:hover:not(:disabled):not([aria-disabled='true']) {

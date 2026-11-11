@@ -1,0 +1,104 @@
+/**
+ * @scilence/primitives — SegmentedControl CSS
+ *
+ * The Library rail segment recipe: joined segments in a border-strong frame
+ * at control radius; the chosen segment on the system selected pair, never an
+ * accent fill. Tokens: @scilence/tokens `_segmented.css`.
+ *
+ * Selectors carry the ARIA role, so they outrank one-class legacy hooks a
+ * consumer may keep on the same elements (GUIDE keeps `.pg-view-toggle` /
+ * `.pg-view-btn` as selector hooks during migration). Focus sits INSIDE the
+ * frame: the group clips its corners, so an outside ring would be cut off.
+ */
+
+.s-segmented[role='radiogroup'] {
+	box-sizing: border-box;
+	display: inline-flex;
+	/* Never stretch: the group is as wide as its segments, whatever the
+	   parent (a grid cell or a column flex container would otherwise fill
+	   the row; founder 2026-10-20). It may shrink, never grow. */
+	inline-size: fit-content;
+	max-inline-size: 100%;
+	justify-self: start;
+	align-self: flex-start;
+	flex: 0 1 auto;
+	flex-wrap: nowrap;
+	align-items: stretch;
+	gap: 0;
+	padding: 0;
+	border: var(--s-border-thin) solid var(--s-segmented-border);
+	border-radius: var(--s-segmented-radius);
+	background: var(--s-segmented-bg);
+	overflow: hidden;
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio'] {
+	box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: var(--s-space-1);
+	min-inline-size: var(--s-segmented-height);
+	min-block-size: var(--s-segmented-height);
+	margin: 0;
+	padding: 0 var(--s-segmented-padding-inline);
+	border: 0;
+	border-inline-end: var(--s-border-thin) solid var(--s-segmented-divider);
+	border-radius: 0;
+	background: var(--s-segmented-bg);
+	color: var(--s-segmented-fg);
+	font-family: var(--s-font-sans);
+	font-size: var(--s-segmented-font-size);
+	font-weight: var(--s-font-weight-medium);
+	line-height: var(--s-font-line-height-tight);
+	white-space: nowrap;
+	cursor: pointer;
+	transition: background var(--s-duration-fast) var(--s-ease-out), color var(--s-duration-fast) var(--s-ease-out);
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio']:last-child {
+	border-inline-end: 0;
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio']:hover:not(:disabled) {
+	background: var(--s-segmented-hover-bg);
+	color: var(--s-color-fg-primary);
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio'][aria-checked='true'] {
+	background: var(--s-segmented-selected-bg);
+	color: var(--s-segmented-selected-fg);
+	font-weight: var(--s-font-weight-semibold);
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio']:focus-visible {
+	outline: var(--s-border-base) solid var(--s-color-focus-border);
+	outline-offset: calc(-1 * var(--s-border-base));
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio']:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.s-segmented[role='radiogroup'] > .s-segmented__item[role='radio'] svg {
+	inline-size: var(--s-segmented-icon-size);
+	block-size: var(--s-segmented-icon-size);
+}
+
+/* Size resolves the --s-segmented-* box tokens on the element, so a subtree
+   that changes the scale re-flows (see _type-roles.css on why aliases resolve
+   at the element). */
+.s-segmented[data-size='md'] {
+	--s-segmented-height: var(--s-segmented-size-md-height);
+	--s-segmented-padding-inline: var(--s-segmented-size-md-padding-inline);
+	--s-segmented-font-size: var(--s-segmented-size-md-font-size);
+	--s-segmented-icon-size: var(--s-segmented-size-md-icon);
+}
+
+.s-segmented[data-size='sm'] {
+	--s-segmented-height: var(--s-segmented-size-sm-height);
+	--s-segmented-padding-inline: var(--s-segmented-size-sm-padding-inline);
+	--s-segmented-font-size: var(--s-segmented-size-sm-font-size);
+	--s-segmented-icon-size: var(--s-segmented-size-sm-icon);
+}

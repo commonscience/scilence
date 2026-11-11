@@ -45,6 +45,15 @@ export type {
 	Tone,
 } from './components/Card/index.js';
 
+// ── SegmentedControl (radiogroup; GUIDE DS consolidation U8) ────────────
+export { createSegmentedControl } from './components/SegmentedControl/index.js';
+export type {
+	SegmentedControlHandle,
+	SegmentedControlOptions,
+	SegmentedOption,
+	Size as SegmentedControlSize,
+} from './components/SegmentedControl/index.js';
+
 // ── Chip (unified chip vocabulary) ──────────────────────────────────────
 export { Chip, createChip } from './components/Chip/index.js';
 export { mergeChipVariants, resolveChipTokens } from './components/Chip/index.js';
@@ -83,7 +92,7 @@ export type {
 } from './components/IconButton/index.js';
 
 // ── Modal (native dialog substrate) ─────────────────────────────────────
-export { Modal, createModal } from './components/Modal/index.js';
+export { Modal, createModal, createModalChrome, getModalHandle } from './components/Modal/index.js';
 export { mergeModalVariants, resolveModalTokens } from './components/Modal/index.js';
 export type {
 	BodySlot,
@@ -95,6 +104,14 @@ export type {
 	HeaderAction,
 	HeaderSlot,
 	ModalConfig,
+	ModalChromeHandle,
+	ModalChromeOptions,
+	ModalChromeSlots,
+	ModalDismissal,
+	ModalFeedbackSlot,
+	ModalPresentation,
+	ModalStepperItem,
+	ModalStepperSlot,
 	ModalHandle,
 	ModalLifecycle,
 	ModalMode,
@@ -126,11 +143,38 @@ export type {
 	MenuVariants,
 } from './components/Menu/index.js';
 
+// ── NavTreeRow (shared navigation disclosure + sibling actions) ─────────
+export { NavTreeRow, createNavTreeRow } from './components/NavTreeRow/index.js';
+export type { NavTreeRowConfig, NavTreeRowHandle, NavTreeRowVariant } from './components/NavTreeRow/index.js';
+
+// ── ContextMenuButton (IconButton + Menu + native popover lifecycle) ─────
+export { createContextMenuButton } from './components/ContextMenuButton/index.js';
+export type { ContextMenuButtonConfig, ContextMenuButtonHandle } from './components/ContextMenuButton/index.js';
+
+// ── HoverDisclosure (behavior-only native popover intent controller) ─────
+export { attachHoverDisclosure, joinHoverDisclosureGroup } from './hover-disclosure/index.js';
+export type { HoverDisclosureGroupHandle, HoverDisclosureGroupParticipant, HoverDisclosureHandle, HoverDisclosureOptions, HoverDisclosureState } from './hover-disclosure/index.js';
+
+// ── CellPicker geometry (top-layer presentation remains consumer-owned) ─
+export { computeCellPickerGeometry } from './cell-picker/geometry.js';
+export type {
+	CellPickerGeometry,
+	CellPickerGeometryOptions,
+	CellPickerPoint,
+	CellPickerRect,
+	CellPickerViewport,
+} from './cell-picker/geometry.js';
+
+// ── PlacementHandle (accessible alternative to dragging) ───────────────
+export { createPlacementHandle, placementHandleLabel } from './placement-handle/index.js';
+export type { PlacementHandle, PlacementHandleOptions } from './placement-handle/index.js';
+
 // ── InspectorStack (Brief library-inspector-section-stack — Increment 1) ─
 // Reusable ordered collapsible right-rail section list — drag + keyboard
 // reorder + ARIA live announce + per-surface localStorage persistence.
 // Generalized from the notebook inspector widget+stack.
 export { createInspectorStack } from './inspector-stack/index.js';
+export { attachInspectorResize, clampInspectorHeight, INSPECTOR_MIN_HEIGHT, INSPECTOR_MAX_HEIGHT } from './inspector-stack/resize.js';
 export type {
 	InspectorSectionDescriptor,
 	InspectorSectionRender,

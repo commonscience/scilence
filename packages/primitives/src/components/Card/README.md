@@ -43,6 +43,10 @@ container.appendChild(card.render());
 
 Link `Card.css` once per surface (GUIDE: `/admin/css/card.css`).
 
+## Spacing
+
+Use consistent, modest shell padding across card layouts. `regular` density is the default: `--s-space-2` vertically and `--s-space-3` horizontally. Use `compact` for an intentionally denser context, consistently within that context. A grid/list layout change must not increase shell padding. Keep page gutters separate; do not add surface padding overrides or duplicate shell padding inside slots. Adjust shared density tokens when a general change is needed.
+
 ## Slot API
 
 - `head` — iter, substate exception, discipline chips, prototype chip, agent chip

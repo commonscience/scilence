@@ -27,6 +27,22 @@ and dismissal, including Escape. This keeps Menu embeddable in any host
 
 ## Usage
 
+Menu items preserve the shared `--s-size-touch-target-min` floor on coarse or
+non-hover input, independently of size and density. Desktop menus remain compact.
+
+### Floating surface ownership
+
+Floating menu hosts reuse `--s-shadow-raised`, the same theme-aware soft shadow
+as Menu's `surface` chrome. When a popover owns the background and radius, use
+`chrome: 'bare'` for its Menu contents and apply the shadow **only to the host**.
+A borderless host can use this depth cue without adding an outline. Keep its
+background/foreground paired (`--s-surface-elevation-2-bg` /
+`--s-color-fg-primary`); focus indicators are independent and remain visible.
+
+The shadow communicates a temporary layer above the work. A preview that becomes
+a pinned/docked navigation panel drops that shadow; ordinary panels and cards do
+not acquire it. GUIDE's navigation preview and View popover consume this recipe.
+
 ```ts
 import { createMenu } from '@scilence/primitives';
 

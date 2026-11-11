@@ -1,4 +1,5 @@
-export { Modal, createModal } from './Modal.js';
+export { createModalChrome } from './chrome.js';
+export { Modal, createModal, getModalHandle } from './Modal.js';
 export { mergeModalVariants, resolveModalTokens } from './resolve-modal-tokens.js';
 export type {
 	BodySlot,
@@ -11,6 +12,14 @@ export type {
 	HeaderAction,
 	HeaderSlot,
 	ModalConfig,
+	ModalChromeHandle,
+	ModalChromeOptions,
+	ModalChromeSlots,
+	ModalDismissal,
+	ModalFeedbackSlot,
+	ModalPresentation,
+	ModalStepperItem,
+	ModalStepperSlot,
 	ModalHandle,
 	ModalLifecycle,
 	ModalMode,

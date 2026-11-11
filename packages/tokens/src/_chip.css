@@ -2,6 +2,7 @@
    Variant axes resolve to these custom properties; Chip.ts sets
    --s-chip-* resolved values on the element (single lookup, no cascade wars). */
 
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* size — font + padding + gap */
 
@@ -37,7 +38,7 @@
 	--s-chip-tone-default-border-color: var(--s-color-border-subtle);
 
 	--s-chip-tone-muted-bg: var(--s-color-bg-muted);
-	--s-chip-tone-muted-fg: var(--s-color-fg-secondary);
+	--s-chip-tone-muted-fg: var(--s-color-fg-muted);
 	--s-chip-tone-muted-border-width: 1px;
 	--s-chip-tone-muted-border-color: var(--s-color-border-subtle);
 
@@ -70,7 +71,7 @@
 
 	/* number badge (slot variants) */
 	--s-chip-number-bg: var(--s-color-bg-subtle);
-	--s-chip-number-fg: var(--s-color-fg-tertiary);
+	--s-chip-number-fg: var(--s-color-fg-soft);
 	--s-chip-number-radius: var(--s-radius-pill);
 	--s-chip-number-min-width: var(--s-space-3);
 	--s-chip-number-padding-inline: var(--s-space-hair);

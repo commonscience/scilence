@@ -2,6 +2,10 @@
    Canonical pan-app tokens (@scilence/tokens). */
 
 /* ===== 5. Z-INDEX ===== */
+/* These tokens order ordinary stacking contexts. A native dialog/popover lives
+   in the browser top layer, which no numeric z-index can outrank. Tooltip
+   portals use the shared tooltip-layer adapter: manual native popover, owned
+   by the trigger's dialog when present. Do not escalate numbers to fix this. */
 :root {
 	--s-z-base: 0;
 	--s-z-raised: 1;

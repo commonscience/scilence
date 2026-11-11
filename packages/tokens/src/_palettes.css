@@ -8,7 +8,12 @@
 	--brand-hue: 180;
 	--brand-hue-secondary: 249;
 	--scale-hue: 180;
+}
 
+/* Rebind derived palettes at an explicit theme boundary. Hues above stay
+   inherited from the appearance owner; an explicit local hue still works. */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
+:root {
 	/* Cream palette (legacy, for reference) */
 	--cream-white: #fefdfd;
 	--cream-paper: #fbfbf9;

@@ -2,6 +2,7 @@
    Canonical pan-app tokens (@scilence/tokens). */
 
 /* ===== 8. STATUS COLORS ===== */
+.s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Status color components (for manipulation) */
 	--s-status-success-O: 0.54; /* 0.58 → 0.54 (2026-08-23): 3.96:1 as text on the light ground, under the 4.5 floor. Now 4.66. */
@@ -28,11 +29,6 @@
 	--s-color-warning: var(--s-color-status-warning);
 	--s-color-error: var(--s-color-status-danger);
 	--s-color-info: var(--s-color-status-info);
-	/* Compatibility aliases used across shell CSS while we complete cleanup waves. */
-	--s-color-border: var(--s-color-border-subtle);
-	--s-color-bg-hover: var(--s-color-hover-bg);
-	--s-color-fg-secondary: var(--s-color-fg-muted);
-	--s-color-surface-subtle: var(--s-color-bg-subtle);
 	--s-line-height-snug: var(--s-font-line-height-tight);
 
 	/* Success variations */
@@ -102,10 +98,6 @@
 	 * fallbacks are forbidden, removing the safety net for a token this package
 	 * never declared. Declared here, where its consumers live. */
 	--s-radius-pill: var(--s-radius-round);
-
-	/* Referenced by _lens-colors.css and four guide stylesheets; the declared
-	 * name is --s-color-fg-primary. */
-	--s-color-fg-default: var(--s-color-fg-primary);
 }
 
 /* ===== 8b. STATUS COLORS — DARK ANCHORS =====
@@ -135,6 +127,7 @@
  * same reason: no single ladder step clears both grounds.
  *
  * Gate: scripts/lib/token-contrast.test.mjs. */
+.s-theme-scope[data-theme='dark'],
 :root[data-theme='dark'] {
 	--s-status-info-O: 0.68;    /* 0.44 → 4.57:1 */
 	--s-status-success-O: 0.66; /* 0.54 → 4.64:1 */
