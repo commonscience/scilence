@@ -26,9 +26,19 @@
 	--s-space-twohair: 2px;
 	--s-space-tight-3: 4px;
 
+	/* Snug roles — Caitlin, 2026-11-06. Density follows the Fibonacci scale. */
+	--s-page-margin: var(--s-space-6);
+	--s-gutter: var(--s-space-5);
+	--s-section-gap: var(--s-space-5);
+	--s-subsection-gap: var(--s-space-4);
+	--s-sibling-gap: var(--s-space-3);
+	--s-child-gap: var(--s-space-2);
+	--s-inset: var(--s-space-4);
+	--s-rule-gap: var(--s-space-4);
+
 	/* Semantic spacing tokens */
-	--s-layout-gutter: var(--s-space-6);
-	--s-layout-section-gap: var(--s-space-6);
+	--s-layout-gutter: var(--s-gutter);
+	--s-layout-section-gap: var(--s-section-gap);
 	--s-layout-card-pad: var(--s-space-5);
 	--s-layout-card-gap: var(--s-space-4);
 	--s-layout-nav-item-gap: var(--s-space-2);

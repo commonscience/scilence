@@ -14,7 +14,8 @@
 	--s-icon-button-size-sm-container: 22px;
 	--s-icon-button-size-sm-icon: 12px;
 
-	--s-icon-button-size-md-container: 28px;
+	--s-control-height: 28px;
+	--s-icon-button-size-md-container: var(--s-control-height);
 	--s-icon-button-size-md-icon: 14px;
 
 	--s-icon-button-size-lg-container: 32px;
