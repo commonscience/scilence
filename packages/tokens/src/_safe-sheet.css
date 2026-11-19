@@ -1,0 +1,23 @@
+/* Safe area, keyboard inset, and sheet template geometry.
+   Purpose: one home for the viewport insets and the sheet sizes Return 3 names.
+   Inputs: env(safe-area-inset-*), the keyboard cover the app writes onto
+   --s-keyboard-inset, --s-size-touch-target-min, and --navigation-rail-width.
+   Outputs: the custom properties below.
+   Invariant: status is proposed. This file does not change breakpoint rules
+   and does not pick a spacing role for the keyboard or the safe area.
+   Design Lab entries: each property below, status proposed. */
+:root {
+	/* Token level. Design Lab entry, status proposed. */
+	--s-safe-top: env(safe-area-inset-top, 0px);
+	--s-safe-bottom: env(safe-area-inset-bottom, 0px);
+	--s-safe-start: env(safe-area-inset-left, 0px);
+	--s-safe-end: env(safe-area-inset-right, 0px);
+	--s-keyboard-inset: 0px;
+
+	/* Template level. Design Lab entry, status proposed. */
+	--s-sheet-max-inline: min(70rem, 94vw);
+	--s-sheet-peek-block: min(100%, calc(var(--s-size-touch-target-min) * 4 + var(--s-safe-bottom)));
+	--s-sheet-half-block: 50dvh;
+	--s-panel-track: minmax(0, 1fr);
+	--s-rail-sheet-inline: calc(100% - var(--navigation-rail-width, 0px) - var(--s-safe-start) - var(--s-safe-end));
+}
