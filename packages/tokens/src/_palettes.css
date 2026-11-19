@@ -15,12 +15,12 @@
 .s-theme-scope:is([data-theme=light], [data-theme=dark]),
 :root {
 	/* Cream palette (legacy, for reference) */
-	--cream-white: #fefdfd;
-	--cream-paper: #fbfbf9;
-	--cream-canvas: #f0eee6;
-	--cream-linen: #e8e6dc;
-	--cream-sand: #e0ddd2;
-	--cream-bone: #d2cfc3;
+	--cream-white: #fefdfd; /* retired 2026-11-06, do not use */
+	--cream-paper: #fbfbf9; /* retired 2026-11-06, do not use */
+	--cream-canvas: #f0eee6; /* retired 2026-11-06, do not use */
+	--cream-linen: #e8e6dc; /* retired 2026-11-06, do not use */
+	--cream-sand: #e0ddd2; /* retired 2026-11-06, do not use */
+	--cream-bone: #d2cfc3; /* retired 2026-11-06, do not use */
 
 	/* ===== TEALSCALE (Primary UI scale, hue 180) =====
 	   Chroma peaks mid-range (0.12) and tapers at extremes, matching
@@ -84,31 +84,31 @@
 	   and cream-75 reverted (pass 9, 2026-05-12 Caitlin direct: H=90 hue
 	   skewed too cream/saturated). Sourced from the morph sequencer's
 	   battle-tested palette. */
-	--s-cream-15:  #fffdf7;  /* warm near-white — pass 9 revert from pass-8 OKLCH after Caitlin direct "skewed way too cream"; equivalent target was oklch(0.996 0.012 90), but H=90 hue pushed too warm/saturated; hex restored. Slot above cream-25 for footer/bright-status. */
-	--s-cream-25:  #fefdfd;  /* white */
-	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */
-	--s-cream-50:  #fbfbf9;  /* paper */
-	--s-cream-75:  #f9f9f6;  /* pearl — sunken-tier second pass (2026-05-19): L≈0.981, closer to cream-50; subtler column-well vs card contrast. */
-	--s-cream-100: #f0eee6;  /* cream */
-	--s-cream-150: #e8e6dc;  /* linen */
-	--s-cream-200: #e0ddd2;  /* sand */
-	--s-cream-300: #d2cfc3;  /* bone */
-	--s-cream-400: #c4bfb0;  /* stone */
-	--s-cream-500: #b8b3a4;  /* clay */
-	--s-cream-600: #a09a8a;  /* drift */
-	--s-cream-700: #8a8474;  /* walnut */
-	--s-cream-800: #736d5e;  /* timber */
-	--s-cream-850: #5c5749;  /* bark */
-	--s-cream-900: #454136;  /* earth */
-	--s-cream-925: #2e2b24;  /* ink */
-	--s-cream-950: #1a1815;  /* char */
-	--s-cream-975: #000000;  /* black */
+	--s-cream-15:  #fffdf7;  /* warm near-white — pass 9 revert from pass-8 OKLCH after Caitlin direct "skewed way too cream"; equivalent target was oklch(0.996 0.012 90), but H=90 hue pushed too warm/saturated; hex restored. Slot above cream-25 for footer/bright-status. */ /* retired 2026-11-06, do not use */
+	--s-cream-25:  #fefdfd;  /* white */ /* retired 2026-11-06, do not use */
+	--s-cream-35:  #fdfcfb;  /* parchment — intermediate step added for lightening-pass surface tiers */ /* retired 2026-11-06, do not use */
+	--s-cream-50:  #fbfbf9;  /* paper */ /* retired 2026-11-06, do not use */
+	--s-cream-75:  #f9f9f6;  /* pearl — sunken-tier second pass (2026-05-19): L≈0.981, closer to cream-50; subtler column-well vs card contrast. */ /* retired 2026-11-06, do not use */
+	--s-cream-100: #f0eee6;  /* cream */ /* retired 2026-11-06, do not use */
+	--s-cream-150: #e8e6dc;  /* linen */ /* retired 2026-11-06, do not use */
+	--s-cream-200: #e0ddd2;  /* sand */ /* retired 2026-11-06, do not use */
+	--s-cream-300: #d2cfc3;  /* bone */ /* retired 2026-11-06, do not use */
+	--s-cream-400: #c4bfb0;  /* stone */ /* retired 2026-11-06, do not use */
+	--s-cream-500: #b8b3a4;  /* clay */ /* retired 2026-11-06, do not use */
+	--s-cream-600: #a09a8a;  /* drift */ /* retired 2026-11-06, do not use */
+	--s-cream-700: #8a8474;  /* walnut */ /* retired 2026-11-06, do not use */
+	--s-cream-800: #736d5e;  /* timber */ /* retired 2026-11-06, do not use */
+	--s-cream-850: #5c5749;  /* bark */ /* retired 2026-11-06, do not use */
+	--s-cream-900: #454136;  /* earth */ /* retired 2026-11-06, do not use */
+	--s-cream-925: #2e2b24;  /* ink */ /* retired 2026-11-06, do not use */
+	--s-cream-950: #1a1815;  /* char */ /* retired 2026-11-06, do not use */
+	--s-cream-975: #000000;  /* black */ /* retired 2026-11-06, do not use */
 
 	/* Creamscale alpha variants (using oklch for alpha channel) */
-	--s-cream-alpha-5:  oklch(0.97 0.01 80 / 0.05);
-	--s-cream-alpha-10: oklch(0.97 0.01 80 / 0.10);
-	--s-cream-alpha-20: oklch(0.93 0.01 80 / 0.20);
-	--s-cream-alpha-40: oklch(0.90 0.01 80 / 0.40);
+	--s-cream-alpha-5:  oklch(0.97 0.01 80 / 0.05); /* retired 2026-11-06, do not use */
+	--s-cream-alpha-10: oklch(0.97 0.01 80 / 0.10); /* retired 2026-11-06, do not use */
+	--s-cream-alpha-20: oklch(0.93 0.01 80 / 0.20); /* retired 2026-11-06, do not use */
+	--s-cream-alpha-40: oklch(0.90 0.01 80 / 0.40); /* retired 2026-11-06, do not use */
 
 	/* ===== BRANDSCALE (Dynamic, follows --brand-hue) =====
 	   Same chroma curve as tealscale but keyed to --brand-hue.

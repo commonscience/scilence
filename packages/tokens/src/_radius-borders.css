@@ -49,7 +49,7 @@
    inner radius = outer radius − the inset between them, clamped at 0.
 
    A rounded container PUBLISHES its corner (--s-radius-outer) and its inset
-   (--s-inset); a surface inside it takes `.s-radius-inner`, whose radius is
+   (--s-radius-inset); a surface inside it takes `.s-radius-inner`, whose radius is
    computed ON THAT ELEMENT from the inherited values. The formula lives only
    in the `.s-radius-inner` rule: a :root token holding it would resolve at
    :root, before any container has published anything.
@@ -65,14 +65,14 @@
    inner corner is square. That is the rule, not a bug. */
 .s-radius-nest {
 	--s-radius-outer: var(--s-radius-nest-outer, var(--s-radius-container));
-	--s-inset: var(--s-radius-nest-inset, var(--s-space-3));
+	--s-radius-inset: var(--s-radius-nest-inset, var(--s-space-3));
 	border-radius: var(--s-radius-outer);
-	padding: var(--s-inset);
+	padding: var(--s-radius-inset);
 }
 
 .s-radius-inner {
 	border-radius: max(
 		var(--s-radius-none),
-		calc(var(--s-radius-outer, var(--s-radius-none)) - var(--s-inset, var(--s-radius-none)))
+		calc(var(--s-radius-outer, var(--s-radius-none)) - var(--s-radius-inset, var(--s-radius-none)))
 	);
 }
